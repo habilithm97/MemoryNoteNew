@@ -55,4 +55,7 @@ dependencies {
     // KSP : 코틀린에 최적화된 컴파일 타임 코드 생성 도구 (KAPT보다 더 빠르고 가벼움)
     ksp(libs.androidx.room.compiler) // DAO 구현체 및 코드 자동 생성
     implementation(libs.androidx.room.ktx) // 코틀린 확장 (코루틴, Flow)
+
+    // LiveData
+    implementation(libs.androidx.lifecycle.livedata.ktx)
 }
