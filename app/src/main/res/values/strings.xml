@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MemoryNoteNew</string>
+
+    <string name="memo">Memo</string>
 </resources>

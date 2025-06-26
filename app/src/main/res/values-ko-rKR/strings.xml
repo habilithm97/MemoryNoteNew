@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">기억노트</string>
+
+    <string name="memo">메모</string>
+</resources>

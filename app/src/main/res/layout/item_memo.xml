@@ -34,7 +34,7 @@
                 android:fontFamily="@font/bookkmyungjo_bold"
                 android:maxLines="1"
                 android:padding="4dp"
-                android:text="메모"
+                android:text="@string/memo"
                 android:textSize="18sp" />
 
             <LinearLayout
