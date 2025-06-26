@@ -31,7 +31,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
+                android:fontFamily="@font/bookkmyungjo_bold"
                 android:maxLines="1"
+                android:padding="4dp"
                 android:text="메모"
                 android:textSize="18sp" />
 
@@ -45,6 +47,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:fontFamily="@font/bookkmyungjo_light"
+                    android:gravity="center_vertical"
+                    android:padding="4dp"
                     android:text="2025.00.00. 00:00" />
 
                 <ImageView
