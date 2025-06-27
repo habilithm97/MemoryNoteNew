@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
 abstract class MemoDatabase : RoomDatabase() {
     abstract fun memoDao(): MemoDao
 
-    companion object { // 클래스 수준의 싱글톤 객체 (static 처럼 사용 가능)
+    companion object { // 클래스 수준의 싱글톤 객체 (static처럼 동작)
         @Volatile // 여러 스레드가 항상 최신 값을 읽도록 보장
         private var INSTANCE: MemoDatabase? = null
         private const val DB_NAME = "memo.db"
