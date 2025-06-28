@@ -24,12 +24,12 @@ class MemoAdapter : ListAdapter<Memo, MemoAdapter.MemoViewHolder>(DIFF_CALLBACK)
                     tvContent.text = memo.content
                     tvDate.text = SimpleDateFormat(itemView.context.getString(R.string.date_format),
                         Locale.getDefault()).format(Date(memo.date))
-                    ivLock.visibility = if (memo.isLocked) View.VISIBLE else View.INVISIBLE
+                    imageView.visibility = if (memo.isLocked) View.VISIBLE else View.INVISIBLE
                 }
             }
     }
 
-    companion object { // 클래스 수준의 싱글톤 객체 (static처럼 동작)
+    companion object { // 클래스 수준의 정적 객체 (static처럼 동작)
         // RecyclerView 성능 최적화를 위해 변경 사항만 업데이트
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Memo>() {
             override fun areItemsTheSame(oldItem: Memo, newItem: Memo): Boolean {
