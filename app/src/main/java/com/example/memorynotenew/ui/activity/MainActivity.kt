@@ -1,6 +1,7 @@
 package com.example.memorynotenew.ui.activity
 
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -33,6 +34,17 @@ class MainActivity : AppCompatActivity() {
         binding.apply {
             setSupportActionBar(toolbar)
         }
+    }
+
+    // MemoFragment 업 버튼 활성화
+    fun showUpButton(show: Boolean) {
+        supportActionBar?.setDisplayHomeAsUpEnabled(show)
+    }
+
+    // MemoFragment 업 버튼 클릭 시 동작
+    override fun onSupportNavigateUp(): Boolean {
+        supportFragmentManager.popBackStack()
+        return true
     }
 
     private fun replaceFragment(fragment: Fragment) {
