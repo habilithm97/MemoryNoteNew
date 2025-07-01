@@ -5,12 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import com.example.memorynotenew.databinding.FragmentMemoBinding
+import com.example.memorynotenew.room.memo.Memo
 import com.example.memorynotenew.ui.activity.MainActivity
+import com.example.memorynotenew.viewmodel.MemoViewModel
 
 class MemoFragment : Fragment() {
     private var _binding: FragmentMemoBinding? = null
     private val binding get() = _binding!!
+    private val memoViewModel: MemoViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,6 +31,21 @@ class MemoFragment : Fragment() {
         binding.apply {
 
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        val memoStr = binding.editText.text.toString()
+        if (memoStr.isNotBlank()) {
+            saveMemo(memoStr)
+        }
+    }
+
+    private fun saveMemo(memoStr: String) {
+        val date = System.currentTimeMillis()
+        val memo = Memo(content = memoStr, date  = date)
+        memoViewModel.insertMemo(memo)
     }
 
     override fun onDestroyView() {
