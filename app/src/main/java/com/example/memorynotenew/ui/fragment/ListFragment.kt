@@ -9,14 +9,15 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.memorynotenew.R
 import com.example.memorynotenew.adapter.MemoAdapter
+import com.example.memorynotenew.constants.Constants
 import com.example.memorynotenew.databinding.FragmentListBinding
 import com.example.memorynotenew.viewmodel.MemoViewModel
 
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null // nullable
     private val binding get() = _binding!! // non-null, 항상 null-safe한 접근 가능
-    private val memoAdapter by lazy { MemoAdapter() }
     private val memoViewModel: MemoViewModel by viewModels()
+    private lateinit var memoAdapter: MemoAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +29,8 @@ class ListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupMemoAdapter()
 
         binding.apply {
             recyclerView.apply {
@@ -54,6 +57,22 @@ class ListFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setupMemoAdapter() {
+        memoAdapter = MemoAdapter(
+            onItemClick = { memo ->
+                val memoFragment = MemoFragment().apply {
+                    arguments = Bundle().apply {
+                        putParcelable(Constants.MEMO, memo)
+                    }
+                }
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, memoFragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+        )
     }
 
     override fun onDestroyView() {
