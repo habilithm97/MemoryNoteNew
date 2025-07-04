@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.memorynotenew.R
@@ -49,15 +50,25 @@ class ListFragment : Fragment() {
                     .addToBackStack(null) // 백 스택에 추가
                     .commit()
             }
-            memoViewModel.getAllMemos.observe(viewLifecycleOwner) {
+            memoViewModel.getAllMemos.observe(viewLifecycleOwner) { memoList ->
                 memoAdapter.apply {
-                    submitList(it) {
-                        if (itemCount > 0) {
-                            recyclerView.smoothScrollToPosition(itemCount - 1)
-                        }
+                    submitMemoList(memoList)
+                    if (itemCount > 0) {
+                        recyclerView.smoothScrollToPosition(itemCount - 1)
                     }
                 }
             }
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                // 검색어 입력 시 호출
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    memoAdapter.filterList(newText ?: "") // null이면 "" 사용
+                    return true
+                }
+                // 키보드 검색 버튼 클릭 시 호출
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
+                }
+            })
         }
     }
 

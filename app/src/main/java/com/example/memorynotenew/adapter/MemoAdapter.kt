@@ -19,6 +19,8 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                   private val onItemLongClick: (Memo) -> Unit) :
     ListAdapter<Memo, MemoAdapter.MemoViewHolder>(DIFF_CALLBACK) {
 
+        private var memoList: List<Memo> = emptyList() // 원본 리스트
+
     inner class MemoViewHolder(private val binding: ItemMemoBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -36,7 +38,7 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                         }
                         setOnLongClickListener {
                             showPopupMenu(it, memo)
-                            true
+                            true // 클릭 이벤트 발생 방지 (롱클릭 이벤트만 소비)
                         }
                     }
                 }
@@ -78,5 +80,21 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
     override fun onBindViewHolder(holder: MemoAdapter.MemoViewHolder, position: Int) {
         // 현재 위치의 Memo 데이터를 ViewHolder에 바인딩
         holder.bind(getItem(position))
+    }
+
+    fun submitMemoList(memoList: List<Memo>) {
+        this.memoList = memoList // 원본 리스트 보관
+        submitList(memoList)
+    }
+
+    fun filterList(searchQuery: String) {
+        val filteredList = if (searchQuery.isEmpty()) { // (공백도 검색 가능)
+            memoList
+        } else {
+            memoList.filter {
+                it.content.contains(searchQuery, ignoreCase = true) // 대소문자 구분 없이 검색
+            }
+        }
+        submitList(filteredList)
     }
 }
