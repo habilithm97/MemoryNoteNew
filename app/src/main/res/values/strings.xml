@@ -3,4 +3,9 @@
 
     <string name="memo">Memo</string>
     <string name="date_format">yyyy. M. d. HH:mm</string>
+
+    <string name="delete_dialog_title">To delete</string>
+    <string name="delete_dialog_msg">Delete the selected memo?</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
 </resources>

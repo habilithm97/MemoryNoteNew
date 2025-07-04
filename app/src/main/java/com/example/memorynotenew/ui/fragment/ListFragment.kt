@@ -1,5 +1,6 @@
 package com.example.memorynotenew.ui.fragment
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import com.example.memorynotenew.R
 import com.example.memorynotenew.adapter.MemoAdapter
 import com.example.memorynotenew.constants.Constants
 import com.example.memorynotenew.databinding.FragmentListBinding
+import com.example.memorynotenew.room.memo.Memo
 import com.example.memorynotenew.viewmodel.MemoViewModel
 
 class ListFragment : Fragment() {
@@ -71,8 +73,22 @@ class ListFragment : Fragment() {
                     .replace(R.id.container, memoFragment)
                     .addToBackStack(null)
                     .commit()
+            }, onItemLongClick = { memo ->
+                showDeleteDialog(memo)
             }
         )
+    }
+
+    private fun showDeleteDialog(memo: Memo) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.delete_dialog_title)) // 삭제하기
+            .setMessage(getString(R.string.delete_dialog_msg)) // 선택한 메모를 삭제할까요?
+            .setNegativeButton(getString(R.string.cancel), null) // 취소
+            .setPositiveButton(getString(R.string.delete)) { dialog, _ -> // 삭제
+                memoViewModel.deleteMemo(memo)
+                dialog.dismiss()
+            }
+            .show()
     }
 
     override fun onDestroyView() {

@@ -3,6 +3,7 @@ package com.example.memorynotenew.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +15,8 @@ import java.util.Date
 import java.util.Locale
 
 // 아이템 클릭 시 실행될 동작을 외부에서 전달 받음
-class MemoAdapter(private val onItemClick: (Memo) -> Unit) :
+class MemoAdapter(private val onItemClick: (Memo) -> Unit,
+                  private val onItemLongClick: (Memo) -> Unit) :
     ListAdapter<Memo, MemoAdapter.MemoViewHolder>(DIFF_CALLBACK) {
 
     inner class MemoViewHolder(private val binding: ItemMemoBinding) :
@@ -28,11 +30,32 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit) :
                         Locale.getDefault()).format(Date(memo.date))
                     imageView.visibility = if (memo.isLocked) View.VISIBLE else View.INVISIBLE
 
-                    root.setOnClickListener {
-                        onItemClick(memo)
+                    root.apply {
+                        setOnClickListener {
+                            onItemClick(memo)
+                        }
+                        setOnLongClickListener {
+                            showPopupMenu(it, memo)
+                            true
+                        }
                     }
                 }
             }
+        private fun showPopupMenu(view: View, memo: Memo) {
+            PopupMenu(view.context, view).apply {
+                menuInflater.inflate(R.menu.item_popup_menu, menu)
+                setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        R.id.delete -> {
+                            onItemLongClick(memo)
+                            true
+                        }
+                        else -> false
+                    }
+                }
+                show()
+            }
+        }
     }
 
     companion object { // 클래스 수준의 정적 객체 (static처럼 동작)
