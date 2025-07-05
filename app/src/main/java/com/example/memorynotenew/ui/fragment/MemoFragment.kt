@@ -1,11 +1,13 @@
 package com.example.memorynotenew.ui.fragment
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.viewModels
 import com.example.memorynotenew.constants.Constants
 import com.example.memorynotenew.databinding.FragmentMemoBinding
@@ -69,6 +71,18 @@ class MemoFragment : Fragment() {
 
         if (updatedMemo != null) {
             memoViewModel.updateMemo(updatedMemo)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // 새 메모일 경우 소프트 키보드 자동으로 표시
+        if (selectedMemo == null) {
+            binding.editText.requestFocus()
+            // requireContext : null이면 예외
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.editText, InputMethodManager.SHOW_IMPLICIT)
         }
     }
 

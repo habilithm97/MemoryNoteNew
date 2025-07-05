@@ -19,7 +19,7 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                   private val onItemLongClick: (Memo) -> Unit) :
     ListAdapter<Memo, MemoAdapter.MemoViewHolder>(DIFF_CALLBACK) {
 
-        private var memoList: List<Memo> = emptyList() // 원본 리스트
+        private var memoList: List<Memo> = emptyList() // 원본 메모 리스트
 
     inner class MemoViewHolder(private val binding: ItemMemoBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -83,7 +83,7 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
     }
 
     fun submitMemoList(memoList: List<Memo>) {
-        this.memoList = memoList // 원본 리스트 보관
+        this.memoList = memoList // 원본 메모 리스트 보관
         submitList(memoList)
     }
 
