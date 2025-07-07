@@ -61,7 +61,19 @@ class ListFragment : Fragment() {
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 // 검색어 입력 시 호출
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    memoAdapter.filterList(newText ?: "") // null이면 "" 사용
+                    val query = newText.orEmpty() // null이면 "" 처리
+                    memoAdapter.apply {
+                        filterList(query) { // 필터링
+                            // 검색어가 비어 있고, 메모가 하나 이상 있으면
+                            if (query.isEmpty() && itemCount > 0) {
+                                recyclerView.apply {
+                                    post { // RecyclerView 업데이트 후 실행
+                                        smoothScrollToPosition(itemCount - 1)
+                                    }
+                                }
+                            }
+                        }
+                    }
                     return true
                 }
                 // 키보드 검색 버튼 클릭 시 호출

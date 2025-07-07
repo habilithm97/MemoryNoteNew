@@ -87,7 +87,7 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
         submitList(memoList)
     }
 
-    fun filterList(searchQuery: String) {
+    fun filterList(searchQuery: String, onFilterComplete: () -> Unit) {
         val filteredList = if (searchQuery.isEmpty()) { // (공백도 검색 가능)
             memoList
         } else {
@@ -95,6 +95,8 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                 it.content.contains(searchQuery, ignoreCase = true) // 대소문자 구분 없이 검색
             }
         }
-        submitList(filteredList)
+        submitList(filteredList) {
+            onFilterComplete() // 필터링 후속 작업
+        }
     }
 }
