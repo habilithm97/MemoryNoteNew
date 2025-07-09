@@ -30,9 +30,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        binding.apply {
-            setSupportActionBar(toolbar)
-        }
+        setSupportActionBar(binding.toolbar)
     }
 
     // MemoFragment 업 버튼 활성화

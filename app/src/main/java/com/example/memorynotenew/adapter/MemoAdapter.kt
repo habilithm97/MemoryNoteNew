@@ -25,14 +25,14 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
         RecyclerView.ViewHolder(binding.root) {
 
             fun bind(memo: Memo) {
-                binding.apply {
+                with(binding) {
                     // Memo 데이터를 각 View에 할당
                     tvContent.text = memo.content
                     tvDate.text = SimpleDateFormat(itemView.context.getString(R.string.date_format),
                         Locale.getDefault()).format(Date(memo.date))
                     imageView.visibility = if (memo.isLocked) View.VISIBLE else View.INVISIBLE
 
-                    root.apply {
+                    with(root) {
                         setOnClickListener {
                             onItemClick(memo)
                         }

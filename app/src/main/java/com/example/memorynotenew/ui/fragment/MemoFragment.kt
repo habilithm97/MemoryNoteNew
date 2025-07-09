@@ -79,10 +79,12 @@ class MemoFragment : Fragment() {
 
         // 새 메모일 경우 소프트 키보드 자동으로 표시
         if (selectedMemo == null) {
-            binding.editText.requestFocus()
-            // requireContext : null이면 예외
-            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(binding.editText, InputMethodManager.SHOW_IMPLICIT)
+            with(binding) {
+                editText.requestFocus()
+                // requireContext : null이면 예외
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+            }
         }
     }
 
