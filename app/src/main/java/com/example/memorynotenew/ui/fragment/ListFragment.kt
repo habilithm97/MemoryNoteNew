@@ -43,6 +43,8 @@ class ListFragment : Fragment() {
     private fun setupAdapter() {
         memoAdapter = MemoAdapter(
             onItemClick = { memo ->
+                binding.searchView.setQuery("", false) // 검색어 초기화
+
                 val memoFragment = MemoFragment().apply {
                     arguments = Bundle().apply {
                         putParcelable(Constants.MEMO, memo)
@@ -121,11 +123,14 @@ class ListFragment : Fragment() {
     }
 
     private fun setupFab() {
-        binding.fab.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container, MemoFragment())
-                .addToBackStack(null) // 백 스택에 추가
-                .commit()
+        with(binding) {
+            fab.setOnClickListener {
+                searchView.setQuery("", false) // 검색어 초기화
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, MemoFragment())
+                    .addToBackStack(null) // 백 스택에 추가
+                    .commit()
+            }
         }
     }
 
