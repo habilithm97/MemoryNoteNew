@@ -33,58 +33,14 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupMemoAdapter()
-
-        binding.apply {
-            recyclerView.apply {
-                adapter = memoAdapter
-                layoutManager = LinearLayoutManager(requireContext()).apply {
-                    reverseLayout = true
-                    stackFromEnd = true
-                }
-                setHasFixedSize(true) // 아이템 크기 고정 -> 성능 최적화
-            }
-            fab.setOnClickListener {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.container, MemoFragment())
-                    .addToBackStack(null) // 백 스택에 추가
-                    .commit()
-            }
-            memoViewModel.getAllMemos.observe(viewLifecycleOwner) { memoList ->
-                memoAdapter.apply {
-                    submitMemoList(memoList)
-                    if (itemCount > 0) {
-                        recyclerView.smoothScrollToPosition(itemCount - 1)
-                    }
-                }
-            }
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                // 검색어 입력 시 호출
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    val query = newText.orEmpty() // null이면 "" 처리
-                    memoAdapter.apply {
-                        filterList(query) { // 필터링
-                            // 검색어가 비어 있고, 메모가 하나 이상 있으면
-                            if (query.isEmpty() && itemCount > 0) {
-                                recyclerView.apply {
-                                    post { // RecyclerView 업데이트 후 실행
-                                        smoothScrollToPosition(itemCount - 1)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    return true
-                }
-                // 키보드 검색 버튼 클릭 시 호출
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    return false
-                }
-            })
-        }
+        setupAdapter()
+        setupRecyclerView()
+        setupObserver()
+        setupSearchView()
+        setupFab()
     }
 
-    private fun setupMemoAdapter() {
+    private fun setupAdapter() {
         memoAdapter = MemoAdapter(
             onItemClick = { memo ->
                 val memoFragment = MemoFragment().apply {
@@ -112,6 +68,65 @@ class ListFragment : Fragment() {
                 dialog.dismiss()
             }
             .show()
+    }
+
+    private fun setupRecyclerView() {
+        with(binding.recyclerView) {
+            adapter = memoAdapter
+            layoutManager = LinearLayoutManager(requireContext()).apply {
+                reverseLayout = true
+                stackFromEnd = true
+            }
+            setHasFixedSize(true) // 아이템 크기 고정 -> 성능 최적화
+        }
+    }
+
+    private fun setupObserver() {
+        memoViewModel.getAllMemos.observe(viewLifecycleOwner) { memoList ->
+            with(memoAdapter) {
+                submitMemoList(memoList)
+                if (itemCount > 0) {
+                    binding.recyclerView.smoothScrollToPosition(itemCount - 1)
+                }
+            }
+        }
+    }
+
+    private fun setupSearchView() {
+        with(binding) {
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                // 검색어 입력 시 호출
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    val query = newText.orEmpty() // null이면 "" 처리
+                    with(memoAdapter) {
+                        filterList(query) { // 필터링
+                            // 검색어가 비어 있고, 메모가 하나 이상 있으면
+                            if (query.isEmpty() && itemCount > 0) {
+                                with(recyclerView) {
+                                    post { // RecyclerView 업데이트 후 실행
+                                        smoothScrollToPosition(itemCount - 1)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return true
+                }
+                // 키보드 검색 버튼 클릭 시 호출
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
+                }
+            })
+        }
+    }
+
+    private fun setupFab() {
+        binding.fab.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, MemoFragment())
+                .addToBackStack(null) // 백 스택에 추가
+                .commit()
+        }
     }
 
     override fun onDestroyView() {
