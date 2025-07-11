@@ -7,6 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.memorynotenew.R
@@ -33,6 +36,12 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 키보드(IME) 인셋에 따라 RecyclerView 하단 패딩 조정
+        ViewCompat.setOnApplyWindowInsetsListener(binding.recyclerView) { view, insets ->
+            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime()) // 키보드 크기 가져오기
+            view.updatePadding(bottom = imeInsets.bottom) // 키보드 높이만큼 하단 패딩 적용
+            insets
+        }
         setupAdapter()
         setupRecyclerView()
         setupObserver()
@@ -100,6 +109,7 @@ class ListFragment : Fragment() {
                 // 검색어 입력 시 호출
                 override fun onQueryTextChange(newText: String?): Boolean {
                     val query = newText.orEmpty() // null이면 "" 처리
+
                     with(memoAdapter) {
                         filterList(query) { // 필터링
                             // 검색어가 비어 있고, 메모가 하나 이상 있으면
@@ -126,6 +136,7 @@ class ListFragment : Fragment() {
         with(binding) {
             fab.setOnClickListener {
                 searchView.setQuery("", false) // 검색어 초기화
+                
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.container, MemoFragment())
                     .addToBackStack(null) // 백 스택에 추가
