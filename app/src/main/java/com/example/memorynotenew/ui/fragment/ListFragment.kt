@@ -46,7 +46,8 @@ class ListFragment : Fragment() {
         setupRecyclerView()
         setupObserver()
         setupSearchView()
-        setupFab()
+        setupFabAdd()
+        setupFabScroll()
     }
 
     private fun setupAdapter() {
@@ -132,15 +133,27 @@ class ListFragment : Fragment() {
         }
     }
 
-    private fun setupFab() {
+    private fun setupFabAdd() {
         with(binding) {
-            fab.setOnClickListener {
+            fabAdd.setOnClickListener {
                 searchView.setQuery("", false) // 검색어 초기화
                 
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.container, MemoFragment())
                     .addToBackStack(null) // 백 스택에 추가
                     .commit()
+            }
+        }
+    }
+
+    private fun setupFabScroll() {
+        with(binding) {
+            fabScroll.setOnClickListener {
+                with(memoAdapter) {
+                    if (itemCount > 0) {
+                        recyclerView.smoothScrollToPosition(itemCount - 1)
+                    }
+                }
             }
         }
     }
