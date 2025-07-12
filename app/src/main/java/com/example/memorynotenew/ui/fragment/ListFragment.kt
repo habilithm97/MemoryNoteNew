@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.memorynotenew.R
 import com.example.memorynotenew.adapter.MemoAdapter
 import com.example.memorynotenew.constants.Constants
@@ -83,13 +84,23 @@ class ListFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        with(binding.recyclerView) {
-            adapter = memoAdapter
-            layoutManager = LinearLayoutManager(requireContext()).apply {
-                reverseLayout = true
-                stackFromEnd = true
+        with(binding) {
+            recyclerView.apply {
+                adapter = memoAdapter
+                layoutManager = LinearLayoutManager(requireContext()).apply {
+                    reverseLayout = true
+                    stackFromEnd = true
+                }
+                setHasFixedSize(true) // 아이템 크기 고정 -> 성능 최적화
+
+                addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        // 위로 더 이상 스크롤 할 수 없으면 최상단
+                        val isAtTop = !canScrollVertically(-1)
+                        fabScroll.visibility = if (isAtTop) View.GONE else View.VISIBLE
+                    }
+                })
             }
-            setHasFixedSize(true) // 아이템 크기 고정 -> 성능 최적화
         }
     }
 
