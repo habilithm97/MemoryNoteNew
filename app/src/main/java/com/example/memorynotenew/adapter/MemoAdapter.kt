@@ -55,6 +55,7 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                         else -> false
                     }
                 }
+                setForceShowIcon(true) // 아이콘 강제 표시
                 show()
             }
         }
