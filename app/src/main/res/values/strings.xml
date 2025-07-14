@@ -8,4 +8,6 @@
     <string name="delete_dialog_msg">Delete the selected memo?</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+
+    <string name="password_enter">Enter your password</string>
 </resources>
