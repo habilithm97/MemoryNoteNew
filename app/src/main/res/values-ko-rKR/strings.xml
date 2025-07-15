@@ -13,4 +13,6 @@
     <string name="password_enter">비밀번호 입력</string>
 
     <string name="lock">잠금</string>
+
+    <string name="settings">설정</string>
 </resources>
