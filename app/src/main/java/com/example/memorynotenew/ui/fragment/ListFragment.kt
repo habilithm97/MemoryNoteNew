@@ -15,7 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.memorynotenew.R
 import com.example.memorynotenew.adapter.MemoAdapter
-import com.example.memorynotenew.constants.Constants
+import com.example.memorynotenew.common.Constants
+import com.example.memorynotenew.common.PopupAction
 import com.example.memorynotenew.databinding.FragmentListBinding
 import com.example.memorynotenew.room.memo.Memo
 import com.example.memorynotenew.viewmodel.MemoViewModel
@@ -65,8 +66,16 @@ class ListFragment : Fragment() {
                     .replace(R.id.container, memoFragment)
                     .addToBackStack(null)
                     .commit()
-            }, onItemLongClick = { memo ->
-                showDeleteDialog(memo)
+            }, onItemLongClick = { memo, popupAction ->
+                when (popupAction) {
+                    PopupAction.DELETE ->
+                        showDeleteDialog(memo)
+                    PopupAction.LOCK ->
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.container, PasswordFragment())
+                            .addToBackStack(null)
+                            .commit()
+                }
             }
         )
     }

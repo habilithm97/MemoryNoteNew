@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.viewModels
-import com.example.memorynotenew.constants.Constants
+import com.example.memorynotenew.common.Constants
 import com.example.memorynotenew.databinding.FragmentMemoBinding
 import com.example.memorynotenew.room.memo.Memo
 import com.example.memorynotenew.ui.activity.MainActivity

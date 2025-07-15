@@ -10,4 +10,6 @@
     <string name="delete">Delete</string>
 
     <string name="password_enter">Enter your password</string>
+
+    <string name="lock">Lock</string>
 </resources>

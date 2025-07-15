@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.memorynotenew.R
+import com.example.memorynotenew.common.PopupAction
 import com.example.memorynotenew.databinding.ItemMemoBinding
 import com.example.memorynotenew.room.memo.Memo
 import java.text.SimpleDateFormat
@@ -16,7 +17,7 @@ import java.util.Locale
 
 // 아이템 클릭 시 실행될 동작을 외부에서 전달 받음
 class MemoAdapter(private val onItemClick: (Memo) -> Unit,
-                  private val onItemLongClick: (Memo) -> Unit) :
+                  private val onItemLongClick: (Memo, PopupAction) -> Unit) :
     ListAdapter<Memo, MemoAdapter.MemoViewHolder>(DIFF_CALLBACK) {
 
         private var memoList: List<Memo> = emptyList() // 원본 메모 리스트
@@ -49,7 +50,11 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                 setOnMenuItemClickListener { item ->
                     when (item.itemId) {
                         R.id.delete -> {
-                            onItemLongClick(memo)
+                            onItemLongClick(memo, PopupAction.DELETE)
+                            true
+                        }
+                        R.id.lock -> {
+                            onItemLongClick(memo, PopupAction.LOCK)
                             true
                         }
                         else -> false
