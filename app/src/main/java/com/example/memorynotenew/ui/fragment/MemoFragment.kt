@@ -77,6 +77,8 @@ class MemoFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
+        requireActivity().invalidateOptionsMenu() // 옵션 메뉴 업데이트
+
         // 새 메모일 경우 소프트 키보드 자동으로 표시
         if (selectedMemo == null) {
             with(binding) {
