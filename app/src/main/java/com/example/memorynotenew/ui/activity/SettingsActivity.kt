@@ -5,6 +5,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
@@ -23,6 +24,15 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-
+        with(binding) {
+            setSupportActionBar(toolbar)
+            supportActionBar?.apply {
+                setDisplayHomeAsUpEnabled(true)
+                title = getString(R.string.settings)
+            }
+            toolbar.setNavigationOnClickListener {
+                finish()
+            }
+        }
     }
 }
