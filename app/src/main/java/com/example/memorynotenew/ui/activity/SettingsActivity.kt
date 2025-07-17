@@ -7,6 +7,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.ActivitySettingsBinding
+import com.example.memorynotenew.ui.fragment.SettingsFragment
 
 class SettingsActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySettingsBinding.inflate(layoutInflater) }
@@ -34,5 +35,9 @@ class SettingsActivity : AppCompatActivity() {
                 finish()
             }
         }
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.container, SettingsFragment())
+            .commit()
     }
 }
