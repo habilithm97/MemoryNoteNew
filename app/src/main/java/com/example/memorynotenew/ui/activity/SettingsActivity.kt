@@ -5,8 +5,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.ActivitySettingsBinding
+import com.example.memorynotenew.ui.fragment.PasswordFragment2
 import com.example.memorynotenew.ui.fragment.SettingsFragment
 
 class SettingsActivity : AppCompatActivity() {
@@ -21,23 +23,41 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        initView()
+        setSupportActionBar(binding.toolbar)
+
+        // 프래그먼트 백스택이 바뀔 때마다 갱신 (최초 실행 시 별도의 갱신 필요)
+        supportFragmentManager.addOnBackStackChangedListener {
+            setupActionBar()
+        }
+        if (savedInstanceState == null) {
+            replaceFragment(SettingsFragment())
+            setupActionBar()
+        }
     }
 
-    private fun initView() {
-        with(binding) {
-            setSupportActionBar(toolbar)
-            supportActionBar?.apply {
-                setDisplayHomeAsUpEnabled(true)
-                title = getString(R.string.settings)
-            }
-            toolbar.setNavigationOnClickListener {
-                finish()
-            }
+    private fun setupActionBar() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
+        val title = when (currentFragment) {
+            is SettingsFragment -> getString(R.string.settings)
+            is PasswordFragment2 -> getString(R.string.password_settings)
+            else -> ""
         }
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, SettingsFragment())
+        supportActionBar?.apply {
+            this.title = title
+            setDisplayHomeAsUpEnabled(currentFragment is SettingsFragment)
+        }
+    }
+
+    // 업 버튼 동작
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, fragment)
+            .addToBackStack(null)
             .commit()
     }
 }

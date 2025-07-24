@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.ActivityMainBinding
 import com.example.memorynotenew.ui.fragment.ListFragment
+import com.example.memorynotenew.ui.fragment.MemoFragment
+import com.example.memorynotenew.ui.fragment.PasswordFragment
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -25,15 +27,31 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        initView()
+        setSupportActionBar(binding.toolbar)
 
+        // 프래그먼트 백스택이 바뀔 때마다 갱신 (최초 실행 시 별도의 갱신 필요)
+        supportFragmentManager.addOnBackStackChangedListener {
+            setupActionBar()
+            invalidateOptionsMenu()
+        }
         if (savedInstanceState == null) {
             replaceFragment(ListFragment())
+            setupActionBar()
+            invalidateOptionsMenu()
         }
     }
 
-    private fun initView() {
-        setSupportActionBar(binding.toolbar)
+    private fun setupActionBar() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
+        val title = when (currentFragment) {
+            is ListFragment, is MemoFragment -> getString(R.string.memo)
+            is PasswordFragment -> getString(R.string.lock_memo)
+            else -> ""
+        }
+        supportActionBar?.apply {
+            this.title = title
+            setDisplayHomeAsUpEnabled(currentFragment is MemoFragment)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -57,12 +75,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // MemoFragment 업 버튼 활성화
-    fun showUpButton(show: Boolean) {
-        supportActionBar?.setDisplayHomeAsUpEnabled(show)
-    }
-
-    // MemoFragment 업 버튼 클릭 시 동작
+    // 업 버튼 동작
     override fun onSupportNavigateUp(): Boolean {
         supportFragmentManager.popBackStack()
         return true
@@ -71,6 +84,7 @@ class MainActivity : AppCompatActivity() {
     private fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, fragment)
+            .addToBackStack(null)
             .commit()
     }
 }

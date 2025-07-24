@@ -12,6 +12,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val passwordPref = findPreference<Preference>(Constants.PW_SETTINGS)
         passwordPref?.setOnPreferenceClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, PasswordFragment2())
+                .addToBackStack(null)
+                .commit()
             true
         }
     }

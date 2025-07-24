@@ -17,4 +17,6 @@
     <string name="settings">설정</string>
     <string name="password_settings">비밀번호 설정</string>
     <string name="password_settings_summary">비밀번호를 저장 및 변경합니다.</string>
+
+    <string name="lock_memo">메모 잠금</string>
 </resources>

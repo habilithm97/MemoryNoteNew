@@ -12,7 +12,6 @@ import androidx.fragment.app.viewModels
 import com.example.memorynotenew.common.Constants
 import com.example.memorynotenew.databinding.FragmentMemoBinding
 import com.example.memorynotenew.room.memo.Memo
-import com.example.memorynotenew.ui.activity.MainActivity
 import com.example.memorynotenew.viewmodel.MemoViewModel
 
 class MemoFragment : Fragment() {
@@ -31,7 +30,6 @@ class MemoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as? MainActivity)?.showUpButton(true) // 업 버튼 활성화
 
         selectedMemo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelable(Constants.MEMO, Memo::class.java)
@@ -77,8 +75,6 @@ class MemoFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        requireActivity().invalidateOptionsMenu() // 옵션 메뉴 업데이트
-
         // 새 메모일 경우 소프트 키보드 자동으로 표시
         if (selectedMemo == null) {
             with(binding) {
@@ -93,7 +89,6 @@ class MemoFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        (activity as? MainActivity)?.showUpButton(false) // 업 버튼 비활성화
         _binding = null
     }
 }
