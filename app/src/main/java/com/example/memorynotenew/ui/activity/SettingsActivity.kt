@@ -25,10 +25,11 @@ class SettingsActivity : AppCompatActivity() {
         }
         setSupportActionBar(binding.toolbar)
 
-        // 프래그먼트 백스택이 바뀔 때마다 갱신 (최초 실행 시 별도의 갱신 필요)
+        // 프래그먼트 전환 시 갱신
         supportFragmentManager.addOnBackStackChangedListener {
             setupActionBar()
         }
+        // 최초 실행 시 프래그먼트 삽입
         if (savedInstanceState == null) {
             replaceFragment(SettingsFragment())
             setupActionBar()
@@ -37,6 +38,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun setupActionBar() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
+
         val title = when (currentFragment) {
             is SettingsFragment -> getString(R.string.settings)
             is PasswordFragment2 -> getString(R.string.password_settings)

@@ -29,11 +29,12 @@ class MainActivity : AppCompatActivity() {
         }
         setSupportActionBar(binding.toolbar)
 
-        // 프래그먼트 백스택이 바뀔 때마다 갱신 (최초 실행 시 별도의 갱신 필요)
+        // 프래그먼트 전환 시 갱신
         supportFragmentManager.addOnBackStackChangedListener {
             setupActionBar()
             invalidateOptionsMenu()
         }
+        // 최초 실행 시 프래그먼트 삽입
         if (savedInstanceState == null) {
             replaceFragment(ListFragment())
             setupActionBar()
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupActionBar() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
+
         val title = when (currentFragment) {
             is ListFragment, is MemoFragment -> getString(R.string.memo)
             is PasswordFragment -> getString(R.string.lock_memo)
@@ -56,6 +58,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
+
         return if (currentFragment is ListFragment) {
             menuInflater.inflate(R.menu.menu_main, menu)
             return true

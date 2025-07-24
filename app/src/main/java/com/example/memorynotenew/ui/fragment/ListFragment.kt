@@ -160,7 +160,7 @@ class ListFragment : Fragment() {
                 
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.container, MemoFragment())
-                    .addToBackStack(null) // 백 스택에 추가
+                    .addToBackStack(null)
                     .commit()
             }
         }
