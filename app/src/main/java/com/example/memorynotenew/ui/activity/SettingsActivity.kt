@@ -8,7 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.ActivitySettingsBinding
-import com.example.memorynotenew.ui.fragment.PasswordFragment2
+import com.example.memorynotenew.ui.fragment.PasswordFragment
 import com.example.memorynotenew.ui.fragment.SettingsFragment
 
 class SettingsActivity : AppCompatActivity() {
@@ -41,7 +41,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val title = when (currentFragment) {
             is SettingsFragment -> getString(R.string.settings)
-            is PasswordFragment2 -> getString(R.string.password_settings)
+            is PasswordFragment -> getString(R.string.password_settings)
             else -> ""
         }
         supportActionBar?.apply {

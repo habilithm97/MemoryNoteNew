@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.memorynotenew.R
 import com.example.memorynotenew.adapter.MemoAdapter
 import com.example.memorynotenew.common.Constants
+import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PopupAction
 import com.example.memorynotenew.databinding.FragmentListBinding
 import com.example.memorynotenew.room.memo.Memo
@@ -70,11 +71,13 @@ class ListFragment : Fragment() {
                 when (popupAction) {
                     PopupAction.DELETE ->
                         showDeleteDialog(memo)
-                    PopupAction.LOCK ->
+                    PopupAction.LOCK -> {
+                        val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK)
                         parentFragmentManager.beginTransaction()
-                            .replace(R.id.container, PasswordFragment())
+                            .replace(R.id.container, passwordFragment)
                             .addToBackStack(null)
                             .commit()
+                    }
                 }
             }
         )
