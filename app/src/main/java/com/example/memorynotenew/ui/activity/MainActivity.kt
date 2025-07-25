@@ -46,7 +46,8 @@ class MainActivity : AppCompatActivity() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
 
         val title = when (currentFragment) {
-            is ListFragment, is MemoFragment -> getString(R.string.memo)
+            is ListFragment -> getString(R.string.app_name)
+            is MemoFragment -> getString(R.string.memo)
             is PasswordFragment -> getString(R.string.lock_memo)
             else -> ""
         }

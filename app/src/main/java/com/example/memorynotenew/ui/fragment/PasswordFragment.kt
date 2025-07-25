@@ -7,11 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.lifecycleScope
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class PasswordFragment : Fragment() {
     private var _binding: FragmentPasswordBinding? = null // nullable

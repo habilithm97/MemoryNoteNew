@@ -9,6 +9,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@null"
+        android:fontFamily="@font/bookkmyungjo_light"
         android:gravity="top|start"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"

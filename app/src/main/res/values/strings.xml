@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MemoryNoteNew</string>
+    <string name="app_name">MemoryNote</string>
 
     <string name="memo">Memo</string>
     <string name="date_format">yyyy. M. d. HH:mm</string>
