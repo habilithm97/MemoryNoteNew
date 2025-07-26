@@ -4,18 +4,16 @@
     <string name="memo">Memo</string>
     <string name="date_format">yyyy. M. d. HH:mm</string>
 
-    <string name="delete_dialog_title">To delete</string>
-    <string name="delete_dialog_msg">Delete the selected memo?</string>
-    <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
-
-    <string name="password_enter">Enter your password</string>
-
-    <string name="lock">Lock</string>
+    <string name="delete_dialog_msg">Do you want to delete the selected memo?</string>
+    <string name="cancel">Cancel</string>
 
     <string name="settings">Settings</string>
-    <string name="password_settings">Password Settings</string>
+    <string name="password_settings">Set Password</string>
     <string name="password_settings_summary">Save or change your password.</string>
+    <string name="password_save">Save Password</string>
+    <string name="password_enter">Enter Password</string>
 
+    <string name="lock">Lock</string>
     <string name="lock_memo">Lock Memo</string>
 </resources>

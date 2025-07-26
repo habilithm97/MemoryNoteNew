@@ -5,18 +5,16 @@
     <string name="memo">메모</string>
     <string name="date_format">yyyy. M. d. HH:mm</string>
 
-    <string name="delete_dialog_title">삭제하기</string>
+    <string name="delete">삭제</string>
     <string name="delete_dialog_msg">선택한 메모를 삭제할까요?</string>
     <string name="cancel">취소</string>
-    <string name="delete">삭제</string>
-
-    <string name="password_enter">비밀번호 입력</string>
-
-    <string name="lock">잠금</string>
 
     <string name="settings">설정</string>
     <string name="password_settings">비밀번호 설정</string>
     <string name="password_settings_summary">비밀번호를 저장 및 변경합니다.</string>
+    <string name="password_save">비밀번호 저장</string>
+    <string name="password_enter">비밀번호 입력</string>
 
+    <string name="lock">잠금</string>
     <string name="lock_memo">메모 잠금</string>
 </resources>

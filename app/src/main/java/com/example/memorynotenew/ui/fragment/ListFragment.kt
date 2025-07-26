@@ -85,7 +85,7 @@ class ListFragment : Fragment() {
 
     private fun showDeleteDialog(memo: Memo) {
         AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.delete_dialog_title)) // 삭제하기
+            .setTitle(getString(R.string.delete)) // 삭제
             .setMessage(getString(R.string.delete_dialog_msg)) // 선택한 메모를 삭제할까요?
             .setNegativeButton(getString(R.string.cancel), null) // 취소
             .setPositiveButton(getString(R.string.delete)) { dialog, _ -> // 삭제
