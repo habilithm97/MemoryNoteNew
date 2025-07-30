@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.memorynotenew.common.PasswordPurpose
+import com.example.memorynotenew.common.PasswordString
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
 
 class PasswordFragment : Fragment() {
@@ -18,8 +19,11 @@ class PasswordFragment : Fragment() {
     private lateinit var dots: List<View>
 
     private var password = StringBuilder()
+    private var storedPassword: String? = null // 저장된 비밀번호
+    private var confirmingPassword = StringBuilder() // 임시 저장 비밀번호 (확인용)
 
     private var isLocked = false // 입력 잠금 상태
+    private var isConfirming = false // 확인 상태
 
     companion object {
         private const val PURPOSE = "password_purpose"
@@ -82,7 +86,13 @@ class PasswordFragment : Fragment() {
         if (password.length == 4) {
             isLocked = true // 입력 잠금
             Handler(Looper.getMainLooper()).postDelayed({
-                clearPassword()
+                when (passwordPurpose) {
+                    PasswordPurpose.SETTINGS -> {
+                        createNewPassword()
+                    }
+                    PasswordPurpose.AUTHENTICATION -> {
+                    }
+                }
             }, 500)
         }
     }
@@ -94,10 +104,39 @@ class PasswordFragment : Fragment() {
         }
     }
 
+    private fun createNewPassword() {
+        // 저장된 비밀번호가 없으면 새 비밀번호 저장
+        if (storedPassword == null) {
+            if (!isConfirming) { // 첫 번째 입력
+                enterNewPassword() // 새 비밀번호 입력
+            } else { // 두 번째 입력
+                confirmPassword() // 비밀번호 확인
+            }
+            updateDots()
+            isLocked = false // 입력 잠금 해제
+        }
+    }
+
+    private fun enterNewPassword() {
+        confirmingPassword.clear().append(password)
+        isConfirming = true
+        binding.textView.text = getString(PasswordString.CONFIRM.resId)
+        password.clear()
+    }
+
+    private fun confirmPassword() {
+        // 비밀번호 확인 성공
+        if (password.toString() == confirmingPassword.toString()) {
+        } else { // 비밀번호 확인 실패
+            binding.textView.text = getString(PasswordString.RE_ENTER.resId)
+            clearPassword()
+        }
+    }
+
     private fun clearPassword() {
-        isLocked = false // 입력 잠금 해제
         password.clear()
         updateDots()
+        isLocked = false // 입력 잠금 해제
     }
 
     private fun setupBtnCancel() {

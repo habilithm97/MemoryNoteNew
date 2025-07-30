@@ -13,7 +13,9 @@
     <string name="password_settings">비밀번호 설정</string>
     <string name="password_settings_summary">비밀번호를 저장 및 변경합니다.</string>
     <string name="password_save">비밀번호 저장</string>
-    <string name="password_enter">비밀번호 입력</string>
+    <string name="password_new">새 비밀번호 입력</string>
+    <string name="password_confirm">비밀번호 확인</string>
+    <string name="password_reenter">비밀번호 재입력</string>
 
     <string name="lock">잠금</string>
     <string name="lock_memo">메모 잠금</string>

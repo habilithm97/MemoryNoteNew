@@ -72,7 +72,7 @@ class ListFragment : Fragment() {
                     PopupAction.DELETE ->
                         showDeleteDialog(memo)
                     PopupAction.LOCK -> {
-                        val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK)
+                        val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.AUTHENTICATION)
                         parentFragmentManager.beginTransaction()
                             .replace(R.id.container, passwordFragment)
                             .addToBackStack(null)

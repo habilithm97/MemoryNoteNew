@@ -12,7 +12,9 @@
     <string name="password_settings">Set Password</string>
     <string name="password_settings_summary">Save or change your password.</string>
     <string name="password_save">Save Password</string>
-    <string name="password_enter">Enter Password</string>
+    <string name="password_new">Enter New Password</string>
+    <string name="password_confirm">Confirm Password</string>
+    <string name="password_reenter">Re-enter Password</string>
 
     <string name="lock">Lock</string>
     <string name="lock_memo">Lock Memo</string>

@@ -41,7 +41,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val title = when (currentFragment) {
             is SettingsFragment -> getString(R.string.settings)
-            is PasswordFragment -> getString(R.string.password_settings)
+            is PasswordFragment -> getString(R.string.password_save)
             else -> ""
         }
         supportActionBar?.apply {
