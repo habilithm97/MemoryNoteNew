@@ -57,8 +57,8 @@ dependencies {
     ksp(libs.androidx.room.compiler) // DAO 구현체 및 코드 자동 생성
     implementation(libs.androidx.room.ktx) // 코틀린 확장 (코루틴, Flow)
 
-    // LiveData
-    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx) // Lifecycle
+    implementation(libs.androidx.lifecycle.livedata.ktx) // LiveData
 
     // Fragment API에 코틀린 확장 기능(KTX) 추가
     implementation(libs.androidx.fragment.ktx)

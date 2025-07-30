@@ -7,9 +7,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PasswordString
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PasswordFragment : Fragment() {
     private var _binding: FragmentPasswordBinding? = null // nullable
@@ -85,7 +88,10 @@ class PasswordFragment : Fragment() {
         // 4자리 입력 완료
         if (password.length == 4) {
             isLocked = true // 입력 잠금
-            Handler(Looper.getMainLooper()).postDelayed({
+
+            // 액/프 소멸 시 자동으로 코루틴 취소 (메모리 누수 방지)
+            lifecycleScope.launch {
+                delay(500)
                 when (passwordPurpose) {
                     PasswordPurpose.SETTINGS -> {
                         createNewPassword()
@@ -93,7 +99,7 @@ class PasswordFragment : Fragment() {
                     PasswordPurpose.AUTHENTICATION -> {
                     }
                 }
-            }, 500)
+            }
         }
     }
 
