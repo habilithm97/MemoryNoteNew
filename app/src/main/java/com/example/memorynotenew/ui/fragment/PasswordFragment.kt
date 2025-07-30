@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PasswordString
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
+import com.example.memorynotenew.utils.VibrateUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -89,7 +90,7 @@ class PasswordFragment : Fragment() {
         if (password.length == 4) {
             isLocked = true // 입력 잠금
 
-            // 액/프 소멸 시 자동으로 코루틴 취소 (메모리 누수 방지)
+            // 액/프 소멸 시 코루틴 자동 취소 (메모리 누수 방지)
             lifecycleScope.launch {
                 delay(500)
                 when (passwordPurpose) {
@@ -135,6 +136,7 @@ class PasswordFragment : Fragment() {
         if (password.toString() == confirmingPassword.toString()) {
         } else { // 비밀번호 확인 실패
             binding.textView.text = getString(PasswordString.RE_ENTER.resId)
+            VibrateUtil.vibrate(requireContext())
             clearPassword()
         }
     }
