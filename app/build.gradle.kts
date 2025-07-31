@@ -65,4 +65,8 @@ dependencies {
 
     // Preference
     implementation(libs.androidx.preference.ktx)
+
+    // EncryptedSharedPreferences, MasterKey
+    implementation(libs.androidx.security.crypto)
+    implementation(libs.androidx.security.crypto.ktx)
 }
