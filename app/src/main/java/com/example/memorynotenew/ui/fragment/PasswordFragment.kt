@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.example.memorynotenew.R
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PasswordString
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
+import com.example.memorynotenew.utils.ToastUtil
 import com.example.memorynotenew.utils.VibrateUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -163,6 +165,8 @@ class PasswordFragment : Fragment() {
             putString("password_key", password)
             apply() // 비동기 방식으로 커밋 (commit()보다 성능 좋음)
         }
+        requireActivity().supportFragmentManager.popBackStack()
+        ToastUtil.showToast(requireContext(), getString(R.string.password_saved))
     }
 
     private fun clearPassword() {
