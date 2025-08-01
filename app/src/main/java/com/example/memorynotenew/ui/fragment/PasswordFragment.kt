@@ -6,12 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import com.example.memorynotenew.R
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PasswordString
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
+import com.example.memorynotenew.utils.PasswordManager
 import com.example.memorynotenew.utils.ToastUtil
 import com.example.memorynotenew.utils.VibrateUtil
 import kotlinx.coroutines.delay
@@ -136,37 +135,14 @@ class PasswordFragment : Fragment() {
     private fun confirmPassword() {
         // 비밀번호 확인 성공
         if (password.toString() == confirmingPassword.toString()) {
-            savePassword(password.toString())
+            PasswordManager.savePassword(requireContext(), password.toString())
+            requireActivity().supportFragmentManager.popBackStack()
+            ToastUtil.showToast(requireContext(), getString(R.string.password_saved))
         } else { // 비밀번호 확인 실패
             binding.textView.text = getString(PasswordString.RE_ENTER.resId)
             VibrateUtil.vibrate(requireContext())
             clearPassword()
         }
-    }
-
-    private fun savePassword(password: String) {
-        // AES256-GCM 방식으로 MasterKey 생성 (보안을 위한 기본키)
-        val masterKeyAlias = MasterKey.Builder(requireContext())
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-
-        // 암호화된 sharedPreferences 객체 생성
-        val sharedPreferences = EncryptedSharedPreferences.create(
-            requireContext(),
-            "secret_shared_prefs",
-            masterKeyAlias, // 생성한 보안키로 암호화
-            // 키(이름) 암호화 방식
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            // 값(데이터) 암호화 방식
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-        // 암호화된 sharedPreferences에 비밀번호 저장
-        with(sharedPreferences.edit()) {
-            putString("password_key", password)
-            apply() // 비동기 방식으로 커밋 (commit()보다 성능 좋음)
-        }
-        requireActivity().supportFragmentManager.popBackStack()
-        ToastUtil.showToast(requireContext(), getString(R.string.password_saved))
     }
 
     private fun clearPassword() {

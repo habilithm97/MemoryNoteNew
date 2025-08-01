@@ -10,6 +10,7 @@ import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.ActivitySettingsBinding
 import com.example.memorynotenew.ui.fragment.PasswordFragment
 import com.example.memorynotenew.ui.fragment.SettingsFragment
+import com.example.memorynotenew.utils.PasswordManager
 
 class SettingsActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySettingsBinding.inflate(layoutInflater) }
@@ -41,7 +42,14 @@ class SettingsActivity : AppCompatActivity() {
 
         val title = when (currentFragment) {
             is SettingsFragment -> getString(R.string.settings)
-            is PasswordFragment -> getString(R.string.password_save)
+            is PasswordFragment -> {
+                val savedPassword = PasswordManager.getSavedPassword(this@SettingsActivity)
+                if (savedPassword.isNullOrEmpty()) {
+                    getString(R.string.password_save)
+                } else {
+                    getString(R.string.password_change)
+                }
+            }
             else -> ""
         }
         supportActionBar?.apply {

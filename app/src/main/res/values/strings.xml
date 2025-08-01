@@ -16,6 +16,7 @@
     <string name="password_confirm">Confirm Password</string>
     <string name="password_reenter">Re-enter Password</string>
     <string name="password_saved">Password saved successfully!</string>
+    <string name="password_change">Change Password</string>
 
     <string name="lock">Lock</string>
     <string name="lock_memo">Lock Memo</string>
