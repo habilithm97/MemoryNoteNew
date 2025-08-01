@@ -43,6 +43,6 @@ object PasswordManager {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
-        return sharedPreferences.getString("password_key", null)
+        return sharedPreferences.getString(PASSWORD_KEY, null)
     }
 }

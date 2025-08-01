@@ -1,6 +1,7 @@
 package com.example.memorynotenew.ui.activity
 
 import android.os.Bundle
+import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -35,6 +36,9 @@ class SettingsActivity : AppCompatActivity() {
             replaceFragment(SettingsFragment())
             setupActionBar()
         }
+        onBackPressedDispatcher.addCallback(this@SettingsActivity) {
+            finish()
+        }
     }
 
     private fun setupActionBar() {
@@ -62,6 +66,11 @@ class SettingsActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
     }
 
     private fun replaceFragment(fragment: Fragment) {
