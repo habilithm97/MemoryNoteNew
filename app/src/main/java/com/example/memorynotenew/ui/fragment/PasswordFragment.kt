@@ -10,6 +10,7 @@ import com.example.memorynotenew.R
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PasswordString
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
+import com.example.memorynotenew.ui.activity.SettingsActivity
 import com.example.memorynotenew.utils.PasswordManager
 import com.example.memorynotenew.utils.ToastUtil
 import com.example.memorynotenew.utils.VibrateUtil
@@ -63,8 +64,20 @@ class PasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupTitle()
         setupKeypad()
         setupBtnCancel()
+    }
+
+    private fun setupTitle() {
+        val savedPassword = PasswordManager.getSavedPassword(requireContext())
+
+        val title = if (savedPassword.isNullOrEmpty()) {
+            getString(R.string.password_new)
+        } else {
+            getString(R.string.password_enter)
+        }
+        binding.textView.text = title
     }
 
     private fun setupKeypad() {

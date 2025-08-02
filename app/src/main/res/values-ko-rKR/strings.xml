@@ -18,6 +18,7 @@
     <string name="password_reenter">비밀번호 재입력</string>
     <string name="password_saved">비밀번호 저장 완료!</string>
     <string name="password_change">비밀번호 변경</string>
+    <string name="password_enter">비밀번호 입력</string>
 
     <string name="lock">잠금</string>
     <string name="lock_memo">메모 잠금</string>
