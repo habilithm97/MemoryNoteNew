@@ -140,7 +140,13 @@ class PasswordFragment : Fragment() {
         } else { // 두 번째 입력 이후
             if (firstInput.toString() == password.toString()) { // 첫 번째 입력과 일치
                 PasswordManager.savePassword(requireContext(), password.toString()) // 비밀번호 저장
-                ToastUtil.showToast(requireContext(), getString(R.string.password_saved)) // 비밀번호 저장 완료!
+
+                val message = if (storedPassword.isNullOrEmpty()) {
+                    R.string.password_saved // 비밀번호 저장 완료!
+                } else {
+                    R.string.password_changed // 비밀번호 변경 완료!
+                }
+                ToastUtil.showToast(requireContext(), getString(message))
                 firstInput = null
                 requireActivity().supportFragmentManager.popBackStack()
                 return
