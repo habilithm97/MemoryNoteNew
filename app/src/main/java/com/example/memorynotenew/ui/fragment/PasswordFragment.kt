@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import com.example.memorynotenew.R
 import com.example.memorynotenew.common.PasswordPurpose
+import com.example.memorynotenew.common.PasswordStep
 import com.example.memorynotenew.common.PasswordString
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
-import com.example.memorynotenew.ui.activity.SettingsActivity
 import com.example.memorynotenew.utils.PasswordManager
 import com.example.memorynotenew.utils.ToastUtil
 import com.example.memorynotenew.utils.VibrateUtil
@@ -20,16 +20,16 @@ import kotlinx.coroutines.launch
 class PasswordFragment : Fragment() {
     private var _binding: FragmentPasswordBinding? = null // nullable
     private val binding get() = _binding!! // non-null, 항상 null-safe한 접근 가능
+
     private lateinit var passwordPurpose: PasswordPurpose
+    private lateinit var currentStep: PasswordStep
+    private var isLocked = false // 입력 잠금 상태
 
     private lateinit var dots: List<View>
 
     private var password = StringBuilder()
     private var storedPassword: String? = null // 저장된 비밀번호
-    private var confirmingPassword = StringBuilder() // 임시 저장 비밀번호 (확인용)
-
-    private var isLocked = false // 입력 잠금 상태
-    private var isConfirming = false // 확인 상태
+    private var firstInput: StringBuilder? = null // 확인용 비밀번호
 
     companion object {
         private const val PURPOSE = "password_purpose"
@@ -64,18 +64,22 @@ class PasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        storedPassword = PasswordManager.getSavedPassword(requireContext())
+
+        currentStep = if (storedPassword.isNullOrEmpty()) {
+            PasswordStep.PASSWORD_NEW
+        } else {
+            PasswordStep.PASSWORD_ENTER
+        }
         setupTitle()
         setupKeypad()
         setupBtnCancel()
     }
 
     private fun setupTitle() {
-        val savedPassword = PasswordManager.getSavedPassword(requireContext())
-
-        val title = if (savedPassword.isNullOrEmpty()) {
-            getString(R.string.password_new)
-        } else {
-            getString(R.string.password_enter)
+        val title = when (currentStep) {
+            PasswordStep.PASSWORD_NEW -> getString(PasswordString.NEW.resId)
+            PasswordStep.PASSWORD_ENTER -> getString(PasswordString.ENTER.resId)
         }
         binding.textView.text = title
     }
@@ -109,7 +113,10 @@ class PasswordFragment : Fragment() {
                 delay(500)
                 when (passwordPurpose) {
                     PasswordPurpose.SETTINGS -> {
-                        createNewPassword()
+                        when (currentStep) {
+                            PasswordStep.PASSWORD_NEW -> enterNewPassword()
+                            PasswordStep.PASSWORD_ENTER -> TODO()
+                        }
                     }
                     PasswordPurpose.AUTHENTICATION -> {
                     }
@@ -125,43 +132,30 @@ class PasswordFragment : Fragment() {
         }
     }
 
-    private fun createNewPassword() {
-        // 저장된 비밀번호가 없으면 새 비밀번호 저장
-        if (storedPassword == null) {
-            if (!isConfirming) { // 첫 번째 입력
-                enterNewPassword() // 새 비밀번호 입력
-            } else { // 두 번째 입력
-                confirmPassword() // 비밀번호 확인
-            }
-            updateDots()
-            isLocked = false // 입력 잠금 해제
-        }
-    }
-
     private fun enterNewPassword() {
-        confirmingPassword.clear().append(password)
-        isConfirming = true
-        binding.textView.text = getString(PasswordString.CONFIRM.resId)
-        password.clear()
-    }
-
-    private fun confirmPassword() {
-        // 비밀번호 확인 성공
-        if (password.toString() == confirmingPassword.toString()) {
-            PasswordManager.savePassword(requireContext(), password.toString())
-            requireActivity().supportFragmentManager.popBackStack()
-            ToastUtil.showToast(requireContext(), getString(R.string.password_saved))
-        } else { // 비밀번호 확인 실패
-            binding.textView.text = getString(PasswordString.RE_ENTER.resId)
-            VibrateUtil.vibrate(requireContext())
-            clearPassword()
+        if (firstInput == null) { // 첫 번째 입력
+            firstInput = StringBuilder(password) // 첫 번째 입력 저장
+            password.clear()
+            binding.textView.text = getString(PasswordString.CONFIRM.resId)
+        } else { // 두 번째 입력 이후
+            if (firstInput.toString() == password.toString()) { // 첫 번째 입력과 일치
+                PasswordManager.savePassword(requireContext(), password.toString()) // 비밀번호 저장
+                ToastUtil.showToast(requireContext(), getString(R.string.password_saved)) // 비밀번호 저장 완료!
+                firstInput = null
+                requireActivity().supportFragmentManager.popBackStack()
+                return
+            } else { // 첫 번째 입력과 불일치
+                binding.textView.text = getString(PasswordString.RE_ENTER.resId) // 비밀번호 재입력
+                VibrateUtil.vibrate(requireContext())
+            }
         }
+        clearPassword()
     }
 
     private fun clearPassword() {
         password.clear()
         updateDots()
-        isLocked = false // 입력 잠금 해제
+        isLocked = false
     }
 
     private fun setupBtnCancel() {
