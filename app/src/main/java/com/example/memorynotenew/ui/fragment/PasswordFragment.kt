@@ -115,7 +115,7 @@ class PasswordFragment : Fragment() {
                     PasswordPurpose.SETTINGS -> {
                         when (currentStep) {
                             PasswordStep.PASSWORD_NEW -> enterNewPassword()
-                            PasswordStep.PASSWORD_ENTER -> TODO()
+                            PasswordStep.PASSWORD_ENTER -> updatePassword()
                         }
                     }
                     PasswordPurpose.AUTHENTICATION -> {
@@ -148,6 +148,18 @@ class PasswordFragment : Fragment() {
                 binding.textView.text = getString(PasswordString.RE_ENTER.resId) // 비밀번호 재입력
                 VibrateUtil.vibrate(requireContext())
             }
+        }
+        clearPassword()
+    }
+
+    private fun updatePassword() {
+        // 기존 비밀번호와 일치 -> 새 비밀번호 입력 단계로 이동
+        if (storedPassword == password.toString()) {
+            currentStep = PasswordStep.PASSWORD_NEW
+            binding.textView.text = getString(PasswordString.NEW.resId)
+        } else { // 기존 비밀번호와 불일치 -> 재입력 요청
+            binding.textView.text = getString(PasswordString.RE_ENTER.resId)
+            VibrateUtil.vibrate(requireContext())
         }
         clearPassword()
     }
