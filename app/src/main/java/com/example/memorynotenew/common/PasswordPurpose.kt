@@ -1,3 +1,3 @@
 package com.example.memorynotenew.common
 
-enum class PasswordPurpose { SETTINGS, AUTHENTICATION }
+enum class PasswordPurpose { SETTINGS, LOCK }

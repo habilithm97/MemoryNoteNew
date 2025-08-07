@@ -27,9 +27,9 @@ class PasswordFragment : Fragment() {
 
     private lateinit var dots: List<View>
 
-    private var password = StringBuilder()
     private var storedPassword: String? = null // 저장된 비밀번호
-    private var firstInput: StringBuilder? = null // 확인용 비밀번호
+    private var password = StringBuilder()
+    private var firstInput: StringBuilder? = null // 첫 번째로 입력한 비밀번호
 
     companion object {
         private const val PURPOSE = "password_purpose"
@@ -67,9 +67,9 @@ class PasswordFragment : Fragment() {
         storedPassword = PasswordManager.getSavedPassword(requireContext())
 
         currentStep = if (storedPassword.isNullOrEmpty()) {
-            PasswordStep.PASSWORD_NEW
+            PasswordStep.NEW
         } else {
-            PasswordStep.PASSWORD_ENTER
+            PasswordStep.ENTER
         }
         setupTitle()
         setupKeypad()
@@ -78,8 +78,8 @@ class PasswordFragment : Fragment() {
 
     private fun setupTitle() {
         val title = when (currentStep) {
-            PasswordStep.PASSWORD_NEW -> getString(PasswordString.NEW.resId)
-            PasswordStep.PASSWORD_ENTER -> getString(PasswordString.ENTER.resId)
+            PasswordStep.NEW -> getString(PasswordString.NEW.resId)
+            PasswordStep.ENTER -> getString(PasswordString.ENTER.resId)
         }
         binding.textView.text = title
     }
@@ -114,11 +114,11 @@ class PasswordFragment : Fragment() {
                 when (passwordPurpose) {
                     PasswordPurpose.SETTINGS -> {
                         when (currentStep) {
-                            PasswordStep.PASSWORD_NEW -> enterNewPassword()
-                            PasswordStep.PASSWORD_ENTER -> updatePassword()
+                            PasswordStep.NEW -> enterNewPassword()
+                            PasswordStep.ENTER -> updatePassword()
                         }
                     }
-                    PasswordPurpose.AUTHENTICATION -> {
+                    PasswordPurpose.LOCK -> {
                     }
                 }
             }
@@ -161,7 +161,7 @@ class PasswordFragment : Fragment() {
     private fun updatePassword() {
         // 기존 비밀번호와 일치 -> 새 비밀번호 입력 단계로 이동
         if (storedPassword == password.toString()) {
-            currentStep = PasswordStep.PASSWORD_NEW
+            currentStep = PasswordStep.NEW
             binding.textView.text = getString(PasswordString.NEW.resId)
         } else { // 기존 비밀번호와 불일치 -> 재입력 요청
             binding.textView.text = getString(PasswordString.RE_ENTER.resId)

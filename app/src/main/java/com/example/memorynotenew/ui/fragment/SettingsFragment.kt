@@ -11,7 +11,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
-        val passwordPref = findPreference<Preference>(Constants.PW_SETTINGS)
+        val passwordPref = findPreference<Preference>(Constants.PASSWORD_PREF)
         passwordPref?.setOnPreferenceClickListener {
             val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.SETTINGS)
             parentFragmentManager.beginTransaction()
