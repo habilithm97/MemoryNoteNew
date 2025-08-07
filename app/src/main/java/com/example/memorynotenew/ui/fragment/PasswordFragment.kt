@@ -114,7 +114,7 @@ class PasswordFragment : Fragment() {
                 when (passwordPurpose) {
                     PasswordPurpose.SETTINGS -> {
                         when (currentStep) {
-                            PasswordStep.NEW -> enterNewPassword()
+                            PasswordStep.NEW -> newPassword()
                             PasswordStep.ENTER -> updatePassword()
                         }
                     }
@@ -132,7 +132,7 @@ class PasswordFragment : Fragment() {
         }
     }
 
-    private fun enterNewPassword() {
+    private fun newPassword() {
         if (firstInput == null) { // 첫 번째 입력
             firstInput = StringBuilder(password) // 첫 번째 입력 저장
             password.clear()
