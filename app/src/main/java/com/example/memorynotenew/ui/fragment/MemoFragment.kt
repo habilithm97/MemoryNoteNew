@@ -8,6 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import com.example.memorynotenew.common.Constants
 import com.example.memorynotenew.databinding.FragmentMemoBinding
@@ -31,6 +34,12 @@ class MemoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 소프트 키보드 높이 만큼 EditText 하단 패딩 적용
+        ViewCompat.setOnApplyWindowInsetsListener(binding.editText) { view, insets ->
+            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+            view.updatePadding(bottom = imeInsets.bottom)
+            insets
+        }
         selectedMemo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelable(Constants.MEMO, Memo::class.java)
         } else {

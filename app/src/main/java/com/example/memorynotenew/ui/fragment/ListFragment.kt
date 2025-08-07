@@ -39,10 +39,10 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 키보드(IME) 인셋에 따라 RecyclerView 하단 패딩 조정
+        // 소프트 키보드 높이 만큼 EditText 하단 패딩 적용
         ViewCompat.setOnApplyWindowInsetsListener(binding.recyclerView) { view, insets ->
-            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime()) // 키보드 크기 가져오기
-            view.updatePadding(bottom = imeInsets.bottom) // 키보드 높이만큼 하단 패딩 적용
+            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+            view.updatePadding(bottom = imeInsets.bottom)
             insets
         }
         setupAdapter()
