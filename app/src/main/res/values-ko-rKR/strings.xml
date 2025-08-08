@@ -23,4 +23,5 @@
 
     <string name="lock">잠금</string>
     <string name="lock_memo">메모 잠금</string>
+    <string name="password_required">먼저 잠금 비밀번호를 설정해주세요.</string>
 </resources>

@@ -20,6 +20,8 @@ import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PopupAction
 import com.example.memorynotenew.databinding.FragmentListBinding
 import com.example.memorynotenew.room.memo.Memo
+import com.example.memorynotenew.utils.PasswordManager
+import com.example.memorynotenew.utils.ToastUtil
 import com.example.memorynotenew.viewmodel.MemoViewModel
 
 class ListFragment : Fragment() {
@@ -72,11 +74,16 @@ class ListFragment : Fragment() {
                     PopupAction.DELETE ->
                         showDeleteDialog(memo)
                     PopupAction.LOCK -> {
-                        val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK)
-                        parentFragmentManager.beginTransaction()
-                            .replace(R.id.container, passwordFragment)
-                            .addToBackStack(null)
-                            .commit()
+                        val storedPassword = PasswordManager.getSavedPassword(requireContext())
+                        if (storedPassword.isNullOrEmpty()) {
+                            ToastUtil.showToast(requireContext(), getString(R.string.password_required))
+                        } else {
+                            val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK)
+                            parentFragmentManager.beginTransaction()
+                                .replace(R.id.container, passwordFragment)
+                                .addToBackStack(null)
+                                .commit()
+                        }
                     }
                 }
             }

@@ -3,7 +3,7 @@
 
     <Preference
         android:icon="@drawable/lock"
-        android:key="password_settings"
+        android:key="password_pref"
         android:summary="@string/password_settings_summary"
         android:title="@string/password_settings" />
 
