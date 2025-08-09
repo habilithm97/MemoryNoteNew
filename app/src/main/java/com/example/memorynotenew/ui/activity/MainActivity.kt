@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
         val title = when (currentFragment) {
             is ListFragment -> getString(R.string.app_name)
             is MemoFragment -> getString(R.string.memo)
-            is PasswordFragment -> getString(R.string.lock_memo)
             else -> ""
         }
         supportActionBar?.apply {

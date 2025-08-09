@@ -42,8 +42,7 @@ class PasswordFragment : Fragment() {
     // 상태
     private lateinit var passwordPurpose: PasswordPurpose
     private lateinit var currentStep: PasswordStep
-    private var isInputLocked = false // 입력 잠금 상태
-    private var isLocked = false // 메모 잠금 상태
+    private var isLocked = false // 입력 잠금 상태
 
     // UI
     private lateinit var dots: List<View>
@@ -124,14 +123,14 @@ class PasswordFragment : Fragment() {
 
     private fun onPwKeyPressed(number: String) {
         // 입력 처리 중이거나 4자리 이상이면 추가 입력 제한
-        if (isInputLocked || password.length >= 4) return
+        if (isLocked || password.length >= 4) return
 
         password.append(number)
         updateDots()
 
         // 4자리 입력 완료
         if (password.length == 4) {
-            isInputLocked = true // 입력 잠금
+            isLocked = true // 입력 잠금
 
             // 액/프 소멸 시 코루틴 자동 취소 (메모리 누수 방지)
             lifecycleScope.launch {
@@ -226,7 +225,7 @@ class PasswordFragment : Fragment() {
     private fun clearPassword() {
         password.clear()
         updateDots()
-        isInputLocked = false
+        isLocked = false
     }
 
     private fun setupBtnCancel() {

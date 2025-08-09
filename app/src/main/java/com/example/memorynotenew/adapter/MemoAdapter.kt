@@ -47,6 +47,13 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
         private fun showPopupMenu(view: View, memo: Memo) {
             PopupMenu(view.context, view).apply {
                 menuInflater.inflate(R.menu.item_popup_menu, menu)
+
+                val lockMenuItem = menu.findItem(R.id.lock)
+                lockMenuItem.title = if (memo.isLocked) {
+                    view.context.getString(R.string.unlock)
+                } else {
+                    view.context.getString(R.string.lock)
+                }
                 setOnMenuItemClickListener { item ->
                     when (item.itemId) {
                         R.id.delete -> {

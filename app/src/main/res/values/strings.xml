@@ -21,6 +21,6 @@
     <string name="password_changed">Password changed successfully!</string>
 
     <string name="lock">Lock</string>
-    <string name="lock_memo">Lock Memo</string>
     <string name="password_required">Please set a lock password first.</string>
+    <string name="unlock">Unlock</string>
 </resources>
