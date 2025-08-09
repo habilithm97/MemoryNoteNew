@@ -142,6 +142,7 @@ class PasswordFragment : Fragment() {
                             PasswordStep.ENTER -> updatePassword()
                         }
                     }
+                    PasswordPurpose.OPEN -> openMemo()
                     PasswordPurpose.LOCK -> lockMemo()
                 }
             }
@@ -191,27 +192,31 @@ class PasswordFragment : Fragment() {
         clearPassword()
     }
 
-    private fun lockMemo() {
-        // 저장된 비밀번호와 일치
+    private fun openMemo() {
         if (storedPassword == password.toString()) {
-            if (memo.isLocked) { // 메모가 잠겨 있으면 -> MemoFragment로 이동
-                val memoFragment = MemoFragment().apply {
-                    arguments = Bundle().apply {
-                        putParcelable(Constants.MEMO, memo)
-                    }
+            // PasswordFragment 제거
+            requireActivity().supportFragmentManager.popBackStack()
+
+            val memoFragment = MemoFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(Constants.MEMO, memo)
                 }
-                parentFragmentManager.apply {
-                    popBackStack() // PasswordFragment 제거
-                    beginTransaction()
-                        .replace(R.id.container, memoFragment)
-                        .addToBackStack(null)
-                        .commit()
-                }
-            } else { // 메모가 잠겨 있지 않으면 -> ListFragment로 이동
-                memoViewModel.updateMemo(memo.copy(isLocked = true))
-                requireActivity().supportFragmentManager.popBackStack()
             }
-        } else { // 저장된 비밀번호와 불일치 -> 재입력 요청
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.container, memoFragment)
+                .addToBackStack(null)
+                .commit()
+        } else {
+            reEnterPassword()
+        }
+        clearPassword()
+    }
+
+    private fun lockMemo() {
+        if (storedPassword == password.toString()) {
+            memoViewModel.updateMemo(memo.copy(isLocked = !memo.isLocked))
+            requireActivity().supportFragmentManager.popBackStack()
+        } else {
             reEnterPassword()
         }
         clearPassword()

@@ -61,7 +61,7 @@ class ListFragment : Fragment() {
                 binding.searchView.setQuery("", false) // 검색어 초기화
 
                 if (memo.isLocked) { // 메모가 잠겨 있으면 -> PasswordFragment로 이동
-                    val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK, memo)
+                    val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.OPEN, memo)
                     parentFragmentManager.beginTransaction()
                         .replace(R.id.container, passwordFragment)
                         .addToBackStack(null)
