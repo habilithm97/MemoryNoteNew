@@ -1,6 +1,7 @@
 package com.example.memorynotenew.ui.activity
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -63,7 +64,12 @@ class MainActivity : AppCompatActivity() {
                 if (purpose == PasswordPurpose.OPEN) {
                     ""
                 } else { // LOCK이면 잠금 여부에 따라 title 설정
-                    val memo = currentFragment.arguments?.getParcelable<Memo>(Constants.MEMO)
+                    val memo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        currentFragment.arguments?.getParcelable<Memo>(Constants.MEMO, Memo::class.java)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        currentFragment.arguments?.getParcelable<Memo>(Constants.MEMO)
+                    }
                     if (memo?.isLocked == true) {
                         getString(R.string.unlock_memo) // 메모 잠금 해제
                     } else {
