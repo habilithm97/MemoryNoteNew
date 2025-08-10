@@ -10,7 +10,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.memorynotenew.R
+import com.example.memorynotenew.common.Constants
+import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.databinding.ActivityMainBinding
+import com.example.memorynotenew.room.memo.Memo
 import com.example.memorynotenew.ui.fragment.ListFragment
 import com.example.memorynotenew.ui.fragment.MemoFragment
 import com.example.memorynotenew.ui.fragment.PasswordFragment
@@ -48,6 +51,26 @@ class MainActivity : AppCompatActivity() {
         val title = when (currentFragment) {
             is ListFragment -> getString(R.string.app_name)
             is MemoFragment -> getString(R.string.memo)
+            is PasswordFragment -> {
+                // 비밀번호 목적 가져오기 (여기에선 LOCK, OPEN 필요)
+                val purposeString = currentFragment.arguments?.getString("password_purpose")
+                val purpose = if (purposeString != null) {
+                    PasswordPurpose.valueOf(purposeString) // enum으로 변환
+                } else {
+                    null
+                }
+                // OPEN이면 title 없음
+                if (purpose == PasswordPurpose.OPEN) {
+                    ""
+                } else { // LOCK이면 잠금 여부에 따라 title 설정
+                    val memo = currentFragment.arguments?.getParcelable<Memo>(Constants.MEMO)
+                    if (memo?.isLocked == true) {
+                        getString(R.string.unlock_memo) // 메모 잠금 해제
+                    } else {
+                        getString(R.string.lock_memo) // 메모 잠금
+                    }
+                }
+            }
             else -> ""
         }
         supportActionBar?.apply {
