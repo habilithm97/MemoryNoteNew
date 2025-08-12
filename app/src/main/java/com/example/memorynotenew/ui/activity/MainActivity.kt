@@ -33,16 +33,14 @@ class MainActivity : AppCompatActivity() {
         }
         setSupportActionBar(binding.toolbar)
 
-        // 프래그먼트 전환 시 갱신
+        // Fragment 전환 시 갱신
         supportFragmentManager.addOnBackStackChangedListener {
             setupActionBar()
             invalidateOptionsMenu()
         }
-        // 최초 실행 시 프래그먼트 삽입
+        // 최초 실행 시 Fragment 삽입
         if (savedInstanceState == null) {
             replaceFragment(ListFragment())
-            setupActionBar()
-            invalidateOptionsMenu()
         }
     }
 
@@ -53,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             is ListFragment -> getString(R.string.app_name)
             is MemoFragment -> getString(R.string.memo)
             is PasswordFragment -> {
-                // 비밀번호 목적 가져오기 (여기에선 LOCK, OPEN 필요)
+                // PasswordPurpose 가져오기 (LOCK, OPEN)
                 val purposeString = currentFragment.arguments?.getString("password_purpose")
                 val purpose = if (purposeString != null) {
                     PasswordPurpose.valueOf(purposeString) // enum으로 변환
@@ -65,15 +63,15 @@ class MainActivity : AppCompatActivity() {
                     ""
                 } else { // LOCK이면 잠금 여부에 따라 title 설정
                     val memo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        currentFragment.arguments?.getParcelable<Memo>(Constants.MEMO, Memo::class.java)
+                        currentFragment.arguments?.getParcelable(Constants.MEMO, Memo::class.java)
                     } else {
                         @Suppress("DEPRECATION")
-                        currentFragment.arguments?.getParcelable<Memo>(Constants.MEMO)
+                        currentFragment.arguments?.getParcelable(Constants.MEMO)
                     }
                     if (memo?.isLocked == true) {
-                        getString(R.string.unlock_memo) // 메모 잠금 해제
+                        getString(R.string.unlock_memo)
                     } else {
-                        getString(R.string.lock_memo) // 메모 잠금
+                        getString(R.string.lock_memo)
                     }
                 }
             }
@@ -99,7 +97,9 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.setting -> {
-                val intent = Intent(this@MainActivity, SettingsActivity::class.java)
+                val intent = Intent(this@MainActivity, SettingsActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                }
                 startActivity(intent)
                 true
             }
