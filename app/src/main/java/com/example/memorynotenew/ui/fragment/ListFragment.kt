@@ -26,9 +26,9 @@ import com.example.memorynotenew.viewmodel.MemoViewModel
 
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null // nullable
-    private val binding get() = _binding!! // non-null, 항상 null-safe한 접근 가능
-    private val memoViewModel: MemoViewModel by viewModels()
+    private val binding get() = _binding!! // non-null (생명주기 내 안전)
     private lateinit var memoAdapter: MemoAdapter
+    private val memoViewModel: MemoViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,10 +41,10 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 소프트 키보드 높이 만큼 EditText 하단 패딩 적용
-        ViewCompat.setOnApplyWindowInsetsListener(binding.recyclerView) { view, insets ->
+        // 소프트 키보드 높이 만큼 RecyclerView 하단 패딩 적용
+        ViewCompat.setOnApplyWindowInsetsListener(binding.recyclerView) { recyclerView, insets ->
             val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-            view.updatePadding(bottom = imeInsets.bottom)
+            recyclerView.updatePadding(bottom = imeInsets.bottom)
             insets
         }
         setupAdapter()
@@ -62,20 +62,14 @@ class ListFragment : Fragment() {
 
                 if (memo.isLocked) { // 메모가 잠겨 있으면 -> PasswordFragment로 이동
                     val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.OPEN, memo)
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.container, passwordFragment)
-                        .addToBackStack(null)
-                        .commit()
+                    navigateToFragment(passwordFragment)
                 } else { // 메모가 잠겨 있지 않으면 -> 바로 MemoFragment로 이동
                     val memoFragment = MemoFragment().apply {
                         arguments = Bundle().apply {
                             putParcelable(Constants.MEMO, memo)
                         }
                     }
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.container, memoFragment)
-                        .addToBackStack(null)
-                        .commit()
+                    navigateToFragment(memoFragment)
                 }
             }, onItemLongClick = { memo, popupAction ->
                 when (popupAction) {
@@ -83,14 +77,12 @@ class ListFragment : Fragment() {
                         showDeleteDialog(memo)
                     PopupAction.LOCK -> {
                         val storedPassword = PasswordManager.getSavedPassword(requireContext())
+                        // 저장된 비밀번호가 없으면 -> 토스트 메시지 출력
                         if (storedPassword.isNullOrEmpty()) {
                             ToastUtil.showToast(requireContext(), getString(R.string.password_required))
-                        } else {
+                        } else { // 저장된 비밀번호가 있으면 -> PasswordFragment로 이동
                             val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK, memo)
-                            parentFragmentManager.beginTransaction()
-                                .replace(R.id.container, passwordFragment)
-                                .addToBackStack(null)
-                                .commit()
+                           navigateToFragment(passwordFragment)
                         }
                     }
                 }
@@ -100,10 +92,10 @@ class ListFragment : Fragment() {
 
     private fun showDeleteDialog(memo: Memo) {
         AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.delete)) // 삭제
-            .setMessage(getString(R.string.delete_dialog_msg)) // 선택한 메모를 삭제할까요?
-            .setNegativeButton(getString(R.string.cancel), null) // 취소
-            .setPositiveButton(getString(R.string.delete)) { dialog, _ -> // 삭제
+            .setTitle(getString(R.string.delete))
+            .setMessage(getString(R.string.delete_dialog_msg))
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
                 memoViewModel.deleteMemo(memo)
                 dialog.dismiss()
             }
@@ -132,9 +124,9 @@ class ListFragment : Fragment() {
     }
 
     private fun setupObserver() {
-        memoViewModel.getAllMemos.observe(viewLifecycleOwner) { memoList ->
+        memoViewModel.getAllMemos.observe(viewLifecycleOwner) { memos ->
             with(memoAdapter) {
-                submitMemoList(memoList)
+                submitMemoList(memos)
                 if (itemCount > 0) {
                     binding.recyclerView.smoothScrollToPosition(itemCount - 1)
                 }
@@ -148,7 +140,6 @@ class ListFragment : Fragment() {
                 // 검색어 입력 시 호출
                 override fun onQueryTextChange(newText: String?): Boolean {
                     val query = newText.orEmpty() // null이면 "" 처리
-
                     with(memoAdapter) {
                         filterList(query) { // 필터링
                             // 검색어가 비어 있고, 메모가 하나 이상 있으면
@@ -175,11 +166,7 @@ class ListFragment : Fragment() {
         with(binding) {
             fabAdd.setOnClickListener {
                 searchView.setQuery("", false) // 검색어 초기화
-                
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.container, MemoFragment())
-                    .addToBackStack(null)
-                    .commit()
+                navigateToFragment(MemoFragment())
             }
         }
     }
@@ -194,6 +181,13 @@ class ListFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun navigateToFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     override fun onDestroyView() {
