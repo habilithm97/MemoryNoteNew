@@ -27,16 +27,15 @@ class SettingsActivity : AppCompatActivity() {
         }
         setSupportActionBar(binding.toolbar)
 
-        // 프래그먼트 전환 시 갱신
+        // Fragment 전환 시 갱신
         supportFragmentManager.addOnBackStackChangedListener {
             setupActionBar()
         }
-        // 최초 실행 시 프래그먼트 삽입
+        // 최초 실행 시 Fragment 삽입
         if (savedInstanceState == null) {
             replaceFragment(SettingsFragment())
-            setupActionBar()
         }
-        onBackPressedDispatcher.addCallback(this@SettingsActivity) {
+        onBackPressedDispatcher.addCallback(this@SettingsActivity, true) {
             finish()
         }
     }
@@ -47,8 +46,8 @@ class SettingsActivity : AppCompatActivity() {
         val title = when (currentFragment) {
             is SettingsFragment -> getString(R.string.settings)
             is PasswordFragment -> {
-                val savedPassword = PasswordManager.getSavedPassword(this@SettingsActivity)
-                if (savedPassword.isNullOrEmpty()) {
+                val storedPassword = PasswordManager.getSavedPassword(this@SettingsActivity)
+                if (storedPassword.isNullOrEmpty()) {
                     getString(R.string.password_save)
                 } else {
                     getString(R.string.password_change)
