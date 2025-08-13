@@ -18,10 +18,10 @@ import com.example.memorynotenew.room.memo.Memo
 import com.example.memorynotenew.viewmodel.MemoViewModel
 
 class MemoFragment : Fragment() {
-    private var _binding: FragmentMemoBinding? = null
-    private val binding get() = _binding!!
+    private var _binding: FragmentMemoBinding? = null // nullable
+    private val binding get() = _binding!! // non-null (생명주기 내 안전)
+    private var memo: Memo? = null
     private val memoViewModel: MemoViewModel by viewModels()
-    private var selectedMemo: Memo? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,19 +35,19 @@ class MemoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // 소프트 키보드 높이 만큼 EditText 하단 패딩 적용
-        ViewCompat.setOnApplyWindowInsetsListener(binding.editText) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.editText) { editText, insets ->
             val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-            view.updatePadding(bottom = imeInsets.bottom)
+            editText.updatePadding(bottom = imeInsets.bottom)
             insets
         }
-        selectedMemo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        memo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelable(Constants.MEMO, Memo::class.java)
         } else {
             @Suppress("DEPRECATION")
             arguments?.getParcelable(Constants.MEMO)
         }
-        if (selectedMemo != null) {
-            binding.editText.setText(selectedMemo!!.content)
+        if (memo != null) {
+            binding.editText.setText(memo!!.content)
         }
     }
 
@@ -55,9 +55,9 @@ class MemoFragment : Fragment() {
         super.onPause()
 
         val currentMemo = binding.editText.text.toString()
-        // 메모가 비어 있지 않고, 선택된 메모와 다르면
-        if (currentMemo.isNotBlank() && currentMemo != selectedMemo?.content) {
-            if (selectedMemo != null) { // 수정 모드
+        // 메모가 비어 있지 않고, 기존 메모와 같지 않으면
+        if (currentMemo.isNotBlank() && currentMemo != memo?.content) {
+            if (memo != null) { // 수정 모드
                 updateMemo(currentMemo)
             } else { // 추가 모드
                 saveMemo(currentMemo)
@@ -74,8 +74,7 @@ class MemoFragment : Fragment() {
     private fun updateMemo(currentMemo: String) {
         val date = System.currentTimeMillis()
         // 기존 Memo 객체의 content만 수정하여 새로운 객체 생성
-        val updatedMemo = selectedMemo?.copy(content = currentMemo, date =  date)
-
+        val updatedMemo = memo?.copy(content = currentMemo, date =  date)
         if (updatedMemo != null) {
             memoViewModel.updateMemo(updatedMemo)
         }
@@ -84,11 +83,10 @@ class MemoFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        // 새 메모일 경우 소프트 키보드 자동으로 표시
-        if (selectedMemo == null) {
+        // 새 메모일 경우 소프트 키보드 자동 표시
+        if (memo == null) {
             with(binding) {
                 editText.requestFocus()
-                // requireContext : null이면 예외
                 val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
             }
@@ -98,6 +96,6 @@ class MemoFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
 
-        _binding = null
+        _binding = null // 메모리 누수 방지
     }
 }
