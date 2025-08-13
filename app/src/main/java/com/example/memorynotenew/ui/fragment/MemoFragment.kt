@@ -57,22 +57,21 @@ class MemoFragment : Fragment() {
         val currentMemo = binding.editText.text.toString()
         // 메모가 비어 있지 않고, 기존 메모와 같지 않으면
         if (currentMemo.isNotBlank() && currentMemo != memo?.content) {
+            val date = System.currentTimeMillis()
             if (memo != null) { // 수정 모드
-                updateMemo(currentMemo)
+                updateMemo(currentMemo, date)
             } else { // 추가 모드
-                saveMemo(currentMemo)
+                saveMemo(currentMemo, date)
             }
         }
     }
 
-    private fun saveMemo(currentMemo: String) {
-        val date = System.currentTimeMillis()
+    private fun saveMemo(currentMemo: String, date: Long) {
         val memo = Memo(content = currentMemo, date  = date)
         memoViewModel.insertMemo(memo)
     }
 
-    private fun updateMemo(currentMemo: String) {
-        val date = System.currentTimeMillis()
+    private fun updateMemo(currentMemo: String, date: Long) {
         // 기존 Memo 객체의 content만 수정하여 새로운 객체 생성
         val updatedMemo = memo?.copy(content = currentMemo, date =  date)
         if (updatedMemo != null) {
@@ -87,8 +86,8 @@ class MemoFragment : Fragment() {
         if (memo == null) {
             with(binding) {
                 editText.requestFocus()
-                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+                (requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                .showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
             }
         }
     }

@@ -126,7 +126,7 @@ class ListFragment : Fragment() {
     private fun setupObserver() {
         memoViewModel.getAllMemos.observe(viewLifecycleOwner) { memos ->
             with(memoAdapter) {
-                submitMemoList(memos)
+                submitMemos(memos)
                 if (itemCount > 0) {
                     binding.recyclerView.smoothScrollToPosition(itemCount - 1)
                 }

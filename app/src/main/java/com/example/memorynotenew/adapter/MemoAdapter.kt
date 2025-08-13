@@ -20,7 +20,7 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                   private val onItemLongClick: (Memo, PopupAction) -> Unit) :
     ListAdapter<Memo, MemoAdapter.MemoViewHolder>(DIFF_CALLBACK) {
 
-        private var memoList: List<Memo> = emptyList() // 원본 메모 리스트
+        private var memos: List<Memo> = emptyList() // 원본 메모 리스트
 
     inner class MemoViewHolder(private val binding: ItemMemoBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -73,6 +73,16 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
         }
     }
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoAdapter.MemoViewHolder {
+        val binding = ItemMemoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MemoViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: MemoAdapter.MemoViewHolder, position: Int) {
+        // 현재 위치의 Memo 데이터를 ViewHolder에 바인딩
+        holder.bind(getItem(position))
+    }
+
     companion object { // 클래스 수준의 정적 객체 (static처럼 동작)
         // RecyclerView 성능 최적화를 위해 변경 사항만 업데이트
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Memo>() {
@@ -85,26 +95,16 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoAdapter.MemoViewHolder {
-        val binding = ItemMemoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MemoViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: MemoAdapter.MemoViewHolder, position: Int) {
-        // 현재 위치의 Memo 데이터를 ViewHolder에 바인딩
-        holder.bind(getItem(position))
-    }
-
-    fun submitMemoList(memoList: List<Memo>) {
-        this.memoList = memoList // 원본 메모 리스트 보관
-        submitList(memoList)
+    fun submitMemos(memos: List<Memo>) {
+        this.memos = memos // 원본 메모 리스트 보관
+        submitList(memos)
     }
 
     fun filterList(searchQuery: String, onFilterComplete: () -> Unit) {
-        val filteredList = if (searchQuery.isEmpty()) { // (공백도 검색 가능)
-            memoList
-        } else {
-            memoList.filter {
+        val filteredList = if (searchQuery.isEmpty()) {
+            memos
+        } else { // 공백도 검색 가능
+            memos.filter {
                 it.content.contains(searchQuery, ignoreCase = true) // 대소문자 구분 없이 검색
             }
         }
