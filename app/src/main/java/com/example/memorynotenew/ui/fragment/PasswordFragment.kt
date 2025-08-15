@@ -34,7 +34,6 @@ class PasswordFragment : Fragment() {
             requireArguments().getParcelable(Constants.MEMO)!!
         }
     }
-
     private var _binding: FragmentPasswordBinding? = null // nullable
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
     private val dots: List<View> by lazy {

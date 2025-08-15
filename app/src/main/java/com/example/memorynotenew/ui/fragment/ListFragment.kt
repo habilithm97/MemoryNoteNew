@@ -29,6 +29,7 @@ class ListFragment : Fragment() {
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
     private lateinit var memoAdapter: MemoAdapter
     private val memoViewModel: MemoViewModel by viewModels()
+    private val safeContext get() = requireContext() // Attach된 시점의 안전한 Context를 반환
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,10 +77,10 @@ class ListFragment : Fragment() {
                     PopupAction.DELETE ->
                         showDeleteDialog(memo)
                     PopupAction.LOCK -> {
-                        val storedPassword = PasswordManager.getPassword(requireContext())
+                        val storedPassword = PasswordManager.getPassword(safeContext)
                         // 저장된 비밀번호가 없으면 -> 토스트 메시지 출력
                         if (storedPassword.isNullOrEmpty()) {
-                            ToastUtil.showToast(requireContext(), getString(R.string.password_required))
+                            ToastUtil.showToast(safeContext, getString(R.string.password_required))
                         } else { // 저장된 비밀번호가 있으면 -> PasswordFragment로 이동
                             val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK, memo)
                            navigateToFragment(passwordFragment)
@@ -91,7 +92,7 @@ class ListFragment : Fragment() {
     }
 
     private fun showDeleteDialog(memo: Memo) {
-        AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(safeContext)
             .setTitle(getString(R.string.delete))
             .setMessage(getString(R.string.delete_dialog_msg))
             .setNegativeButton(getString(R.string.cancel), null)
@@ -106,7 +107,7 @@ class ListFragment : Fragment() {
         with(binding) {
             recyclerView.apply {
                 adapter = memoAdapter
-                layoutManager = LinearLayoutManager(requireContext()).apply {
+                layoutManager = LinearLayoutManager(safeContext).apply {
                     reverseLayout = true
                     stackFromEnd = true
                 }
