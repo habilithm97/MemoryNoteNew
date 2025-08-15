@@ -31,7 +31,7 @@ object PasswordManager {
         sharedPreferences.edit().putString(PASSWORD_KEY, password).apply()
     }
 
-    fun getSavedPassword(context: Context): String? {
+    fun getPassword(context: Context): String? {
         val sharedPreferences = getEncryptedPrefs(context)
         return sharedPreferences.getString(PASSWORD_KEY, null)
     }

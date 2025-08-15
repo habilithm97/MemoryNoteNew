@@ -76,7 +76,7 @@ class ListFragment : Fragment() {
                     PopupAction.DELETE ->
                         showDeleteDialog(memo)
                     PopupAction.LOCK -> {
-                        val storedPassword = PasswordManager.getSavedPassword(requireContext())
+                        val storedPassword = PasswordManager.getPassword(requireContext())
                         // 저장된 비밀번호가 없으면 -> 토스트 메시지 출력
                         if (storedPassword.isNullOrEmpty()) {
                             ToastUtil.showToast(requireContext(), getString(R.string.password_required))

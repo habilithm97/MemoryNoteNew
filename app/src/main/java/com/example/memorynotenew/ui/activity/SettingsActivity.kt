@@ -46,7 +46,7 @@ class SettingsActivity : AppCompatActivity() {
         val title = when (currentFragment) {
             is SettingsFragment -> getString(R.string.settings)
             is PasswordFragment -> {
-                val storedPassword = PasswordManager.getSavedPassword(this@SettingsActivity)
+                val storedPassword = PasswordManager.getPassword(this@SettingsActivity)
                 if (storedPassword.isNullOrEmpty()) {
                     getString(R.string.password_save)
                 } else {

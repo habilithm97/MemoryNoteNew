@@ -1,3 +1,3 @@
 package com.example.memorynotenew.common
 
-enum class PasswordStep { NEW, ENTER }
+enum class PasswordMode { NEW, ENTER }
