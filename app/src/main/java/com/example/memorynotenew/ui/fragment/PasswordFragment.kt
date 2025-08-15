@@ -26,7 +26,14 @@ class PasswordFragment : Fragment() {
     private lateinit var passwordPurpose: PasswordPurpose
     private lateinit var passwordMode: PasswordMode
 
-    private lateinit var memo: Memo
+    private val memo: Memo by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireArguments().getParcelable(Constants.MEMO, Memo::class.java)!!
+        } else {
+            @Suppress("DEPRECATION")
+            requireArguments().getParcelable(Constants.MEMO)!!
+        }
+    }
 
     private var _binding: FragmentPasswordBinding? = null // nullable
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
@@ -65,13 +72,6 @@ class PasswordFragment : Fragment() {
         val purpose = arguments?.getString(PURPOSE)
             ?: throw IllegalArgumentException("PasswordFragment is required")
         passwordPurpose = PasswordPurpose.valueOf(purpose) // 문자열을 enum 값으로 변환
-
-        memo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requireArguments().getParcelable(Constants.MEMO, Memo::class.java)!!
-        } else {
-            @Suppress("DEPRECATION")
-            requireArguments().getParcelable(Constants.MEMO)!!
-        }
     }
 
     override fun onCreateView(

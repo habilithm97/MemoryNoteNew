@@ -11,6 +11,7 @@
         android:background="@null"
         android:fontFamily="@font/bookkmyungjo_light"
         android:gravity="top|start"
+        android:lineSpacingExtra="8dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:scrollbars="vertical"
