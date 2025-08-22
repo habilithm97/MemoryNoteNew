@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -54,6 +55,12 @@ class ListFragment : Fragment() {
         setupSearchView()
         setupFabAdd()
         setupFabScroll()
+
+        with(requireActivity()) {
+            onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+                finish()
+            }
+        }
     }
 
     private fun setupAdapter() {
@@ -73,6 +80,8 @@ class ListFragment : Fragment() {
                     navigateToFragment(memoFragment)
                 }
             }, onItemLongClick = { memo, popupAction ->
+                binding.searchView.setQuery("", false) // 검색어 초기화
+
                 when (popupAction) {
                     PopupAction.DELETE ->
                         showDeleteDialog(memo)

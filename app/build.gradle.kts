@@ -10,7 +10,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.memorynotenew"
+        applicationId = "com.habilithm.memorynote"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
