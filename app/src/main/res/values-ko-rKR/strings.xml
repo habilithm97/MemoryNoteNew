@@ -26,4 +26,6 @@
     <string name="unlock">잠금 해제</string>
     <string name="lock_memo">메모 잠금</string>
     <string name="unlock_memo">메모 잠금 해제</string>
+
+    <string name="select_memo">메모 선택</string>
 </resources>

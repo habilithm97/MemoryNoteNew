@@ -200,6 +200,10 @@ class ListFragment : Fragment() {
             .commit()
     }
 
+    fun setMultiSelect(isMultiSelect: Boolean) {
+        memoAdapter.isMultiSelect = isMultiSelect
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
 

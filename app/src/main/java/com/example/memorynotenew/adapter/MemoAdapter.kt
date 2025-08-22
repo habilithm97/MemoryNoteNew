@@ -22,6 +22,13 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
 
         private var memos: List<Memo> = emptyList() // 원본 메모 리스트
 
+    var isMultiSelect = false
+    // isMultiSelect 값이 바뀔 때마다 실행
+    set(value) {
+        field = value // isMultiSelect의 실제 값을 바꿔줌
+        notifyDataSetChanged() // 전체 아이템 갱신
+    }
+
     inner class MemoViewHolder(private val binding: ItemMemoBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -32,6 +39,7 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                     tvDate.text = SimpleDateFormat(itemView.context.getString(R.string.date_format),
                         Locale.getDefault()).format(Date(memo.date))
                     imageView.visibility = if (memo.isLocked) View.VISIBLE else View.INVISIBLE
+                    checkBox.visibility = if (isMultiSelect) View.VISIBLE else View.GONE
 
                     with(root) {
                         setOnClickListener {

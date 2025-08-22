@@ -25,4 +25,6 @@
     <string name="unlock">Unlock</string>
     <string name="lock_memo">Lock Memo</string>
     <string name="unlock_memo">Unlock Memo</string>
+
+    <string name="select_memo">Select Memo</string>
 </resources>

@@ -85,7 +85,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
-
         return if (currentFragment is ListFragment) {
             menuInflater.inflate(R.menu.menu_main, menu)
             return true
@@ -95,16 +94,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.setting -> {
-                val intent = Intent(this, SettingsActivity::class.java).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
+        if (currentFragment is ListFragment) {
+            return when (item.itemId) {
+                R.id.setting -> {
+                    val intent = Intent(this, SettingsActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    }
+                    startActivity(intent)
+                    true
                 }
-                startActivity(intent)
-                true
+                R.id.select -> {
+                    toggleMenuVisibility(item.itemId)
+                    currentFragment.setMultiSelect(true)
+                    true
+                }
+                R.id.cancel -> {
+                    toggleMenuVisibility(item.itemId)
+                    currentFragment.setMultiSelect(false)
+                    true
+                }
+                else -> super.onOptionsItemSelected(item)
             }
-            else -> super.onOptionsItemSelected(item)
         }
+        return super.onOptionsItemSelected(item) // 기본 처리 위임
     }
 
     // 업 버튼 동작
@@ -118,5 +131,14 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.container, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun toggleMenuVisibility(itemId: Int) {
+        val isMultiSelect = itemId == R.id.select
+        binding.toolbar.menu.apply {
+            findItem(R.id.setting)?.isVisible = !isMultiSelect
+            findItem(R.id.select)?.isVisible = !isMultiSelect
+            findItem(R.id.cancel)?.isVisible = isMultiSelect
+        }
     }
 }
