@@ -21,11 +21,13 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
     ListAdapter<Memo, MemoAdapter.MemoViewHolder>(DIFF_CALLBACK) {
 
         private var memos: List<Memo> = emptyList() // 원본 메모 리스트
+    private var selectedMemos = mutableSetOf<Int>() // 선택한 메모 리스트
 
     var isMultiSelect = false
     // isMultiSelect 값이 바뀔 때마다 실행
     set(value) {
         field = value // isMultiSelect의 실제 값을 바꿔줌
+        if (!value) selectedMemos.clear() // 메모 선택 모드 해제 시 체크 상태 초기화
         notifyDataSetChanged() // 전체 아이템 갱신
     }
 
@@ -39,8 +41,23 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                     tvDate.text = SimpleDateFormat(itemView.context.getString(R.string.date_format),
                         Locale.getDefault()).format(Date(memo.date))
                     imageView.visibility = if (memo.isLocked) View.VISIBLE else View.INVISIBLE
-                    checkBox.visibility = if (isMultiSelect) View.VISIBLE else View.GONE
 
+                    // 유효한 아이템을 가리킬 때만 실행
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        checkBox.apply {
+                            visibility = if (isMultiSelect) View.VISIBLE else View.GONE
+                            isChecked = adapterPosition in selectedMemos // 선택한 메모면 체크
+
+                            // 체크 상태 변경 시 selectedMemos에 추가/제거
+                            setOnCheckedChangeListener { _, isChecked ->
+                                if (isChecked) {
+                                    selectedMemos.add(adapterPosition)
+                                } else {
+                                    selectedMemos.remove(adapterPosition)
+                                }
+                            }
+                        }
+                    }
                     with(root) {
                         setOnClickListener {
                             onItemClick(memo)
