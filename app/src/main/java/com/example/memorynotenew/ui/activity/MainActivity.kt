@@ -114,6 +114,10 @@ class MainActivity : AppCompatActivity() {
                     currentFragment.setMultiSelect(false)
                     true
                 }
+                R.id.all -> {
+                    currentFragment.toggleSelectAll()
+                    true
+                }
                 else -> super.onOptionsItemSelected(item)
             }
         }
@@ -139,6 +143,7 @@ class MainActivity : AppCompatActivity() {
             findItem(R.id.setting)?.isVisible = !isMultiSelect
             findItem(R.id.select)?.isVisible = !isMultiSelect
             findItem(R.id.cancel)?.isVisible = isMultiSelect
+            findItem(R.id.all).isVisible = isMultiSelect
         }
     }
 }

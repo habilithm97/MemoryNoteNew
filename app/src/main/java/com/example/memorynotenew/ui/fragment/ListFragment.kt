@@ -204,6 +204,10 @@ class ListFragment : Fragment() {
         memoAdapter.isMultiSelect = isMultiSelect
     }
 
+    fun toggleSelectAll() {
+        (binding.recyclerView.adapter as? MemoAdapter)?.toggleSelectAll()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
 

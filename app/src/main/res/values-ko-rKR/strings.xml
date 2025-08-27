@@ -28,4 +28,5 @@
     <string name="unlock_memo">메모 잠금 해제</string>
 
     <string name="select_memo">메모 선택</string>
+    <string name="all">전체</string>
 </resources>

@@ -137,4 +137,18 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
             onFilterComplete() // 필터링 후속 작업
         }
     }
+
+    fun toggleSelectAll() {
+        // 선택된 메모 수 = 전체 메모 수 -> 전체 선택이면
+        if (selectedMemos.size == currentList.size) {
+            selectedMemos.clear() // 전체 선택 해제
+        } else { // 전체 선택이 아니면
+            // 전체 선택
+            selectedMemos.apply {
+                clear()
+                addAll(currentList.indices)
+            }
+        }
+        notifyDataSetChanged()
+    }
 }

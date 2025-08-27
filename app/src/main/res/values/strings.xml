@@ -27,4 +27,5 @@
     <string name="unlock_memo">Unlock Memo</string>
 
     <string name="select_memo">Select Memo</string>
+    <string name="all">All</string>
 </resources>

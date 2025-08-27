@@ -12,4 +12,9 @@
         android:title="@string/cancel"
         android:visible="false"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/all"
+        android:title="@string/all"
+        android:visible="false"
+        app:showAsAction="always" />
 </menu>
