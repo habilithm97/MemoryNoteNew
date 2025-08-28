@@ -205,7 +205,7 @@ class ListFragment : Fragment() {
     }
 
     fun toggleSelectAll() {
-        (binding.recyclerView.adapter as? MemoAdapter)?.toggleSelectAll()
+        memoAdapter.toggleSelectAll()
     }
 
     override fun onDestroyView() {

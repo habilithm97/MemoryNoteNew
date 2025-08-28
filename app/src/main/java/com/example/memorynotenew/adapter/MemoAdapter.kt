@@ -59,12 +59,18 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                         }
                     }
                     with(root) {
-                        setOnClickListener {
-                            onItemClick(memo)
-                        }
-                        setOnLongClickListener {
-                            showPopupMenu(it, memo)
-                            true // 클릭 이벤트 발생 방지 (롱클릭 이벤트만 소비)
+                        // 다중 선택 모드 -> 클릭/롱클릭 비활성화
+                        if (isMultiSelect) {
+                            setOnClickListener(null)
+                            setOnLongClickListener(null)
+                        } else {
+                            setOnClickListener {
+                                onItemClick(memo)
+                            }
+                            setOnLongClickListener {
+                                showPopupMenu(it, memo)
+                                true // 클릭 이벤트 발생 방지 (롱클릭 이벤트만 소비)
+                            }
                         }
                     }
                 }
@@ -144,7 +150,7 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
             selectedMemos.clear() // 전체 선택 해제
         } else { // 전체 선택이 아니면
             // 전체 선택
-            selectedMemos.apply {
+            with(selectedMemos) {
                 clear()
                 addAll(currentList.indices)
             }

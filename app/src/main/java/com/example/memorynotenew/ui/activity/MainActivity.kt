@@ -140,9 +140,9 @@ class MainActivity : AppCompatActivity() {
     private fun toggleMenuVisibility(itemId: Int) {
         val isMultiSelect = itemId == R.id.select
         binding.toolbar.menu.apply {
-            findItem(R.id.setting)?.isVisible = !isMultiSelect
-            findItem(R.id.select)?.isVisible = !isMultiSelect
-            findItem(R.id.cancel)?.isVisible = isMultiSelect
+            findItem(R.id.setting).isVisible = !isMultiSelect
+            findItem(R.id.select).isVisible = !isMultiSelect
+            findItem(R.id.cancel).isVisible = isMultiSelect
             findItem(R.id.all).isVisible = isMultiSelect
         }
     }
