@@ -157,4 +157,13 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
         }
         notifyDataSetChanged()
     }
+
+    // 선택된 메모만 안전하게 Memo 객체로 반환
+    fun getSelectedMemos() : List<Memo> {
+        // 선택된 메모 index 가져오기 (null 제거)
+        return selectedMemos.mapNotNull { index ->
+            // 각 index에 해당하는 Memo 객체 가져오기 (범위 벗어나면 null)
+            currentList.getOrNull(index)
+        }
+    }
 }

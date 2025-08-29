@@ -21,6 +21,7 @@ import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PopupAction
 import com.example.memorynotenew.databinding.FragmentListBinding
 import com.example.memorynotenew.room.memo.Memo
+import com.example.memorynotenew.ui.activity.MainActivity
 import com.example.memorynotenew.utils.PasswordManager
 import com.example.memorynotenew.utils.ToastUtil
 import com.example.memorynotenew.viewmodel.MemoViewModel
@@ -84,7 +85,7 @@ class ListFragment : Fragment() {
 
                 when (popupAction) {
                     PopupAction.DELETE ->
-                        showDeleteDialog(memo)
+                        showDeleteDialog(listOf(memo), isMultiDelete = false)
                     PopupAction.LOCK -> {
                         val storedPassword = PasswordManager.getPassword(safeContext)
                         // 저장된 비밀번호가 없으면 -> 토스트 메시지 출력
@@ -100,13 +101,23 @@ class ListFragment : Fragment() {
         )
     }
 
-    private fun showDeleteDialog(memo: Memo) {
+    private fun showDeleteDialog(selectedMemos: List<Memo>, isMultiDelete: Boolean) {
         AlertDialog.Builder(safeContext)
             .setTitle(getString(R.string.delete))
             .setMessage(getString(R.string.delete_dialog_msg))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
-                memoViewModel.deleteMemo(memo)
+                if (isMultiDelete) {
+                    selectedMemos.forEach { memo ->
+                        // selectedMemos의 각 memo를 하나씩 삭제
+                        memoViewModel.deleteMemo(memo)
+                        memoAdapter.isMultiSelect = false
+                        (activity as? MainActivity)?.toggleMenuVisibility(R.id.cancel)
+                    }
+                } else {
+                    // selectedMemos의 첫 번째 memo 삭제
+                    memoViewModel.deleteMemo(selectedMemos.first())
+                }
                 dialog.dismiss()
             }
             .show()
@@ -206,6 +217,15 @@ class ListFragment : Fragment() {
 
     fun toggleSelectAll() {
         memoAdapter.toggleSelectAll()
+    }
+
+    fun deleteSelectedMemos() {
+        val selectedMemos = memoAdapter.getSelectedMemos() // 선택된 메모 가져오기
+        if (selectedMemos.isEmpty()) { // 없으면
+            ToastUtil.showToast(safeContext, getString(R.string.select_memo_to_delete))
+        } else { // 있으면
+            showDeleteDialog(selectedMemos, isMultiDelete = true)
+        }
     }
 
     override fun onDestroyView() {

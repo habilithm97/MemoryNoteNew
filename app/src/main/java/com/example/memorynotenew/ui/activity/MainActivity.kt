@@ -114,6 +114,10 @@ class MainActivity : AppCompatActivity() {
                     currentFragment.setMultiSelect(false)
                     true
                 }
+                R.id.delete -> {
+                    currentFragment.deleteSelectedMemos()
+                    true
+                }
                 R.id.all -> {
                     currentFragment.toggleSelectAll()
                     true
@@ -137,12 +141,13 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    private fun toggleMenuVisibility(itemId: Int) {
+    fun toggleMenuVisibility(itemId: Int) {
         val isMultiSelect = itemId == R.id.select
         binding.toolbar.menu.apply {
             findItem(R.id.setting).isVisible = !isMultiSelect
             findItem(R.id.select).isVisible = !isMultiSelect
             findItem(R.id.cancel).isVisible = isMultiSelect
+            findItem(R.id.delete).isVisible = isMultiSelect
             findItem(R.id.all).isVisible = isMultiSelect
         }
     }

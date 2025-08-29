@@ -29,4 +29,5 @@
 
     <string name="select_memo">메모 선택</string>
     <string name="all">전체</string>
+    <string name="select_memo_to_delete">삭제할 메모를 선택해주세요.</string>
 </resources>
