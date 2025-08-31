@@ -93,7 +93,7 @@ class ListFragment : Fragment() {
                             ToastUtil.showToast(safeContext, getString(R.string.password_required))
                         } else { // 저장된 비밀번호가 있으면 -> PasswordFragment로 이동
                             val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK, memo)
-                           navigateToFragment(passwordFragment)
+                            navigateToFragment(passwordFragment)
                         }
                     }
                 }
@@ -107,16 +107,30 @@ class ListFragment : Fragment() {
             .setMessage(getString(R.string.delete_dialog_msg))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
-                if (isMultiDelete) {
+                if (isMultiDelete) { // 다중 삭제
                     selectedMemos.forEach { memo ->
-                        // selectedMemos의 각 memo를 하나씩 삭제
-                        memoViewModel.deleteMemo(memo)
-                        memoAdapter.isMultiSelect = false
-                        (activity as? MainActivity)?.toggleMenuVisibility(R.id.cancel)
+                        if (memo.isLocked) { // 메모가 잠겨 있으면 -> PasswordFragment로 이동
+                            val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.DELETE, memo)
+                            navigateToFragment(passwordFragment)
+                        } else { // 메모가 잠겨 있지 않으면
+                            // selectedMemos의 각 memo를 하나씩 삭제
+                            memoViewModel.deleteMemo(memo)
+                            ToastUtil.showToast(safeContext, getString(R.string.deleted)) // "메모가 삭제되었습니다."
+                            memoAdapter.isMultiSelect = false
+                            (activity as? MainActivity)?.toggleMenuVisibility(R.id.cancel)
+                        }
                     }
-                } else {
-                    // selectedMemos의 첫 번째 memo 삭제
-                    memoViewModel.deleteMemo(selectedMemos.first())
+                } else { // 단일 삭제
+                    selectedMemos.forEach { memo ->
+                        if (memo.isLocked) { // 메모가 잠겨 있으면 -> PasswordFragment로 이동
+                            val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.DELETE, memo)
+                            navigateToFragment(passwordFragment)
+                        } else { // 메모가 잠겨 있지 않으면
+                            // selectedMemos의 첫 번째 memo 삭제
+                            memoViewModel.deleteMemo(selectedMemos.first())
+                            ToastUtil.showToast(safeContext, getString(R.string.deleted)) // "메모가 삭제되었습니다."
+                        }
+                    }
                 }
                 dialog.dismiss()
             }

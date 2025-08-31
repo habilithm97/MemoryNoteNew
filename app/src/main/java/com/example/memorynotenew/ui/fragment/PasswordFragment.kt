@@ -138,6 +138,7 @@ class PasswordFragment : Fragment() {
                     }
                     PasswordPurpose.LOCK -> lockMemo() // 메모 잠금 및 잠금 해제
                     PasswordPurpose.OPEN -> openMemo() // 메모 열기
+                    PasswordPurpose.DELETE -> deleteMemo() // 잠긴 메모 삭제
                 }
             }
         }
@@ -214,6 +215,17 @@ class PasswordFragment : Fragment() {
                 .replace(R.id.container, memoFragment)
                 .addToBackStack(null)
                 .commit()
+        } else {
+            reEnterPassword()
+        }
+        clearPassword()
+    }
+
+    private fun deleteMemo() {
+        if (password.toString() == storedPassword) {
+            memoViewModel.deleteMemo(memo)
+            ToastUtil.showToast(safeContext, getString(R.string.deleted)) // "메모가 삭제되었습니다."
+            requireActivity().supportFragmentManager.popBackStack()
         } else {
             reEnterPassword()
         }
