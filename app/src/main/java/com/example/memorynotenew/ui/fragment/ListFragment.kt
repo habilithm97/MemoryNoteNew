@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.memorynotenew.R
 import com.example.memorynotenew.adapter.MemoAdapter
-import com.example.memorynotenew.common.Constants
+import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PopupAction
 import com.example.memorynotenew.databinding.FragmentListBinding
@@ -75,7 +75,7 @@ class ListFragment : Fragment() {
                 } else { // 메모가 잠겨 있지 않으면 -> 바로 MemoFragment로 이동
                     val memoFragment = MemoFragment().apply {
                         arguments = Bundle().apply {
-                            putParcelable(Constants.MEMO, memo)
+                            putParcelable(MEMO, memo)
                         }
                     }
                     navigateToFragment(memoFragment)
@@ -107,27 +107,47 @@ class ListFragment : Fragment() {
             .setMessage(getString(R.string.delete_dialog_msg))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
-                fun handleDelete(memo: Memo, isMultiDelete: Boolean) {
-                    if (memo.isLocked) { // 메모가 잠겨 있으면 -> PasswordFragment로 이동
-                        val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.DELETE, memo)
-                        navigateToFragment(passwordFragment)
-                    } else { // 메모가 잠겨 있지 않으면
-                        memoViewModel.deleteMemo(memo)
-                        ToastUtil.showToast(safeContext, getString(R.string.deleted))
-                        if (isMultiDelete) { // 다중 삭제
-                            memoAdapter.isMultiSelect = false // 다중 선택 모드 해제
-                            (activity as? MainActivity)?.toggleMenuVisibility(R.id.cancel)
-                        }
-                    }
-                }
                 if (isMultiDelete) { // 다중 삭제
-                    selectedMemos.forEach { handleDelete(it, true) }
+                    multiDeleteMemo(selectedMemos)
                 } else { // 단일 삭제
-                    handleDelete(selectedMemos.first(), false)
+                    singleDeleteMemo(selectedMemos.first())
                 }
                 dialog.dismiss()
             }
             .show()
+    }
+
+    private fun singleDeleteMemo(memo: Memo) {
+        if (memo.isLocked) { // 메모가 잠겨 있으면 -> PasswordFragment로 이동
+            val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.DELETE, memo)
+            navigateToFragment(passwordFragment)
+        } else { // 메모가 잠겨 있지 않으면
+            memoViewModel.deleteMemo(memo)
+            ToastUtil.showToast(safeContext, getString(R.string.deleted_count, 1))
+        }
+    }
+
+    private fun multiDeleteMemo(selectedMemos: List<Memo>) {
+        val lockedMemos = selectedMemos.filter { it.isLocked }
+        val unlockedMemos = selectedMemos.filterNot { it.isLocked }
+
+        // 잠기지 않은 메모는 바로 삭제
+        unlockedMemos.forEach { memoViewModel.deleteMemo(it) }
+
+        // 잠긴 메모가 있으면 PasswordFragment로 이동
+        if (lockedMemos.isNotEmpty()) {
+            val passwordFragment = PasswordFragment.newInstance(
+                PasswordPurpose.DELETE,
+                deleteCount = selectedMemos.size,
+                // 선택된 메모 리스트를 Bundle에 담기 위해 ArrayList로 변환
+                memos = ArrayList(selectedMemos)
+            )
+            navigateToFragment(passwordFragment)
+        } else { // 잠긴 메모가 없으면
+            ToastUtil.showToast(safeContext, getString(R.string.deleted_count, selectedMemos.size))
+        }
+        memoAdapter.isMultiSelect = false
+        (activity as? MainActivity)?.toggleMenuVisibility(R.id.cancel)
     }
 
     private fun setupRecyclerView() {

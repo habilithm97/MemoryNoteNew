@@ -11,7 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.memorynotenew.R
-import com.example.memorynotenew.common.Constants
+import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.databinding.ActivityMainBinding
 import com.example.memorynotenew.room.memo.Memo
@@ -63,10 +63,10 @@ class MainActivity : AppCompatActivity() {
                     ""
                 } else { // LOCK이면 잠금 여부에 따라 title 설정
                     val memo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        currentFragment.arguments?.getParcelable(Constants.MEMO, Memo::class.java)
+                        currentFragment.arguments?.getParcelable(MEMO, Memo::class.java)
                     } else {
                         @Suppress("DEPRECATION")
-                        currentFragment.arguments?.getParcelable(Constants.MEMO)
+                        currentFragment.arguments?.getParcelable(MEMO)
                     }
                     if (memo?.isLocked == true) {
                         getString(R.string.unlock_memo)

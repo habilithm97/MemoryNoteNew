@@ -12,7 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
-import com.example.memorynotenew.common.Constants
+import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.databinding.FragmentMemoBinding
 import com.example.memorynotenew.room.memo.Memo
 import com.example.memorynotenew.viewmodel.MemoViewModel
@@ -41,10 +41,10 @@ class MemoFragment : Fragment() {
             insets
         }
         memo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getParcelable(Constants.MEMO, Memo::class.java)
+            arguments?.getParcelable(MEMO, Memo::class.java)
         } else {
             @Suppress("DEPRECATION")
-            arguments?.getParcelable(Constants.MEMO)
+            arguments?.getParcelable(MEMO)
         }
         if (memo != null) {
             binding.editText.setText(memo!!.content)

@@ -9,7 +9,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.memorynotenew.R
-import com.example.memorynotenew.common.Constants
+import com.example.memorynotenew.common.Constants.DELETE_COUNT
+import com.example.memorynotenew.common.Constants.MEMO
+import com.example.memorynotenew.common.Constants.MEMOS
+import com.example.memorynotenew.common.Constants.PURPOSE
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PasswordMode
 import com.example.memorynotenew.common.PasswordString
@@ -26,12 +29,22 @@ class PasswordFragment : Fragment() {
     private lateinit var passwordPurpose: PasswordPurpose
     private lateinit var passwordMode: PasswordMode
 
+    // 단일 Memo 객체를 arguments에서 가져오기
     private val memo: Memo by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requireArguments().getParcelable(Constants.MEMO, Memo::class.java)!!
+            requireArguments().getParcelable(MEMO, Memo::class.java)!!
         } else {
             @Suppress("DEPRECATION")
-            requireArguments().getParcelable(Constants.MEMO)!!
+            requireArguments().getParcelable(MEMO)!!
+        }
+    }
+    // Memo 객체 리스트를 arguments에서 가져오기
+    private val memos: List<Memo>? by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireArguments().getParcelableArrayList(MEMOS, Memo::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            requireArguments().getParcelableArrayList(MEMOS)
         }
     }
     private var _binding: FragmentPasswordBinding? = null // nullable
@@ -48,17 +61,25 @@ class PasswordFragment : Fragment() {
 
     private val memoViewModel: MemoViewModel by viewModels()
 
-    companion object {
-        private const val PURPOSE = "password_purpose"
+    private var deleteCount: Int = 1
 
-        fun newInstance(purpose: PasswordPurpose, memo: Memo? = null) : PasswordFragment {
+    companion object {
+        fun newInstance(purpose: PasswordPurpose,
+                        memo: Memo? = null,
+                        deleteCount: Int = 1, // 기본값 1
+                        memos: ArrayList<Memo>? = null
+        ) : PasswordFragment {
             return PasswordFragment().apply {
                 // enum 값을 문자열로 변환하여 arguments에 저장
                 arguments = Bundle().apply {
                     putString(PURPOSE, purpose.name)
 
-                    if (memo != null) {
-                        putParcelable(Constants.MEMO, memo)
+                    if (memo != null) putParcelable(MEMO, memo)
+                    if (memos != null) putParcelableArrayList(MEMOS, memos)
+
+                    // DELETE일 때만 deleteCount 전달
+                    if (purpose == PasswordPurpose.DELETE) {
+                        putInt(DELETE_COUNT, deleteCount)
                     }
                 }
             }
@@ -71,6 +92,14 @@ class PasswordFragment : Fragment() {
         val purpose = arguments?.getString(PURPOSE)
             ?: throw IllegalArgumentException("PasswordFragment is required")
         passwordPurpose = PasswordPurpose.valueOf(purpose) // 문자열을 enum 값으로 변환
+
+        // DELETE일 때만 deleteCount 가져오기
+        deleteCount = if (passwordPurpose == PasswordPurpose.DELETE) {
+            // 기본값 1, arguments가 null이면 1로 안전하게 처리
+            arguments?.getInt(DELETE_COUNT, 1) ?: 1
+        } else { // DELETE가 아니면 1
+            1
+        }
     }
 
     override fun onCreateView(
@@ -208,7 +237,7 @@ class PasswordFragment : Fragment() {
 
             val memoFragment = MemoFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(Constants.MEMO, memo)
+                    putParcelable(MEMO, memo)
                 }
             }
             requireActivity().supportFragmentManager.beginTransaction()
@@ -223,8 +252,12 @@ class PasswordFragment : Fragment() {
 
     private fun deleteMemo() {
         if (password.toString() == storedPassword) {
-            memoViewModel.deleteMemo(memo)
-            ToastUtil.showToast(safeContext, getString(R.string.deleted)) // "메모가 삭제되었습니다."
+            if (memos != null) { // 다중 삭제
+                memos!!.forEach { memoViewModel.deleteMemo(it) }
+            } else { // 단일 삭제
+                memoViewModel.deleteMemo(memo)
+            }
+            ToastUtil.showToast(safeContext, getString(R.string.deleted_count, deleteCount))
             requireActivity().supportFragmentManager.popBackStack()
         } else {
             reEnterPassword()
