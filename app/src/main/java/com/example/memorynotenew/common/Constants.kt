@@ -5,6 +5,6 @@ object Constants {
     const val MEMO = "memo"
     const val MEMOS = "memos"
     const val DELETE_COUNT = "delete_count"
-    const val PASSWORD_PREF = "password_pref"
+    const val PASSWORD_PREF = "password_preference"
     const val PURPOSE = "password_purpose"
 }

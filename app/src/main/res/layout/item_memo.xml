@@ -37,7 +37,7 @@
                 android:maxLines="1"
                 android:padding="4dp"
                 android:text="@string/memo"
-                android:textSize="18sp" />
+                android:textSize="20sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -52,7 +52,8 @@
                     android:fontFamily="@font/bookkmyungjo_light"
                     android:gravity="center_vertical"
                     android:padding="4dp"
-                    android:text="2025.00.00. 00:00" />
+                    android:text="2025.00.00. 00:00"
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:id="@+id/imageView"
