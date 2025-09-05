@@ -55,13 +55,20 @@ class MemoFragment : Fragment() {
         super.onPause()
 
         val currentMemo = binding.editText.text.toString()
-        // 메모가 비어 있지 않고, 기존 메모와 같지 않으면
-        if (currentMemo.isNotBlank() && currentMemo != memo?.content) {
-            val date = System.currentTimeMillis()
-            if (memo != null) { // 수정 모드
-                updateMemo(currentMemo, date)
-            } else { // 추가 모드
-                saveMemo(currentMemo, date)
+        val date = System.currentTimeMillis()
+
+        when {
+            // 메모가 비어 있지 않고, 기존 메모와 같지 않으면 -> 추가/수정
+            currentMemo.isNotBlank() && currentMemo != memo?.content -> {
+                if (memo != null) { // 수정 모드
+                    updateMemo(currentMemo, date)
+                } else { // 추가 모드
+                    saveMemo(currentMemo, date)
+                }
+            }
+            // 기존 메모가 존재하고 메모가 비어 있으면 삭제
+            memo != null && currentMemo.isBlank() -> {
+                memoViewModel.deleteMemo(memo!!)
             }
         }
     }

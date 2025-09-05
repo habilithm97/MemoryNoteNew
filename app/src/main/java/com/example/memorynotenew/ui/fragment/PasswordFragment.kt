@@ -30,6 +30,7 @@ class PasswordFragment : Fragment() {
     private lateinit var passwordMode: PasswordMode
 
     // 단일 Memo 객체를 arguments에서 가져오기
+    // 단일 메모 필수, 없으면 crash
     private val memo: Memo by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requireArguments().getParcelable(MEMO, Memo::class.java)!!
@@ -39,6 +40,7 @@ class PasswordFragment : Fragment() {
         }
     }
     // Memo 객체 리스트를 arguments에서 가져오기
+    // 다중 삭제용 선택적 리스트, null 가능
     private val memos: List<Memo>? by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requireArguments().getParcelableArrayList(MEMOS, Memo::class.java)
