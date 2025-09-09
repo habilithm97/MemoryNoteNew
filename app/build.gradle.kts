@@ -69,4 +69,7 @@ dependencies {
     // EncryptedSharedPreferences, MasterKey
     implementation(libs.androidx.security.crypto)
     implementation(libs.androidx.security.crypto.ktx)
+
+    // Goodle Admob
+    implementation(libs.google.ads)
 }

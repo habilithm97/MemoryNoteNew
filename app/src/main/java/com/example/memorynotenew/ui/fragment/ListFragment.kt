@@ -25,6 +25,7 @@ import com.example.memorynotenew.ui.activity.MainActivity
 import com.example.memorynotenew.utils.PasswordManager
 import com.example.memorynotenew.utils.ToastUtil
 import com.example.memorynotenew.viewmodel.MemoViewModel
+import com.google.android.gms.ads.AdRequest
 
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null // nullable
@@ -56,6 +57,7 @@ class ListFragment : Fragment() {
         setupSearchView()
         setupFabAdd()
         setupFabScroll()
+        setupAdView()
 
         with(requireActivity()) {
             onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -110,7 +112,10 @@ class ListFragment : Fragment() {
                 if (isMultiDelete) { // 다중 삭제
                     multiDeleteMemo(selectedMemos)
                 } else { // 단일 삭제
-                    singleDeleteMemo(selectedMemos.first())
+                    // 리스트가 비어 있지 않으면 첫 번째 메모를 안전하게 삭제
+                    selectedMemos.firstOrNull()?.let {
+                        singleDeleteMemo(it)
+                    }
                 }
                 dialog.dismiss()
             }
@@ -255,9 +260,30 @@ class ListFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    private fun setupAdView() {
+        with(binding.adView) {
+            post { // attach 후 실행
+                // 광고 요청 객체 생성 후 광고 로드
+                loadAd(AdRequest.Builder().build())
+            }
+        }
+    }
 
+    override fun onResume() {
+        super.onResume()
+
+        binding.adView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        binding.adView.pause()
+    }
+
+    override fun onDestroyView() {
+        binding.adView.destroy()
         _binding = null // 메모리 누수 방지
+        super.onDestroyView()
     }
 }

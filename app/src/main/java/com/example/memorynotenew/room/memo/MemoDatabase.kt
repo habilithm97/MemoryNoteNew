@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 // Room이 내부적으로 구현체 자동 생성 (annotation processing) -> 추상 클래스로 선언
-@Database(entities = [Memo::class], version = 1)
+@Database(entities = [Memo::class], version = 1, exportSchema = false)
 abstract class MemoDatabase : RoomDatabase() {
     abstract fun memoDao(): MemoDao
 

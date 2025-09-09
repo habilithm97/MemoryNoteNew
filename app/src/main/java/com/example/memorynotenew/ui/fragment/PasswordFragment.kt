@@ -29,18 +29,16 @@ class PasswordFragment : Fragment() {
     private lateinit var passwordPurpose: PasswordPurpose
     private lateinit var passwordMode: PasswordMode
 
-    // 단일 Memo 객체를 arguments에서 가져오기
-    // 단일 메모 필수, 없으면 crash
-    private val memo: Memo by lazy {
+    // arguments에서 단일 Memo 객체 가져오기
+    private val memo: Memo? by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requireArguments().getParcelable(MEMO, Memo::class.java)!!
+            requireArguments().getParcelable(MEMO, Memo::class.java)
         } else {
             @Suppress("DEPRECATION")
-            requireArguments().getParcelable(MEMO)!!
+            requireArguments().getParcelable(MEMO)
         }
     }
-    // Memo 객체 리스트를 arguments에서 가져오기
-    // 다중 삭제용 선택적 리스트, null 가능
+    // arguments에서 Memo 객체 리스트 가져오기
     private val memos: List<Memo>? by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requireArguments().getParcelableArrayList(MEMOS, Memo::class.java)
@@ -223,7 +221,7 @@ class PasswordFragment : Fragment() {
         // 저장된 비밀번호와 일치
         if (password.toString() == storedPassword) {
             // 메모 잠금 상태 변경
-            memoViewModel.updateMemo(memo.copy(isLocked = !memo.isLocked))
+            memo?.let { memoViewModel.updateMemo(it.copy(isLocked = !it.isLocked)) }
             requireActivity().supportFragmentManager.popBackStack()
         } else {
             reEnterPassword()
@@ -257,7 +255,7 @@ class PasswordFragment : Fragment() {
             if (memos != null) { // 다중 삭제
                 memos!!.forEach { memoViewModel.deleteMemo(it) }
             } else { // 단일 삭제
-                memoViewModel.deleteMemo(memo)
+                memo?.let { memoViewModel.deleteMemo(it) }
             }
             ToastUtil.showToast(safeContext, getString(R.string.deleted_count, deleteCount))
             requireActivity().supportFragmentManager.popBackStack()
