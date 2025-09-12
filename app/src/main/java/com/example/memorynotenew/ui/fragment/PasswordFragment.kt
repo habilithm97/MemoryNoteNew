@@ -280,7 +280,12 @@ class PasswordFragment : Fragment() {
 
     private fun setupBtnCancel() {
         binding.btnCancel.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            if (password.isEmpty()) {
+                requireActivity().supportFragmentManager.popBackStack()
+            } else {
+                password.deleteAt(password.length - 1)
+                updateDots()
+            }
         }
     }
 
