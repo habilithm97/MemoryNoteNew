@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.memorynotenew.R
 import com.example.memorynotenew.common.Constants.MEMO
+import com.example.memorynotenew.common.Constants.PURPOSE
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.databinding.ActivityMainBinding
 import com.example.memorynotenew.room.memo.Memo
@@ -52,7 +53,7 @@ class MainActivity : AppCompatActivity() {
             is MemoFragment -> getString(R.string.memo)
             is PasswordFragment -> {
                 // PasswordPurpose 가져오기 (LOCK, OPEN)
-                val purposeString = currentFragment.arguments?.getString("password_purpose")
+                val purposeString = currentFragment.arguments?.getString(PURPOSE)
                 val purpose = if (purposeString != null) {
                     PasswordPurpose.valueOf(purposeString) // enum으로 변환
                 } else {
