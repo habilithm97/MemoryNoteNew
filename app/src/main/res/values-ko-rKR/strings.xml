@@ -31,4 +31,7 @@
     <string name="all">전체</string>
     <string name="select_memo_to_delete">삭제할 메모를 선택해주세요.</string>
     <string name="deleted_count">%1$d개의 메모가 삭제되었습니다.</string>
+
+    <string name="trash">휴지통</string>
+    <string name="restore">복원</string>
 </resources>

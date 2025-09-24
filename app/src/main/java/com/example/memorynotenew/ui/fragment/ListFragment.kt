@@ -11,6 +11,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -69,7 +70,7 @@ class ListFragment : Fragment() {
     private fun setupAdapter() {
         memoAdapter = MemoAdapter(
             onItemClick = { memo ->
-                binding.searchView.setQuery("", false) // 검색어 초기화
+                clearSearchQuery()
 
                 if (memo.isLocked) { // 메모가 잠겨 있으면 -> PasswordFragment로 이동
                     val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.OPEN, memo)
@@ -83,7 +84,7 @@ class ListFragment : Fragment() {
                     navigateToFragment(memoFragment)
                 }
             }, onItemLongClick = { memo, popupAction ->
-                binding.searchView.setQuery("", false) // 검색어 초기화
+                clearSearchQuery()
 
                 when (popupAction) {
                     PopupAction.DELETE ->
@@ -152,7 +153,7 @@ class ListFragment : Fragment() {
             ToastUtil.showToast(safeContext, getString(R.string.deleted_count, selectedMemos.size))
         }
         memoAdapter.isMultiSelect = false
-        (activity as? MainActivity)?.toggleMenuVisibility(R.id.cancel)
+        (activity as? MainActivity)?.toggleMenuVisibility(this@ListFragment, isMultiSelect = false)
     }
 
     private fun setupRecyclerView() {
@@ -218,10 +219,15 @@ class ListFragment : Fragment() {
     private fun setupFabAdd() {
         with(binding) {
             fabAdd.setOnClickListener {
-                searchView.setQuery("", false) // 검색어 초기화
+                clearSearchQuery()
                 navigateToFragment(MemoFragment())
             }
         }
+    }
+
+    // 검색어 초기화
+    private fun clearSearchQuery() {
+        binding.searchView.setQuery("", false) // 검색어 초기화
     }
 
     private fun setupFabScroll() {

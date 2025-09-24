@@ -8,8 +8,16 @@
         android:id="@+id/select"
         android:title="@string/select_memo" />
     <item
+        android:id="@+id/trash"
+        android:title="@string/trash" />
+    <item
         android:id="@+id/cancel"
         android:title="@string/cancel"
+        android:visible="false"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/restore"
+        android:title="@string/restore"
         android:visible="false"
         app:showAsAction="always" />
     <item

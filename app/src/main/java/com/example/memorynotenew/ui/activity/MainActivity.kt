@@ -19,6 +19,7 @@ import com.example.memorynotenew.room.memo.Memo
 import com.example.memorynotenew.ui.fragment.ListFragment
 import com.example.memorynotenew.ui.fragment.MemoFragment
 import com.example.memorynotenew.ui.fragment.PasswordFragment
+import com.example.memorynotenew.ui.fragment.TrashFragment
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -76,57 +77,100 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+            is TrashFragment -> getString(R.string.trash)
             else -> ""
         }
         supportActionBar?.apply {
             this.title = title
-            setDisplayHomeAsUpEnabled(currentFragment is MemoFragment)
+            setDisplayHomeAsUpEnabled(currentFragment is MemoFragment || currentFragment is TrashFragment)
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
-        return if (currentFragment is ListFragment) {
+        return if (currentFragment is ListFragment || currentFragment is TrashFragment) {
             menuInflater.inflate(R.menu.menu_main, menu)
-            return true
+            true
         } else {
             false
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
-        if (currentFragment is ListFragment) {
-            return when (item.itemId) {
-                R.id.setting -> {
-                    val intent = Intent(this, SettingsActivity::class.java).apply {
-                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    }
-                    startActivity(intent)
-                    true
-                }
-                R.id.select -> {
-                    toggleMenuVisibility(item.itemId)
-                    currentFragment.setMultiSelect(true)
-                    true
-                }
-                R.id.cancel -> {
-                    toggleMenuVisibility(item.itemId)
-                    currentFragment.setMultiSelect(false)
-                    true
-                }
-                R.id.delete -> {
-                    currentFragment.deleteSelectedMemos()
-                    true
-                }
-                R.id.all -> {
-                    currentFragment.toggleSelectAll()
-                    true
-                }
-                else -> super.onOptionsItemSelected(item)
+        if (currentFragment is TrashFragment) {
+            menu?.findItem(R.id.select)?.apply {
+                isVisible = true
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            }
+            listOf(R.id.cancel, R.id.restore, R.id.delete, R.id.all, R.id.setting, R.id.trash).forEach {
+                menu?.findItem(it)?.isVisible = false
             }
         }
-        return super.onOptionsItemSelected(item) // 기본 처리 위임
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
+        return when (currentFragment) {
+            is ListFragment -> {
+                when (item.itemId) {
+                    R.id.setting -> {
+                        val intent = Intent(this, SettingsActivity::class.java).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                        }
+                        startActivity(intent)
+                        true
+                    }
+                    R.id.select -> {
+                        toggleMenuVisibility(currentFragment, isMultiSelect = true)
+                        currentFragment.setMultiSelect(true)
+                        true
+                    }
+                    R.id.trash -> {
+                        replaceFragment(TrashFragment())
+                        true
+                    }
+                    R.id.cancel -> {
+                        toggleMenuVisibility(currentFragment, isMultiSelect = false)
+                        currentFragment.setMultiSelect(false)
+                        true
+                    }
+                    R.id.delete -> {
+                        currentFragment.deleteSelectedMemos()
+                        true
+                    }
+                    R.id.all -> {
+                        currentFragment.toggleSelectAll()
+                        true
+                    }
+                    else -> super.onOptionsItemSelected(item)
+                }
+            }
+            is TrashFragment -> {
+                when (item.itemId) {
+                    R.id.select -> {
+                        toggleMenuVisibility(currentFragment, isMultiSelect = true)
+                        true
+                    }
+                    R.id.cancel -> {
+                        toggleMenuVisibility(currentFragment, isMultiSelect = false)
+                        true
+                    }
+                    R.id.restore -> {
+                        true
+                    }
+                    R.id.delete -> {
+                        true
+                    }
+                    R.id.all -> {
+                        true
+                    }
+                    else -> super.onOptionsItemSelected(item)
+                }
+            }
+            else -> super.onOptionsItemSelected(item) // 기본 처리 위임
+        }
     }
 
     // 업 버튼 동작
@@ -142,14 +186,25 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    fun toggleMenuVisibility(itemId: Int) {
-        val isMultiSelect = itemId == R.id.select
-        binding.toolbar.menu.apply {
-            findItem(R.id.setting).isVisible = !isMultiSelect
-            findItem(R.id.select).isVisible = !isMultiSelect
-            findItem(R.id.cancel).isVisible = isMultiSelect
-            findItem(R.id.delete).isVisible = isMultiSelect
-            findItem(R.id.all).isVisible = isMultiSelect
+    fun toggleMenuVisibility(currentFragment: Fragment, isMultiSelect: Boolean) {
+        binding.toolbar.menu?.apply {
+            when (currentFragment) {
+                is ListFragment -> {
+                    findItem(R.id.setting)?.isVisible = !isMultiSelect
+                    findItem(R.id.select)?.isVisible = !isMultiSelect
+                    findItem(R.id.trash)?.isVisible = !isMultiSelect
+                    findItem(R.id.cancel)?.isVisible = isMultiSelect
+                    findItem(R.id.delete)?.isVisible = isMultiSelect
+                    findItem(R.id.all)?.isVisible = isMultiSelect
+                }
+                is TrashFragment -> {
+                    findItem(R.id.select)?.isVisible = !isMultiSelect
+                    findItem(R.id.cancel)?.isVisible = isMultiSelect
+                    findItem(R.id.restore)?.isVisible = isMultiSelect
+                    findItem(R.id.delete)?.isVisible = isMultiSelect
+                    findItem(R.id.all)?.isVisible = isMultiSelect
+                }
+            }
         }
     }
 }

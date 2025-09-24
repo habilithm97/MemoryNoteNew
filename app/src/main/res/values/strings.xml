@@ -30,4 +30,7 @@
     <string name="all">All</string>
     <string name="select_memo_to_delete">Please select a memo to delete.</string>
     <string name="deleted_count">%1$d memos deleted.</string>
+
+    <string name="trash">Trash</string>
+    <string name="restore">Restore</string>
 </resources>
