@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.memorynotenew.R
 import com.example.memorynotenew.common.PopupAction
 import com.example.memorynotenew.databinding.ItemMemoBinding
-import com.example.memorynotenew.room.memo.Memo
+import com.example.memorynotenew.room.entity.Memo
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

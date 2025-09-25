@@ -6,8 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.memorynotenew.repository.MemoRepository
-import com.example.memorynotenew.room.memo.Memo
-import com.example.memorynotenew.room.memo.MemoDatabase
+import com.example.memorynotenew.room.database.MemoDatabase
+import com.example.memorynotenew.room.entity.Memo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

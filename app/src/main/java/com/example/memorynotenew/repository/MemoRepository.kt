@@ -1,7 +1,7 @@
 package com.example.memorynotenew.repository
 
-import com.example.memorynotenew.room.memo.Memo
-import com.example.memorynotenew.room.memo.MemoDao
+import com.example.memorynotenew.room.dao.MemoDao
+import com.example.memorynotenew.room.entity.Memo
 import kotlinx.coroutines.flow.Flow
 
 /* 데이터 저장소와 ViewModel 사이의 다리

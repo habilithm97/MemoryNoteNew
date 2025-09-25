@@ -17,7 +17,7 @@ import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PasswordMode
 import com.example.memorynotenew.common.PasswordString
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
-import com.example.memorynotenew.room.memo.Memo
+import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.utils.PasswordManager
 import com.example.memorynotenew.utils.ToastUtil
 import com.example.memorynotenew.utils.VibrateUtil

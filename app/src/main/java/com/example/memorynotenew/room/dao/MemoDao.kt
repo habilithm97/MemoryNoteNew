@@ -1,11 +1,12 @@
-package com.example.memorynotenew.room.memo
+package com.example.memorynotenew.room.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
-import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Query
+import com.example.memorynotenew.room.entity.Memo
 import kotlinx.coroutines.flow.Flow
 
 // DB 접근 메서드 정의 (DB 작업 캡슐화)

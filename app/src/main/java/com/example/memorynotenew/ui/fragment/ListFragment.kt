@@ -20,7 +20,7 @@ import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PopupAction
 import com.example.memorynotenew.databinding.FragmentListBinding
-import com.example.memorynotenew.room.memo.Memo
+import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.ui.activity.MainActivity
 import com.example.memorynotenew.utils.PasswordManager
 import com.example.memorynotenew.utils.ToastUtil

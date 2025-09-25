@@ -14,7 +14,7 @@ import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.databinding.FragmentMemoBinding
-import com.example.memorynotenew.room.memo.Memo
+import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.viewmodel.MemoViewModel
 
 class MemoFragment : Fragment() {

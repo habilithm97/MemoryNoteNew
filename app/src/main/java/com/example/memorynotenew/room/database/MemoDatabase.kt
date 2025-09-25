@@ -1,4 +1,4 @@
-package com.example.memorynotenew.room.memo
+package com.example.memorynotenew.room.database
 
 import android.content.Context
 import androidx.room.Database
@@ -6,8 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.memorynotenew.room.trash.Trash
-import com.example.memorynotenew.room.trash.TrashDao
+import com.example.memorynotenew.room.dao.MemoDao
+import com.example.memorynotenew.room.dao.TrashDao
+import com.example.memorynotenew.room.entity.Memo
+import com.example.memorynotenew.room.entity.Trash
 
 // Room이 내부적으로 구현체 자동 생성 (annotation processing) -> 추상 클래스로 선언
 @Database(entities = [Memo::class, Trash::class], version = 2, exportSchema = false)
@@ -44,6 +46,5 @@ abstract class MemoDatabase : RoomDatabase() {
                 )
             }
         }
-
     }
 }

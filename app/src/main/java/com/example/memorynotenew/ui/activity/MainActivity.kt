@@ -15,7 +15,7 @@ import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.Constants.PURPOSE
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.databinding.ActivityMainBinding
-import com.example.memorynotenew.room.memo.Memo
+import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.ui.fragment.ListFragment
 import com.example.memorynotenew.ui.fragment.MemoFragment
 import com.example.memorynotenew.ui.fragment.PasswordFragment
