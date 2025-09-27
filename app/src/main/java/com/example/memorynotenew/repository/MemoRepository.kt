@@ -16,31 +16,24 @@ class MemoRepository(
     suspend fun insertMemo(memo: Memo) {
         memoDao.insertMemo(memo)
     }
-
     suspend fun updateMemo(memo: Memo) {
         memoDao.updateMemo(memo)
     }
-
     suspend fun deleteMemo(memo: Memo) {
         memoDao.deleteMemo(memo)
     }
-
     fun getAllMemos(): Flow<List<Memo>> {
         return memoDao.getAllMemos()
     }
-
     suspend fun insertTrash(trash: Trash) {
         trashDao.insertTrash(trash)
     }
-
     suspend fun deleteTrash(trash: Trash) {
         trashDao.deleteTrash(trash)
     }
-
     fun getAllTrash(): Flow<List<Trash>> {
         return trashDao.getAllTrash()
     }
-
     suspend fun deleteOldTrash(limit: Long) {
         trashDao.deleteOldTrash(limit)
     }
