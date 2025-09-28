@@ -15,7 +15,6 @@ class TrashFragment : Fragment() {
     private var _binding: FragmentTrashBinding? = null // nullable
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
     private val trashAdapter by lazy { TrashAdapter() }
-    private val safeContext get() = requireContext() // Attach된 시점의 안전한 Context를 반환
     private val memoViewModel: MemoViewModel by viewModels()
 
     override fun onCreateView(
@@ -37,7 +36,7 @@ class TrashFragment : Fragment() {
         with(binding) {
             recyclerView.apply {
                 adapter = trashAdapter
-                layoutManager = LinearLayoutManager(safeContext).apply {
+                layoutManager = LinearLayoutManager(root.context).apply {
                     reverseLayout = true
                     stackFromEnd = true
                 }

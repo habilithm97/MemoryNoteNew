@@ -32,7 +32,6 @@ class ListFragment : Fragment() {
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
     private lateinit var memoAdapter: MemoAdapter
     private val memoViewModel: MemoViewModel by viewModels()
-    private val safeContext get() = requireContext() // Attach된 시점의 안전한 Context를 반환
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -89,10 +88,10 @@ class ListFragment : Fragment() {
                     PopupAction.DELETE ->
                         showDeleteDialog(listOf(memo), isMultiDelete = false)
                     PopupAction.LOCK -> {
-                        val storedPassword = PasswordManager.getPassword(safeContext)
+                        val storedPassword = PasswordManager.getPassword(requireContext())
                         // 저장된 비밀번호가 없으면 -> 토스트 메시지 출력
                         if (storedPassword.isNullOrEmpty()) {
-                            ToastUtil.showToast(safeContext, getString(R.string.password_required))
+                            ToastUtil.showToast(requireContext(), getString(R.string.password_required))
                         } else { // 저장된 비밀번호가 있으면 -> PasswordFragment로 이동
                             val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK, memo)
                             navigateToFragment(passwordFragment)
@@ -104,7 +103,7 @@ class ListFragment : Fragment() {
     }
 
     private fun showDeleteDialog(selectedMemos: List<Memo>, isMultiDelete: Boolean) {
-        AlertDialog.Builder(safeContext)
+        AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.delete))
             .setMessage(getString(R.string.delete_dialog_msg))
             .setNegativeButton(getString(R.string.cancel), null)
@@ -128,7 +127,7 @@ class ListFragment : Fragment() {
             navigateToFragment(passwordFragment)
         } else { // 메모가 잠겨 있지 않으면
             memoViewModel.moveMemoToTrash(memo)
-            ToastUtil.showToast(safeContext, getString(R.string.deleted_count, 1))
+            ToastUtil.showToast(requireContext(), getString(R.string.deleted_count, 1))
         }
     }
 
@@ -149,7 +148,7 @@ class ListFragment : Fragment() {
             )
             navigateToFragment(passwordFragment)
         } else { // 잠긴 메모가 없으면
-            ToastUtil.showToast(safeContext, getString(R.string.deleted_count, selectedMemos.size))
+            ToastUtil.showToast(requireContext(), getString(R.string.deleted_count, selectedMemos.size))
         }
         memoAdapter.isMultiSelect = false
         (activity as? MainActivity)?.toggleMenuVisibility(this@ListFragment, isMultiSelect = false)
@@ -159,7 +158,7 @@ class ListFragment : Fragment() {
         with(binding) {
             recyclerView.apply {
                 adapter = memoAdapter
-                layoutManager = LinearLayoutManager(safeContext).apply {
+                layoutManager = LinearLayoutManager(root.context).apply {
                     reverseLayout = true
                     stackFromEnd = true
                 }
@@ -259,7 +258,7 @@ class ListFragment : Fragment() {
     fun deleteSelectedMemos() {
         val selectedMemos = memoAdapter.getSelectedMemos() // 선택된 메모 가져오기
         if (selectedMemos.isEmpty()) { // 없으면
-            ToastUtil.showToast(safeContext, getString(R.string.select_memo_to_delete))
+            ToastUtil.showToast(requireContext(), getString(R.string.select_memo_to_delete))
         } else { // 있으면
             showDeleteDialog(selectedMemos, isMultiDelete = true)
         }

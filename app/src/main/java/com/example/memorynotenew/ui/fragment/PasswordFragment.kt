@@ -52,8 +52,6 @@ class PasswordFragment : Fragment() {
     private val dots: List<View> by lazy {
         listOf(binding.dot1, binding.dot2, binding.dot3, binding.dot4)
     }
-    private val safeContext get() = requireContext() // Attach된 시점의 안전한 Context를 반환
-
     private var storedPassword: String? = null // 저장된 비밀번호
     private var password = StringBuilder()
     private var confirmPassword: StringBuilder? = null // 확인용 비밀번호
@@ -113,7 +111,7 @@ class PasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storedPassword = PasswordManager.getPassword(safeContext)
+        storedPassword = PasswordManager.getPassword(binding.root.context)
 
         passwordMode = if (storedPassword.isNullOrEmpty()) {
             PasswordMode.NEW // 새 비밀번호 입력 모드
@@ -181,29 +179,31 @@ class PasswordFragment : Fragment() {
     }
 
     private fun newPassword() {
-        // 첫 번째 입력
-        if (confirmPassword == null) {
-            confirmPassword = StringBuilder(password)
-            password.clear()
-            binding.textView.text = getString(PasswordString.CONFIRM.resId) // "비밀번호 확인"
-        } else { // 두 번째 입력~
-            if (password.toString() == confirmPassword.toString()) { // 첫 번째 입력과 일치
-                PasswordManager.savePassword(safeContext, password.toString()) // 비밀번호 저장
+        with(binding) {
+            // 첫 번째 입력
+            if (confirmPassword == null) {
+                confirmPassword = StringBuilder(password)
+                password.clear()
+                textView.text = getString(PasswordString.CONFIRM.resId) // "비밀번호 확인"
+            } else { // 두 번째 입력~
+                if (password.toString() == confirmPassword.toString()) { // 첫 번째 입력과 일치
+                    PasswordManager.savePassword(root.context, password.toString()) // 비밀번호 저장
 
-                val message = if (storedPassword.isNullOrEmpty()) {
-                    R.string.password_saved // "비밀번호 저장 완료!"
-                } else {
-                    R.string.password_changed // "비밀번호 변경 완료!"
+                    val message = if (storedPassword.isNullOrEmpty()) {
+                        R.string.password_saved // "비밀번호 저장 완료!"
+                    } else {
+                        R.string.password_changed // "비밀번호 변경 완료!"
+                    }
+                    ToastUtil.showToast(requireContext(), getString(message))
+                    confirmPassword = null
+                    requireActivity().supportFragmentManager.popBackStack()
+                    return
+                } else { // 첫 번째 입력과 불일치
+                    reEnterPassword()
                 }
-                ToastUtil.showToast(safeContext, getString(message))
-                confirmPassword = null
-                requireActivity().supportFragmentManager.popBackStack()
-                return
-            } else { // 첫 번째 입력과 불일치
-                reEnterPassword()
             }
+            clearPassword()
         }
-        clearPassword()
     }
 
     private fun updatePassword() {
@@ -257,7 +257,7 @@ class PasswordFragment : Fragment() {
             } else { // 단일 삭제
                 memo?.let { memoViewModel.moveMemoToTrash(it) }
             }
-            ToastUtil.showToast(safeContext, getString(R.string.deleted_count, deleteCount))
+            ToastUtil.showToast(requireContext(), getString(R.string.deleted_count, deleteCount))
             requireActivity().supportFragmentManager.popBackStack()
         } else {
             reEnterPassword()
@@ -268,7 +268,7 @@ class PasswordFragment : Fragment() {
     // 비밀번호 재입력
     private fun reEnterPassword() {
         binding.textView.text = getString(PasswordString.RE_ENTER.resId) // "비밀번호 재입력"
-        VibrateUtil.vibrate(safeContext)
+        VibrateUtil.vibrate(requireContext())
     }
 
     // 비밀번호 초기화
