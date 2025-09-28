@@ -127,7 +127,7 @@ class ListFragment : Fragment() {
             val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.DELETE, memo)
             navigateToFragment(passwordFragment)
         } else { // 메모가 잠겨 있지 않으면
-            memoViewModel.deleteMemo(memo)
+            memoViewModel.moveMemoToTrash(memo)
             ToastUtil.showToast(safeContext, getString(R.string.deleted_count, 1))
         }
     }
@@ -137,7 +137,7 @@ class ListFragment : Fragment() {
         val unlockedMemos = selectedMemos.filterNot { it.isLocked }
 
         // 잠기지 않은 메모는 바로 삭제
-        unlockedMemos.forEach { memoViewModel.deleteMemo(it) }
+        unlockedMemos.forEach { memoViewModel.moveMemoToTrash(it) }
 
         // 잠긴 메모가 있으면 PasswordFragment로 이동
         if (lockedMemos.isNotEmpty()) {

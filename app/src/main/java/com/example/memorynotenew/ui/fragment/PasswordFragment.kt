@@ -253,9 +253,9 @@ class PasswordFragment : Fragment() {
     private fun deleteMemo() {
         if (password.toString() == storedPassword) {
             if (memos != null) { // 다중 삭제
-                memos!!.forEach { memoViewModel.deleteMemo(it) }
+                memos!!.forEach { memoViewModel.moveMemoToTrash(it) }
             } else { // 단일 삭제
-                memo?.let { memoViewModel.deleteMemo(it) }
+                memo?.let { memoViewModel.moveMemoToTrash(it) }
             }
             ToastUtil.showToast(safeContext, getString(R.string.deleted_count, deleteCount))
             requireActivity().supportFragmentManager.popBackStack()
