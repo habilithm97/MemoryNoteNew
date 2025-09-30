@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.memorynotenew.common.Constants
 import com.example.memorynotenew.repository.MemoRepository
 import com.example.memorynotenew.room.database.MemoDatabase
 import com.example.memorynotenew.room.entity.Memo
@@ -77,6 +78,16 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    // 30일 지난 휴지통 메모 자동 삭제
+    fun deleteOldTrash() {
+        viewModelScope.launch(Dispatchers.IO) {
+            // 오늘부터 30일 전 시간
+            val cutoffTime = System.currentTimeMillis() - Constants.THIRTY_DAYS_MS
+            memoRepository.deleteOldTrash(cutoffTime)
+        }
+    }
+
 
     // 휴지통에서 완전히 삭제
     fun deleteTrash(trash: Trash) {

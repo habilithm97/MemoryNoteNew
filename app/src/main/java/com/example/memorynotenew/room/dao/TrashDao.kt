@@ -20,7 +20,9 @@ interface TrashDao {
     @Query("select * from trash order by deletedAt")
     fun getAllTrash(): Flow<List<Trash>>
 
-    // 오래된 항목 자동 삭제 (삭제한 시간 < ex 30일 전 -> 삭제)
-    @Query("delete from trash where deletedAt < :timeLimit")
-    suspend fun deleteOldTrash(timeLimit: Long)
+    // 삭제한 시간 < 오늘부터 30일 전 -> 자동 삭제
+    // ex) 8월 20일 < 8월 31일 -> 삭제o
+    // ex) 9월 20일 > 8월 31일 -> 삭제x
+    @Query("delete from trash where deletedAt < :cutoffTime")
+    suspend fun deleteOldTrash(cutoffTime: Long)
 }

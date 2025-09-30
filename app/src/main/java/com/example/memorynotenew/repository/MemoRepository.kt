@@ -34,7 +34,7 @@ class MemoRepository(
     fun getAllTrash(): Flow<List<Trash>> {
         return trashDao.getAllTrash()
     }
-    suspend fun deleteOldTrash(limit: Long) {
-        trashDao.deleteOldTrash(limit)
+    suspend fun deleteOldTrash(cutoffTime: Long) {
+        trashDao.deleteOldTrash(cutoffTime)
     }
 }

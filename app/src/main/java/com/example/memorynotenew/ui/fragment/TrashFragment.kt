@@ -30,6 +30,7 @@ class TrashFragment : Fragment() {
 
         setupRecyclerView()
         setupObserver()
+        memoViewModel.deleteOldTrash()
     }
 
     private fun setupRecyclerView() {
