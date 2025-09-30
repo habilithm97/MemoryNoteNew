@@ -1,11 +1,15 @@
 package com.example.memorynotenew.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.memorynotenew.R
+import com.example.memorynotenew.common.Constants
 import com.example.memorynotenew.databinding.ItemMemoBinding
 import com.example.memorynotenew.room.entity.Trash
 
@@ -17,9 +21,20 @@ class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLB
         fun bind(trash: Trash) {
             with(binding) {
                 tvContent.text = trash.content
-                // 휴지통에서는 날짜, 잠금 필요 없음
-                tvDate.visibility = View.GONE
-                imageView.visibility = View.GONE
+
+                val deletedAt = trash.deletedAt // 삭제한 시각
+                val maxDays = 30 // 휴지통 최대 보관일
+                val current = System.currentTimeMillis() // 현재 시각
+                // 삭제 후 경과 일수
+                val daysPassed = ((current - deletedAt) / Constants.ONE_DAYS_MS).toInt()
+                // 남은 보관 일수
+                val daysLeft = (maxDays - daysPassed).coerceAtLeast(0)
+                val context = imageView.context
+                tvDate.apply {
+                    text = context.getString(R.string.days_left, daysLeft)
+                    setTextColor(ContextCompat.getColor(context, R.color.orange))
+                }
+                imageView.visibility = View.GONE // 휴지통에서는 잠금 필요 없음
             }
         }
     }
