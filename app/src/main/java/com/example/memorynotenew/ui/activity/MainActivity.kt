@@ -151,10 +151,12 @@ class MainActivity : AppCompatActivity() {
                 when (item.itemId) {
                     R.id.select -> {
                         toggleMenuVisibility(currentFragment, isMultiSelect = true)
+                        currentFragment.setMultiSelect(true)
                         true
                     }
                     R.id.cancel -> {
                         toggleMenuVisibility(currentFragment, isMultiSelect = false)
+                        currentFragment.setMultiSelect(false)
                         true
                     }
                     R.id.restore -> {

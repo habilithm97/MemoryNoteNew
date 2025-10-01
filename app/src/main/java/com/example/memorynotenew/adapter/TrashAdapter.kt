@@ -1,6 +1,5 @@
 package com.example.memorynotenew.adapter
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +14,13 @@ import com.example.memorynotenew.room.entity.Trash
 
 class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLBACK) {
 
+    var isMultiSelect = false
+        // isMultiSelect에 새로운 값이 할당될 때 자동 실행되는 setter
+        set(value) {
+            field = value // backing field(실제 저장되는 값)에 대입
+            notifyDataSetChanged() // 전체 아이템 갱신
+        }
+
     inner class TrashViewHolder(private val binding: ItemMemoBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -27,7 +33,7 @@ class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLB
                 val current = System.currentTimeMillis() // 현재 시각
                 // 삭제 후 경과 일수
                 val daysPassed = ((current - deletedAt) / Constants.ONE_DAYS_MS).toInt()
-                // 남은 보관 일수
+                // 남은 보관 일수 (coerceAtLeast(0) : 계산 결과가 음수면 0으로 보정)
                 val daysLeft = (maxDays - daysPassed).coerceAtLeast(0)
                 val context = imageView.context
                 tvDate.apply {
@@ -35,6 +41,7 @@ class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLB
                     setTextColor(ContextCompat.getColor(context, R.color.orange))
                 }
                 imageView.visibility = View.GONE // 휴지통에서는 잠금 필요 없음
+                checkBox.visibility = if (isMultiSelect) View.VISIBLE else View.GONE
             }
         }
     }
