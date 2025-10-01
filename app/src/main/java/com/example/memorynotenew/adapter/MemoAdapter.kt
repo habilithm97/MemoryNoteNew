@@ -46,6 +46,7 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                     if (adapterPosition != RecyclerView.NO_POSITION) {
                         checkBox.apply {
                             visibility = if (isMultiSelect) View.VISIBLE else View.GONE
+                            setOnCheckedChangeListener(null) // 초기 바인딩 시 리스너 호출 방지
                             isChecked = adapterPosition in selectedMemos // 선택한 메모면 체크
 
                             // 체크 상태 변경 시 selectedMemos에 추가/제거

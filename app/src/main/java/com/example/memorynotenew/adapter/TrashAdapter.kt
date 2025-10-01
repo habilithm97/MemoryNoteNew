@@ -13,11 +13,13 @@ import com.example.memorynotenew.databinding.ItemMemoBinding
 import com.example.memorynotenew.room.entity.Trash
 
 class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLBACK) {
+    private var selectedMemos = mutableSetOf<Int>() // 선택한 메모 리스트
 
     var isMultiSelect = false
         // isMultiSelect에 새로운 값이 할당될 때 자동 실행되는 setter
         set(value) {
             field = value // backing field(실제 저장되는 값)에 대입
+            if (!value) selectedMemos.clear() // 다중 선택 모드 해제 시 체크 상태 초기화
             notifyDataSetChanged() // 전체 아이템 갱신
         }
 
@@ -41,7 +43,24 @@ class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLB
                     setTextColor(ContextCompat.getColor(context, R.color.orange))
                 }
                 imageView.visibility = View.GONE // 휴지통에서는 잠금 필요 없음
-                checkBox.visibility = if (isMultiSelect) View.VISIBLE else View.GONE
+
+                // 유효한 어댑터 위치일 때만 실행
+                if (adapterPosition != RecyclerView.NO_POSITION) {
+                    checkBox.apply {
+                        visibility = if (isMultiSelect) View.VISIBLE else View.GONE
+                        setOnCheckedChangeListener(null) // 불필요한 리스너 호출 방지
+                        isChecked = adapterPosition in selectedMemos
+
+                        // 체크 상태 변경 시 selectedMemos에 추가/제거
+                        setOnCheckedChangeListener { _, isChecked ->
+                            if (isChecked) {
+                                selectedMemos.add(adapterPosition)
+                            } else {
+                                selectedMemos.remove(adapterPosition)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
