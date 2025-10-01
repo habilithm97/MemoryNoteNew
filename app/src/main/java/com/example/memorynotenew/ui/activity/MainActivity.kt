@@ -166,6 +166,7 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
                     R.id.all -> {
+                        currentFragment.toggleSelectAll()
                         true
                     }
                     else -> super.onOptionsItemSelected(item)

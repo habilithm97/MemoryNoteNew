@@ -61,6 +61,10 @@ class TrashFragment : Fragment() {
         trashAdapter.isMultiSelect = isMultiSelect
     }
 
+    fun toggleSelectAll() {
+        trashAdapter.toggleSelectAll()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
 

@@ -86,4 +86,18 @@ class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLB
             }
         }
     }
+
+    fun toggleSelectAll() {
+        // 선택된 메모 수 = 전체 메모 수 -> 전체 선택이면
+        if (selectedMemos.size == currentList.size) {
+            selectedMemos.clear() // 전체 선택 해제
+        } else { // 전체 선택이 아니면
+            // 전체 선택
+            with(selectedMemos) {
+                clear()
+                addAll(currentList.indices)
+            }
+        }
+        notifyDataSetChanged()
+    }
 }
