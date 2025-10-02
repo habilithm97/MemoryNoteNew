@@ -37,4 +37,7 @@ class MemoRepository(
     suspend fun deleteOldTrash(cutoffTime: Long) {
         trashDao.deleteOldTrash(cutoffTime)
     }
+    suspend fun deleteAllTrash() {
+        trashDao.deleteAllTrash()
+    }
 }

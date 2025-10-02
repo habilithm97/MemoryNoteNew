@@ -30,4 +30,8 @@
         android:title="@string/all"
         android:visible="false"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/empty"
+        android:title="@string/empty"
+        android:visible="false" />
 </menu>

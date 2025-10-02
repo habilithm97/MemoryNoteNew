@@ -88,11 +88,16 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
     // 휴지통에서 완전히 삭제
     fun deleteTrash(trash: Trash) {
         viewModelScope.launch(Dispatchers.IO) {
             memoRepository.deleteTrash(trash)
+        }
+    }
+
+    fun emptyTrash() {
+        viewModelScope.launch(Dispatchers.IO) {
+            memoRepository.deleteAllTrash()
         }
     }
 }

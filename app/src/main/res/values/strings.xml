@@ -36,4 +36,6 @@
     <string name="days_left">Auto delete in %1$d day(s)</string>
     <string name="select_memo_to_restore">Please select a memo to restore.</string>
     <string name="restore_dialog_msg">Do you want to restore the selected memo?</string>
+    <string name="empty">Empty</string>
+    <string name="empty_trash_confirm">Do you want to empty the trash?</string>
 </resources>

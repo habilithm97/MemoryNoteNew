@@ -25,4 +25,7 @@ interface TrashDao {
     // ex) 9월 20일 > 8월 31일 -> 삭제x
     @Query("delete from trash where deletedAt < :cutoffTime")
     suspend fun deleteOldTrash(cutoffTime: Long)
+
+    @Query("delete from trash")
+    suspend fun deleteAllTrash()
 }

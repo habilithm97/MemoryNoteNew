@@ -128,6 +128,18 @@ class TrashFragment : Fragment() {
         (activity as? MainActivity)?.toggleMenuVisibility(this@TrashFragment, isMultiSelect = false)
     }
 
+    fun showEmptyTrashDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.empty))
+            .setMessage(getString(R.string.empty_trash_confirm))
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(R.string.empty)) { dialog, _ ->
+                memoViewModel.emptyTrash()
+                dialog.dismiss()
+            }
+            .show()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
 

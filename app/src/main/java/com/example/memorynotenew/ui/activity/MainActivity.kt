@@ -103,6 +103,10 @@ class MainActivity : AppCompatActivity() {
                 isVisible = true
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             }
+            menu?.findItem(R.id.empty)?.apply {
+                isVisible = true
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+            }
             listOf(R.id.cancel, R.id.restore, R.id.delete, R.id.all, R.id.setting, R.id.trash).forEach {
                 menu?.findItem(it)?.isVisible = false
             }
@@ -171,6 +175,10 @@ class MainActivity : AppCompatActivity() {
                         currentFragment.toggleSelectAll()
                         true
                     }
+                    R.id.empty -> {
+                        currentFragment.showEmptyTrashDialog()
+                        true
+                    }
                     else -> super.onOptionsItemSelected(item)
                 }
             }
@@ -208,6 +216,7 @@ class MainActivity : AppCompatActivity() {
                     findItem(R.id.restore)?.isVisible = isMultiSelect
                     findItem(R.id.delete)?.isVisible = isMultiSelect
                     findItem(R.id.all)?.isVisible = isMultiSelect
+                    findItem(R.id.empty)?.isVisible = !isMultiSelect
                 }
             }
         }
