@@ -160,6 +160,7 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
                     R.id.restore -> {
+                        currentFragment.restoreSelectedMemos()
                         true
                     }
                     R.id.delete -> {

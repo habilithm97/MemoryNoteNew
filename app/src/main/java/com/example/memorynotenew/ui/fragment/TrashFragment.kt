@@ -99,6 +99,35 @@ class TrashFragment : Fragment() {
         (activity as? MainActivity)?.toggleMenuVisibility(this@TrashFragment, isMultiSelect = false)
     }
 
+    fun restoreSelectedMemos() {
+        val selectedMemos = trashAdapter.getSelectedMemos() // 선택한 메모 가져오기
+        if (selectedMemos.isEmpty()) { // 없으면
+            ToastUtil.showToast(requireContext(), getString(R.string.select_memo_to_restore))
+        } else { // 있으면
+            showRestoreDialog(selectedMemos)
+        }
+    }
+
+    private fun showRestoreDialog(selectedMemos: List<Trash>) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.restore))
+            .setMessage(getString(R.string.restore_dialog_msg))
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(R.string.restore)) { dialog, _ ->
+                restoreMemo(selectedMemos)
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun restoreMemo(selectedMemos: List<Trash>) {
+        selectedMemos.forEach { trash ->
+            memoViewModel.restoreMemo(trash)
+        }
+        trashAdapter.isMultiSelect = false
+        (activity as? MainActivity)?.toggleMenuVisibility(this@TrashFragment, isMultiSelect = false)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
 

@@ -35,4 +35,6 @@
     <string name="trash">휴지통</string>
     <string name="restore">복원</string>
     <string name="days_left">%1$d일 후 자동 삭제</string>
+    <string name="select_memo_to_restore">복원할 메모를 선택해주세요.</string>
+    <string name="restore_dialog_msg">선택한 메모를 복원할까요?</string>
 </resources>
