@@ -1,5 +1,6 @@
 package com.example.memorynotenew.ui.fragment
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,8 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.memorynotenew.R
 import com.example.memorynotenew.adapter.TrashAdapter
 import com.example.memorynotenew.databinding.FragmentTrashBinding
+import com.example.memorynotenew.room.entity.Trash
+import com.example.memorynotenew.ui.activity.MainActivity
+import com.example.memorynotenew.utils.ToastUtil
 import com.example.memorynotenew.viewmodel.MemoViewModel
 
 class TrashFragment : Fragment() {
@@ -63,6 +68,35 @@ class TrashFragment : Fragment() {
 
     fun toggleSelectAll() {
         trashAdapter.toggleSelectAll()
+    }
+
+    fun deleteSelectedMemos() {
+        val selectedMemos = trashAdapter.getSelectedMemos() // 선택한 메모 가져오기
+        if (selectedMemos.isEmpty()) { // 없으면
+            ToastUtil.showToast(requireContext(), getString(R.string.select_memo_to_delete))
+        } else { // 있으면
+            showDeleteDialog(selectedMemos)
+        }
+    }
+
+    private fun showDeleteDialog(selectedMemos: List<Trash>) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.delete))
+            .setMessage(getString(R.string.delete_dialog_msg))
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
+                deleteTrash(selectedMemos)
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun deleteTrash(selectedMemos: List<Trash>) {
+        selectedMemos.forEach {
+            memoViewModel.deleteTrash(it)
+        }
+        trashAdapter.isMultiSelect = false
+        (activity as? MainActivity)?.toggleMenuVisibility(this@TrashFragment, isMultiSelect = false)
     }
 
     override fun onDestroyView() {

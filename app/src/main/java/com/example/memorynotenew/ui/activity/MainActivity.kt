@@ -163,6 +163,7 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
                     R.id.delete -> {
+                        currentFragment.deleteSelectedMemos()
                         true
                     }
                     R.id.all -> {

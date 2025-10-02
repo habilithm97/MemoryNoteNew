@@ -100,4 +100,13 @@ class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLB
         }
         notifyDataSetChanged()
     }
+
+    // selectedMemos 인덱스 -> Trash 객체 리스트
+    fun getSelectedMemos() : List<Trash> {
+        // selectedMemos 인덱스 순회 (null 제외)
+        return selectedMemos.mapNotNull { index ->
+            // 해당 인덱스의 아이템을 가져옴 (없으면 null)
+            currentList.getOrNull(index)
+        }
+    }
 }
