@@ -35,12 +35,13 @@ class MainActivity : AppCompatActivity() {
         }
         setSupportActionBar(binding.toolbar)
 
-        // Fragment 전환 시 갱신
+        // 백스택 변경을 감지할 리스너를 먼저 등록
+        // 프래그먼트 전환 시 갱신
         supportFragmentManager.addOnBackStackChangedListener {
             setupActionBar()
             invalidateOptionsMenu()
         }
-        // 최초 실행 시 Fragment 삽입
+        // 최초 실행 시 프래그먼트 삽입
         if (savedInstanceState == null) {
             replaceFragment(ListFragment())
         }
@@ -48,67 +49,77 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupActionBar() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
+        val title = getFragmentTitle(currentFragment)
 
-        val title = when (currentFragment) {
-            is ListFragment -> getString(R.string.app_name)
-            is MemoFragment -> getString(R.string.memo)
-            is PasswordFragment -> {
-                // PasswordPurpose 가져오기 (LOCK, OPEN)
-                val purposeString = currentFragment.arguments?.getString(PURPOSE)
-                val purpose = if (purposeString != null) {
-                    PasswordPurpose.valueOf(purposeString) // enum으로 변환
-                } else {
-                    null
-                }
-                // OPEN이면 title 없음
-                if (purpose == PasswordPurpose.OPEN) {
-                    ""
-                } else { // LOCK이면 잠금 여부에 따라 title 설정
-                    val memo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        currentFragment.arguments?.getParcelable(MEMO, Memo::class.java)
-                    } else {
-                        @Suppress("DEPRECATION")
-                        currentFragment.arguments?.getParcelable(MEMO)
-                    }
-                    if (memo?.isLocked == true) {
-                        getString(R.string.unlock_memo)
-                    } else {
-                        getString(R.string.lock_memo)
-                    }
-                }
-            }
-            is TrashFragment -> getString(R.string.trash)
-            else -> ""
-        }
         supportActionBar?.apply {
             this.title = title
-            setDisplayHomeAsUpEnabled(currentFragment is MemoFragment || currentFragment is TrashFragment)
+            setDisplayHomeAsUpEnabled(
+                when (currentFragment) {
+                    is MemoFragment, is TrashFragment -> true
+                    else -> false
+                }
+            )
+        }
+    }
+
+    private fun getFragmentTitle(currentFragment: Fragment?): String = when (currentFragment) {
+        is ListFragment -> getString(R.string.app_name)
+        is MemoFragment -> getString(R.string.memo)
+        is PasswordFragment -> getPasswordFragmentTitle(currentFragment)
+        is TrashFragment -> getString(R.string.trash)
+        else -> ""
+    }
+
+    private fun getPasswordFragmentTitle(currentFragment: PasswordFragment): String {
+        val purposeString = currentFragment.arguments?.getString(PURPOSE)
+        val purpose = purposeString?.let { PasswordPurpose.valueOf(it) }
+
+        return when (purpose) {
+            PasswordPurpose.LOCK -> {
+                val memo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    currentFragment.arguments?.getParcelable(MEMO, Memo::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    currentFragment.arguments?.getParcelable(MEMO)
+                }
+                // 메모 잠금 여부에 따라 제목 설정
+                if (memo?.isLocked == true) {
+                    getString(R.string.unlock_memo)
+                } else {
+                    getString(R.string.lock_memo)
+                }
+            }
+            PasswordPurpose.OPEN -> ""
+            PasswordPurpose.DELETE -> getString(R.string.delete_memo)
+            else -> ""
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
-        return if (currentFragment is ListFragment || currentFragment is TrashFragment) {
-            menuInflater.inflate(R.menu.menu_main, menu)
-            true
-        } else {
-            false
+
+        return when (currentFragment) {
+            is ListFragment, is TrashFragment -> {
+                menuInflater.inflate(R.menu.menu_main, menu)
+                true
+            } else -> false
         }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
-        if (currentFragment is TrashFragment) {
-            menu?.findItem(R.id.select)?.apply {
+
+        if (currentFragment is TrashFragment && menu != null) {
+            menu.findItem(R.id.select)?.apply {
                 isVisible = true
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             }
-            menu?.findItem(R.id.empty)?.apply {
+            menu.findItem(R.id.empty)?.apply {
                 isVisible = true
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
             }
-            listOf(R.id.cancel, R.id.restore, R.id.delete, R.id.all, R.id.setting, R.id.trash).forEach {
-                menu?.findItem(it)?.isVisible = false
+            listOf(R.id.setting, R.id.cancel, R.id.restore, R.id.delete, R.id.all, R.id.trash).forEach {
+                menu.findItem(it)?.isVisible = false
             }
         }
         return super.onPrepareOptionsMenu(menu)
@@ -116,6 +127,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
+
         return when (currentFragment) {
             is ListFragment -> {
                 when (item.itemId) {
@@ -127,8 +139,8 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
                     R.id.select -> {
-                        toggleMenuVisibility(currentFragment, isMultiSelect = true)
                         currentFragment.setMultiSelect(true)
+                        toggleMenuVisibility(currentFragment,true)
                         true
                     }
                     R.id.trash -> {
@@ -136,8 +148,8 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
                     R.id.cancel -> {
-                        toggleMenuVisibility(currentFragment, isMultiSelect = false)
                         currentFragment.setMultiSelect(false)
+                        toggleMenuVisibility(currentFragment, false)
                         true
                     }
                     R.id.delete -> {
@@ -154,13 +166,17 @@ class MainActivity : AppCompatActivity() {
             is TrashFragment -> {
                 when (item.itemId) {
                     R.id.select -> {
-                        toggleMenuVisibility(currentFragment, isMultiSelect = true)
                         currentFragment.setMultiSelect(true)
+                        toggleMenuVisibility(currentFragment, true)
+                        true
+                    }
+                    R.id.empty -> {
+                        currentFragment.showEmptyTrashDialog()
                         true
                     }
                     R.id.cancel -> {
-                        toggleMenuVisibility(currentFragment, isMultiSelect = false)
                         currentFragment.setMultiSelect(false)
+                        toggleMenuVisibility(currentFragment, false)
                         true
                     }
                     R.id.restore -> {
@@ -173,10 +189,6 @@ class MainActivity : AppCompatActivity() {
                     }
                     R.id.all -> {
                         currentFragment.toggleSelectAll()
-                        true
-                    }
-                    R.id.empty -> {
-                        currentFragment.showEmptyTrashDialog()
                         true
                     }
                     else -> super.onOptionsItemSelected(item)
@@ -212,11 +224,11 @@ class MainActivity : AppCompatActivity() {
                 }
                 is TrashFragment -> {
                     findItem(R.id.select)?.isVisible = !isMultiSelect
+                    findItem(R.id.empty)?.isVisible = !isMultiSelect
                     findItem(R.id.cancel)?.isVisible = isMultiSelect
                     findItem(R.id.restore)?.isVisible = isMultiSelect
                     findItem(R.id.delete)?.isVisible = isMultiSelect
                     findItem(R.id.all)?.isVisible = isMultiSelect
-                    findItem(R.id.empty)?.isVisible = !isMultiSelect
                 }
             }
         }

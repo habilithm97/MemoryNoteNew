@@ -38,4 +38,5 @@
     <string name="restore_dialog_msg">Do you want to restore the selected memo?</string>
     <string name="empty">Empty</string>
     <string name="empty_trash_confirm">Do you want to empty the trash?</string>
+    <string name="delete_memo">Delete Memo</string>
 </resources>
