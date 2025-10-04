@@ -27,38 +27,42 @@ class SettingsActivity : AppCompatActivity() {
         }
         setSupportActionBar(binding.toolbar)
 
-        // Fragment 전환 시 갱신
+        // 백스택 변경을 감지할 리스너를 먼저 등록
+        // 프래그먼트 전환 시 갱신
         supportFragmentManager.addOnBackStackChangedListener {
             setupActionBar()
         }
-        // 최초 실행 시 Fragment 삽입
+        // 최초 실행 시 SettingsFragment 삽입
         if (savedInstanceState == null) {
             replaceFragment(SettingsFragment())
         }
-        onBackPressedDispatcher.addCallback(this@SettingsActivity, true) {
+        // 뒤로가기 버튼 클릭 시 액티비티 종료
+        onBackPressedDispatcher.addCallback(this, true) {
             finish()
         }
     }
 
     private fun setupActionBar() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
+        val title = getFragmentTitle(currentFragment)
 
-        val title = when (currentFragment) {
-            is SettingsFragment -> getString(R.string.settings)
-            is PasswordFragment -> {
-                val storedPassword = PasswordManager.getPassword(this@SettingsActivity)
-                if (storedPassword.isNullOrEmpty()) {
-                    getString(R.string.password_save)
-                } else {
-                    getString(R.string.password_change)
-                }
-            }
-            else -> ""
-        }
         supportActionBar?.apply {
             this.title = title
             setDisplayHomeAsUpEnabled(currentFragment is SettingsFragment)
         }
+    }
+
+    private fun getFragmentTitle(currentFragment: Fragment?): String = when(currentFragment) {
+        is SettingsFragment -> getString(R.string.settings)
+        is PasswordFragment -> {
+            val storedPassword = PasswordManager.getPassword(this)
+            if (storedPassword.isNullOrEmpty()) {
+                getString(R.string.password_save)
+            } else {
+                getString(R.string.password_change)
+            }
+        }
+        else -> ""
     }
 
     // 업 버튼 동작

@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             setupActionBar()
             invalidateOptionsMenu()
         }
-        // 최초 실행 시 프래그먼트 삽입
+        // 최초 실행 시 ListFragment 삽입
         if (savedInstanceState == null) {
             replaceFragment(ListFragment())
         }
@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                 isVisible = true
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
             }
-            listOf(R.id.setting, R.id.cancel, R.id.restore, R.id.delete, R.id.all, R.id.trash).forEach {
+            listOf(R.id.setting, R.id.trash, R.id.cancel, R.id.restore, R.id.delete, R.id.all).forEach {
                 menu.findItem(it)?.isVisible = false
             }
         }
