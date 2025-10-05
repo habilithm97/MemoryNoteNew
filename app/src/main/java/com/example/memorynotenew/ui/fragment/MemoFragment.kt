@@ -46,9 +46,7 @@ class MemoFragment : Fragment() {
             @Suppress("DEPRECATION")
             arguments?.getParcelable(MEMO)
         }
-        if (memo != null) {
-            binding.editText.setText(memo!!.content)
-        }
+        memo?.let { binding.editText.setText(it.content) }
     }
 
     override fun onPause() {
@@ -57,18 +55,17 @@ class MemoFragment : Fragment() {
         val currentMemo = binding.editText.text.toString()
         val date = System.currentTimeMillis()
 
-        when {
-            // 메모가 비어 있지 않고, 기존 메모와 같지 않으면 -> 추가/수정
-            currentMemo.isNotBlank() && currentMemo != memo?.content -> {
-                if (memo != null) { // 수정 모드
-                    updateMemo(currentMemo, date)
-                } else { // 추가 모드
-                    saveMemo(currentMemo, date)
-                }
+        memo?.let { // 기존 메모가 있으면
+            when {
+                // 메모가 비어 있으면 -> 삭제
+                currentMemo.isBlank() -> memoViewModel.deleteMemo(it)
+                // 기존 메모와 같지 않으면 -> 수정
+                currentMemo != it.content -> updateMemo(currentMemo, date)
             }
-            // 기존 메모가 존재하고 메모가 비어 있으면 삭제
-            memo != null && currentMemo.isBlank() -> {
-                memoViewModel.deleteMemo(memo!!)
+        } ?: run { // 기존 메모가 없으면
+            // 현재 메모가 비어 있지 않으면 -> 추가
+            if (currentMemo.isNotBlank()) {
+                saveMemo(currentMemo, date)
             }
         }
     }
@@ -81,9 +78,8 @@ class MemoFragment : Fragment() {
     private fun updateMemo(currentMemo: String, date: Long) {
         // 기존 Memo 객체의 content만 수정하여 새로운 객체 생성
         val updatedMemo = memo?.copy(content = currentMemo, date =  date)
-        if (updatedMemo != null) {
-            memoViewModel.updateMemo(updatedMemo)
-        }
+
+        updatedMemo?.let { memoViewModel.updateMemo(it) }
     }
 
     override fun onResume() {
