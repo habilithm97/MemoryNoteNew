@@ -95,6 +95,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // 업 버튼 동작
+    override fun onSupportNavigateUp(): Boolean {
+        supportFragmentManager.popBackStack()
+        return true
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
 
@@ -198,19 +204,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 업 버튼 동작
-    override fun onSupportNavigateUp(): Boolean {
-        supportFragmentManager.popBackStack()
-        return true
-    }
-
-    private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.container, fragment)
-            .addToBackStack(null)
-            .commit()
-    }
-
     fun toggleMenuVisibility(currentFragment: Fragment, isMultiSelect: Boolean) {
         binding.toolbar.menu?.apply {
             when (currentFragment) {
@@ -232,5 +225,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

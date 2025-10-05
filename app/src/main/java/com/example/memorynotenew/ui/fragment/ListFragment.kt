@@ -70,31 +70,30 @@ class ListFragment : Fragment() {
             onItemClick = { memo ->
                 clearSearchQuery()
 
-                if (memo.isLocked) { // 메모가 잠겨 있으면 -> PasswordFragment로 이동
-                    val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.OPEN, memo)
-                    navigateToFragment(passwordFragment)
-                } else { // 메모가 잠겨 있지 않으면 -> 바로 MemoFragment로 이동
-                    val memoFragment = MemoFragment().apply {
+                val targetFragment = if (memo.isLocked) { // 메모가 잠겨 있으면
+                    PasswordFragment.newInstance(PasswordPurpose.OPEN, memo)
+                } else { // 메모가 잠겨 있지 않으면
+                    MemoFragment().apply {
                         arguments = Bundle().apply {
                             putParcelable(MEMO, memo)
                         }
                     }
-                    navigateToFragment(memoFragment)
                 }
+                replaceFragment(targetFragment)
+
             }, onItemLongClick = { memo, popupAction ->
                 clearSearchQuery()
 
                 when (popupAction) {
                     PopupAction.DELETE ->
-                        showDeleteDialog(listOf(memo), isMultiDelete = false)
+                        showDeleteDialog(listOf(memo), false)
                     PopupAction.LOCK -> {
                         val storedPassword = PasswordManager.getPassword(requireContext())
-                        // 저장된 비밀번호가 없으면 -> 토스트 메시지 출력
-                        if (storedPassword.isNullOrEmpty()) {
+                        if (storedPassword.isNullOrEmpty()) { // 저장된 비밀번호가 없으면
                             ToastUtil.showToast(requireContext(), getString(R.string.password_required))
-                        } else { // 저장된 비밀번호가 있으면 -> PasswordFragment로 이동
+                        } else { // 저장된 비밀번호가 있으면
                             val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK, memo)
-                            navigateToFragment(passwordFragment)
+                            replaceFragment(passwordFragment)
                         }
                     }
                 }
@@ -111,7 +110,7 @@ class ListFragment : Fragment() {
                 if (isMultiDelete) { // 다중 삭제
                     multiDeleteMemo(selectedMemos)
                 } else { // 단일 삭제
-                    // 리스트가 비어 있지 않으면 첫 번째 메모를 안전하게 삭제
+                    // 리스트가 비어 있지 않으면 첫 번째 메모 삭제
                     selectedMemos.firstOrNull()?.let {
                         singleDeleteMemo(it)
                     }
@@ -122,9 +121,9 @@ class ListFragment : Fragment() {
     }
 
     private fun singleDeleteMemo(memo: Memo) {
-        if (memo.isLocked) { // 메모가 잠겨 있으면 -> PasswordFragment로 이동
+        if (memo.isLocked) { // 메모가 잠겨 있으면
             val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.DELETE, memo)
-            navigateToFragment(passwordFragment)
+            replaceFragment(passwordFragment)
         } else { // 메모가 잠겨 있지 않으면
             memoViewModel.moveMemoToTrash(memo)
             ToastUtil.showToast(requireContext(), getString(R.string.deleted_count, 1))
@@ -138,7 +137,7 @@ class ListFragment : Fragment() {
         // 잠기지 않은 메모는 바로 삭제
         unlockedMemos.forEach { memoViewModel.moveMemoToTrash(it) }
 
-        // 잠긴 메모가 있으면 PasswordFragment로 이동
+        // 잠긴 메모가 하나라도 있으면
         if (lockedMemos.isNotEmpty()) {
             val passwordFragment = PasswordFragment.newInstance(
                 PasswordPurpose.DELETE,
@@ -146,12 +145,12 @@ class ListFragment : Fragment() {
                 // 선택된 메모 리스트를 Bundle에 담기 위해 ArrayList로 변환
                 memos = ArrayList(selectedMemos)
             )
-            navigateToFragment(passwordFragment)
+            replaceFragment(passwordFragment)
         } else { // 잠긴 메모가 없으면
             ToastUtil.showToast(requireContext(), getString(R.string.deleted_count, selectedMemos.size))
         }
         memoAdapter.isMultiSelect = false
-        (activity as? MainActivity)?.toggleMenuVisibility(this@ListFragment, isMultiSelect = false)
+        (activity as? MainActivity)?.toggleMenuVisibility(this, false)
     }
 
     private fun setupRecyclerView() {
@@ -189,9 +188,10 @@ class ListFragment : Fragment() {
     private fun setupSearchView() {
         with(binding) {
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                // 검색어 입력 시 호출
+                // 검색어 입력 시
                 override fun onQueryTextChange(newText: String?): Boolean {
                     val query = newText.orEmpty() // null이면 "" 처리
+
                     with(memoAdapter) {
                         filterList(query) { // 필터링
                             // 검색어가 비어 있고, 메모가 하나 이상 있으면
@@ -206,7 +206,7 @@ class ListFragment : Fragment() {
                     }
                     return true
                 }
-                // 키보드 검색 버튼 클릭 시 호출
+                // 키보드 검색 버튼 클릭 시
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     return false
                 }
@@ -218,14 +218,9 @@ class ListFragment : Fragment() {
         with(binding) {
             fabAdd.setOnClickListener {
                 clearSearchQuery()
-                navigateToFragment(MemoFragment())
+                replaceFragment(MemoFragment())
             }
         }
-    }
-
-    // 검색어 초기화
-    private fun clearSearchQuery() {
-        binding.searchView.setQuery("", false) // 검색어 초기화
     }
 
     private fun setupFabScroll() {
@@ -240,27 +235,36 @@ class ListFragment : Fragment() {
         }
     }
 
-    private fun navigateToFragment(fragment: Fragment) {
+    // 검색어 초기화
+    private fun clearSearchQuery() {
+        binding.searchView.setQuery("", false)
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
         parentFragmentManager.beginTransaction()
             .replace(R.id.container, fragment)
             .addToBackStack(null)
             .commit()
     }
 
+    // 다중 선택 토글
     fun setMultiSelect(isMultiSelect: Boolean) {
         memoAdapter.isMultiSelect = isMultiSelect
     }
 
+    // 전체 선택 토글
     fun toggleSelectAll() {
         memoAdapter.toggleSelectAll()
     }
 
+    // selectedMemos 삭제
     fun deleteSelectedMemos() {
-        val selectedMemos = memoAdapter.getSelectedMemos() // 선택된 메모 가져오기
+        val selectedMemos = memoAdapter.getSelectedMemos() // selectedMemos 가져오기
+
         if (selectedMemos.isEmpty()) { // 없으면
             ToastUtil.showToast(requireContext(), getString(R.string.select_memo_to_delete))
         } else { // 있으면
-            showDeleteDialog(selectedMemos, isMultiDelete = true)
+            showDeleteDialog(selectedMemos, true)
         }
     }
 
