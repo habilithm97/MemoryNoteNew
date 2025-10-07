@@ -20,15 +20,15 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                   private val onItemLongClick: (Memo, PopupAction) -> Unit) :
     ListAdapter<Memo, MemoAdapter.MemoViewHolder>(DIFF_CALLBACK) {
 
-        private var memos: List<Memo> = emptyList() // 원본 메모 리스트
-    private var selectedMemos = mutableSetOf<Int>() // 선택한 메모 리스트
+        private var memos: List<Memo> = emptyList() // 원본 메모 리스트 (불변)
+    private var selectedMemos = mutableSetOf<Int>() // 선택된 메모 리스트 (중복 방지)
 
     var isMultiSelect = false
-    // isMultiSelect 값이 바뀔 때마다 실행
-    set(value) {
-        field = value // isMultiSelect의 실제 값을 바꿔줌
-        if (!value) selectedMemos.clear() // 메모 선택 모드 해제 시 체크 상태 초기화
-        notifyDataSetChanged() // 전체 아이템 갱신
+        // isMultiSelect에 새로운 값이 할당될 때 자동 실행되는 setter
+        set(value) {
+            field = value // backing field(실제 저장되는 값)에 대입
+            if (!value) selectedMemos.clear() // 다중 선택 모드 해제 시 체크 상태 초기화
+            notifyDataSetChanged() // 전체 아이템 갱신
     }
 
     inner class MemoViewHolder(private val binding: ItemMemoBinding) :
@@ -46,10 +46,10 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
                     if (adapterPosition != RecyclerView.NO_POSITION) {
                         checkBox.apply {
                             visibility = if (isMultiSelect) View.VISIBLE else View.GONE
-                            setOnCheckedChangeListener(null) // 초기 바인딩 시 리스너 호출 방지
-                            isChecked = adapterPosition in selectedMemos // 선택한 메모면 체크
+                            setOnCheckedChangeListener(null) // 초기화 중 콜백 방지
+                            isChecked = adapterPosition in selectedMemos // 선택 상태 반영
 
-                            // 체크 상태 변경 시 selectedMemos에 추가/제거
+                            // 선택 상태 변경 시 selectedMemos에 추가/제거
                             setOnCheckedChangeListener { _, isChecked ->
                                 if (isChecked) {
                                     selectedMemos.add(adapterPosition)
@@ -105,13 +105,15 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
         }
     }
 
+    // ViewHolder 생성 및 아이템 뷰 초기화
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemoAdapter.MemoViewHolder {
         val binding = ItemMemoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MemoViewHolder(binding)
     }
 
+    // 재사용되는 ViewHolder에 데이터 바인딩
     override fun onBindViewHolder(holder: MemoAdapter.MemoViewHolder, position: Int) {
-        // 현재 위치의 Memo 데이터를 ViewHolder에 바인딩
+        // 해당 위치의 데이터를 ViewHolder에 바인딩
         holder.bind(getItem(position))
     }
 
@@ -132,21 +134,21 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
         submitList(memos)
     }
 
-    fun filterList(searchQuery: String, onFilterComplete: () -> Unit) {
-        val filteredList = if (searchQuery.isEmpty()) {
+    fun filterList(query: String, onFilterComplete: () -> Unit) {
+        val filteredList = if (query.isEmpty()) {
             memos
         } else { // 공백도 검색 가능
             memos.filter {
-                it.content.contains(searchQuery, ignoreCase = true) // 대소문자 구분 없이 검색
+                it.content.contains(query, true) // 대소문자 구분 없이 검색
             }
         }
         submitList(filteredList) {
-            onFilterComplete() // 필터링 후속 작업
+            onFilterComplete() // 필터링 후속 작업 (자동 스크롤)
         }
     }
 
     fun toggleSelectAll() {
-        // 선택된 메모 수 = 전체 메모 수 -> 전체 선택이면
+        // (선택된 메모 수 = 전체 메모 수) 전체 선택이면
         if (selectedMemos.size == currentList.size) {
             selectedMemos.clear() // 전체 선택 해제
         } else { // 전체 선택이 아니면
@@ -159,11 +161,10 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
         notifyDataSetChanged()
     }
 
-    // 선택된 메모만 안전하게 Memo 객체로 반환
     fun getSelectedMemos() : List<Memo> {
-        // 선택된 메모 index 가져오기 (null 제거)
+        // selectedMemos 인덱스 순회 (null 제외)
         return selectedMemos.mapNotNull { index ->
-            // 각 index에 해당하는 Memo 객체 가져오기 (범위 벗어나면 null)
+            // 해당 인덱스의 아이템을 가져옴 (없으면 null)
             currentList.getOrNull(index)
         }
     }
