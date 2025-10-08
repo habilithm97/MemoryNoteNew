@@ -40,4 +40,6 @@
     <string name="empty">비우기</string>
     <string name="empty_trash_confirm">휴지통을 비울까요?</string>
     <string name="delete_memo">메모 삭제</string>
+
+    <string name="no_memos">메모가 없습니다.</string>
 </resources>

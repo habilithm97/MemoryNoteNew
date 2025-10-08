@@ -177,10 +177,23 @@ class ListFragment : Fragment() {
 
     private fun setupObserver() {
         memoViewModel.getAllMemos.observe(viewLifecycleOwner) { memos ->
-            with(memoAdapter) {
-                submitMemos(memos)
-                if (itemCount > 0) {
-                    binding.recyclerView.smoothScrollToPosition(itemCount - 1)
+            with(binding) {
+                if (memos.isEmpty()) {
+                    recyclerView.visibility = View.GONE
+                    tvEmpty.apply {
+                        visibility = View.VISIBLE
+                        text = getString(R.string.no_memos)
+                    }
+                } else {
+                    recyclerView.visibility = View.VISIBLE
+                    tvEmpty.visibility = View.GONE
+
+                    with(memoAdapter) {
+                        submitMemos(memos)
+                        if (itemCount > 0) {
+                            recyclerView.smoothScrollToPosition(itemCount - 1)
+                        }
+                    }
                 }
             }
         }
