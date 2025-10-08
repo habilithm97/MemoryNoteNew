@@ -31,7 +31,7 @@ class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLB
             with(binding) {
                 // Trash 데이터를 각 뷰에 할당
                 tvContent.text = trash.content
-                // 남은 보관일 계산
+                // 남은 보관일 계산 (삭제된 시각, 최대 보관일 30일)
                 val daysLeft = calculateDaysLeft(trash.deletedAt, MAX_TRASH_DAYS)
                 tvDate.apply {
                     text = context.getString(R.string.days_left, daysLeft)
