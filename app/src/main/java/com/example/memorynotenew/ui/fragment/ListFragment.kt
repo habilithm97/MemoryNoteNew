@@ -178,13 +178,13 @@ class ListFragment : Fragment() {
     private fun setupObserver() {
         memoViewModel.getAllMemos.observe(viewLifecycleOwner) { memos ->
             with(binding) {
-                if (memos.isEmpty()) {
+                if (memos.isEmpty()) { // 메모가 없으면
                     recyclerView.visibility = View.GONE
                     tvEmpty.apply {
                         visibility = View.VISIBLE
                         text = getString(R.string.no_memos)
                     }
-                } else {
+                } else { // 메모가 있으면
                     recyclerView.visibility = View.VISIBLE
                     tvEmpty.visibility = View.GONE
 

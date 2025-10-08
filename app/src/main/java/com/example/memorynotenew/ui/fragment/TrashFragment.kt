@@ -53,10 +53,23 @@ class TrashFragment : Fragment() {
 
     private fun setupObserver() {
         memoViewModel.getAllTrash.observe(viewLifecycleOwner) { trashList ->
-            with(trashAdapter) {
-                submitList(trashList)
-                if (itemCount > 0) {
-                    binding.recyclerView.smoothScrollToPosition(itemCount - 1)
+            with(binding) {
+                if (trashList.isEmpty()) { // 휴지통이 비어 있으면
+                    recyclerView.visibility = View.GONE
+                    textView.apply {
+                        visibility = View.VISIBLE
+                        text = getString(R.string.empty_trash)
+                    }
+                } else { // 휴지통이 비어 있지 않으면
+                    recyclerView.visibility = View.VISIBLE
+                    textView.visibility = View.GONE
+
+                    with(trashAdapter) {
+                        submitList(trashList)
+                        if (itemCount > 0) {
+                            recyclerView.smoothScrollToPosition(itemCount - 1)
+                        }
+                    }
                 }
             }
         }

@@ -41,4 +41,5 @@
     <string name="delete_memo">Delete Memo</string>
 
     <string name="no_memos">No memos.</string>
+    <string name="empty_trash">Trash is empty.</string>
 </resources>
