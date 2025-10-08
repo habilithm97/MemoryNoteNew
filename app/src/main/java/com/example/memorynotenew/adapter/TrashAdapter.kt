@@ -8,12 +8,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.memorynotenew.R
-import com.example.memorynotenew.common.Constants
+import com.example.memorynotenew.common.Constants.MAX_TRASH_DAYS
+import com.example.memorynotenew.common.Constants.ONE_DAYS_MS
 import com.example.memorynotenew.databinding.ItemMemoBinding
 import com.example.memorynotenew.room.entity.Trash
 
 class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLBACK) {
-    private var selectedMemos = mutableSetOf<Int>() // 선택한 메모 리스트
+    private var selectedMemos = mutableSetOf<Int>() // 선택된 메모 리스트 (중복 방지)
 
     var isMultiSelect = false
         // isMultiSelect에 새로운 값이 할당될 때 자동 실행되는 setter
@@ -28,30 +29,24 @@ class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLB
 
         fun bind(trash: Trash) {
             with(binding) {
+                // Trash 데이터를 각 뷰에 할당
                 tvContent.text = trash.content
-
-                val deletedAt = trash.deletedAt // 삭제한 시각
-                val maxDays = 30 // 휴지통 최대 보관일
-                val current = System.currentTimeMillis() // 현재 시각
-                // 삭제 후 경과 일수
-                val daysPassed = ((current - deletedAt) / Constants.ONE_DAYS_MS).toInt()
-                // 남은 보관 일수 (coerceAtLeast(0) : 계산 결과가 음수면 0으로 보정)
-                val daysLeft = (maxDays - daysPassed).coerceAtLeast(0)
-                val context = imageView.context
+                // 남은 보관일 계산
+                val daysLeft = calculateDaysLeft(trash.deletedAt, MAX_TRASH_DAYS)
                 tvDate.apply {
                     text = context.getString(R.string.days_left, daysLeft)
                     setTextColor(ContextCompat.getColor(context, R.color.orange))
                 }
                 imageView.visibility = View.GONE // 휴지통에서는 잠금 필요 없음
 
-                // 유효한 어댑터 위치일 때만 실행
+                // 유효한 아이템을 가리킬 때만 실행
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     checkBox.apply {
                         visibility = if (isMultiSelect) View.VISIBLE else View.GONE
-                        setOnCheckedChangeListener(null) // 불필요한 리스너 호출 방지
-                        isChecked = adapterPosition in selectedMemos
+                        setOnCheckedChangeListener(null) // 초기화 중 콜백 방지
+                        isChecked = adapterPosition in selectedMemos // 선택 상태 반영
 
-                        // 체크 상태 변경 시 selectedMemos에 추가/제거
+                        // 선택 상태 변경 시 selectedMemos에 추가/제거
                         setOnCheckedChangeListener { _, isChecked ->
                             if (isChecked) {
                                 selectedMemos.add(adapterPosition)
@@ -65,13 +60,22 @@ class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLB
         }
     }
 
+    private fun calculateDaysLeft(deletedAt: Long, maxDays: Int): Int {
+        // 삭제 후 경과일
+        val daysPassed = ((System.currentTimeMillis() - deletedAt) / ONE_DAYS_MS).toInt()
+        // 남은 보관일 (coerceAtLeast(0) : 계산 결과가 음수면 0으로 보정)
+        return (maxDays - daysPassed).coerceAtLeast(0)
+    }
+
+    // ViewHolder 생성 및 아이템 뷰 초기화
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrashAdapter.TrashViewHolder {
         val binding = ItemMemoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TrashViewHolder(binding)
     }
 
+    // 재사용되는 ViewHolder에 데이터 바인딩
     override fun onBindViewHolder(holder: TrashAdapter.TrashViewHolder, position: Int) {
-        // 현재 위치의 Memo 데이터를 ViewHolder에 바인딩
+        // 해당 위치의 데이터를 ViewHolder에 바인딩
         holder.bind(getItem(position))
     }
 
@@ -88,7 +92,7 @@ class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLB
     }
 
     fun toggleSelectAll() {
-        // 선택된 메모 수 = 전체 메모 수 -> 전체 선택이면
+        // (선택된 메모 수 = 전체 메모 수) 전체 선택이면
         if (selectedMemos.size == currentList.size) {
             selectedMemos.clear() // 전체 선택 해제
         } else { // 전체 선택이 아니면
@@ -101,7 +105,6 @@ class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLB
         notifyDataSetChanged()
     }
 
-    // selectedMemos 인덱스 -> Trash 객체 리스트
     fun getSelectedMemos() : List<Trash> {
         // selectedMemos 인덱스 순회 (null 제외)
         return selectedMemos.mapNotNull { index ->

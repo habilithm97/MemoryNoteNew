@@ -36,7 +36,7 @@ class MemoAdapter(private val onItemClick: (Memo) -> Unit,
 
             fun bind(memo: Memo) {
                 with(binding) {
-                    // Memo 데이터를 각 View에 할당
+                    // Memo 데이터를 각 뷰에 할당
                     tvContent.text = memo.content
                     tvDate.text = SimpleDateFormat(itemView.context.getString(R.string.date_format),
                         Locale.getDefault()).format(Date(memo.date))
