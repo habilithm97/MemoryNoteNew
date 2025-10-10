@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -20,6 +21,7 @@ import com.example.memorynotenew.ui.fragment.ListFragment
 import com.example.memorynotenew.ui.fragment.MemoFragment
 import com.example.memorynotenew.ui.fragment.PasswordFragment
 import com.example.memorynotenew.ui.fragment.TrashFragment
+import com.example.memorynotenew.utils.ToastUtil
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -145,8 +147,12 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
                     R.id.select -> {
-                        currentFragment.setMultiSelect(true)
-                        toggleMenuVisibility(currentFragment,true)
+                        if (currentFragment.hasMemos()) {
+                            currentFragment.toggleMultiSelect(true)
+                            toggleMenuVisibility(currentFragment,true)
+                        } else {
+                            ToastUtil.showToast(this, getString(R.string.no_memos))
+                        }
                         true
                     }
                     R.id.trash -> {
@@ -154,7 +160,7 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
                     R.id.cancel -> {
-                        currentFragment.setMultiSelect(false)
+                        currentFragment.toggleMultiSelect(false)
                         toggleMenuVisibility(currentFragment, false)
                         true
                     }
@@ -172,8 +178,12 @@ class MainActivity : AppCompatActivity() {
             is TrashFragment -> {
                 when (item.itemId) {
                     R.id.select -> {
-                        currentFragment.toggleMultiSelect(true)
-                        toggleMenuVisibility(currentFragment, true)
+                        if (currentFragment.hasTrash()) {
+                            currentFragment.toggleMultiSelect(true)
+                            toggleMenuVisibility(currentFragment, true)
+                        } else {
+                            ToastUtil.showToast(this, getString(R.string.empty_trash))
+                        }
                         true
                     }
                     R.id.empty -> {

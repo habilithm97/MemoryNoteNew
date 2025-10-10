@@ -176,9 +176,9 @@ class ListFragment : Fragment() {
     }
 
     private fun setupObserver() {
-        memoViewModel.getAllMemos.observe(viewLifecycleOwner) { memos ->
+        memoViewModel.getAllMemos.observe(viewLifecycleOwner) {
             with(binding) {
-                if (memos.isEmpty()) { // 메모가 없으면
+                if (it.isEmpty()) { // 메모가 없으면
                     recyclerView.visibility = View.GONE
                     tvEmpty.apply {
                         visibility = View.VISIBLE
@@ -189,7 +189,7 @@ class ListFragment : Fragment() {
                     tvEmpty.visibility = View.GONE
 
                     with(memoAdapter) {
-                        submitMemos(memos)
+                        submitMemos(it)
                         if (itemCount > 0) {
                             recyclerView.smoothScrollToPosition(itemCount - 1)
                         }
@@ -262,7 +262,7 @@ class ListFragment : Fragment() {
     }
 
     // 다중 선택 토글
-    fun setMultiSelect(isMultiSelect: Boolean) {
+    fun toggleMultiSelect(isMultiSelect: Boolean) {
         memoAdapter.isMultiSelect = isMultiSelect
     }
 
@@ -280,6 +280,10 @@ class ListFragment : Fragment() {
         } else { // 있으면
             showDeleteDialog(selectedMemos, true)
         }
+    }
+
+    fun hasMemos(): Boolean {
+        return memoAdapter.itemCount > 0
     }
 
     private fun setupAdView() {

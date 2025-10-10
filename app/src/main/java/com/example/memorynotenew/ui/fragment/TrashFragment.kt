@@ -52,9 +52,9 @@ class TrashFragment : Fragment() {
     }
 
     private fun setupObserver() {
-        memoViewModel.getAllTrash.observe(viewLifecycleOwner) { trashList ->
+        memoViewModel.getAllTrash.observe(viewLifecycleOwner) {
             with(binding) {
-                if (trashList.isEmpty()) { // 휴지통이 비어 있으면
+                if (it.isEmpty()) { // 휴지통이 비어 있으면
                     recyclerView.visibility = View.GONE
                     textView.apply {
                         visibility = View.VISIBLE
@@ -65,7 +65,7 @@ class TrashFragment : Fragment() {
                     textView.visibility = View.GONE
 
                     with(trashAdapter) {
-                        submitList(trashList)
+                        submitList(it)
                         if (itemCount > 0) {
                             recyclerView.smoothScrollToPosition(itemCount - 1)
                         }
@@ -155,6 +155,10 @@ class TrashFragment : Fragment() {
                 dialog.dismiss()
             }
             .show()
+    }
+
+    fun hasTrash(): Boolean {
+        return trashAdapter.itemCount > 0
     }
 
     override fun onDestroyView() {
