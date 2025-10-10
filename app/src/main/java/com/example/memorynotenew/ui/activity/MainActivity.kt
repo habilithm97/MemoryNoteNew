@@ -172,7 +172,7 @@ class MainActivity : AppCompatActivity() {
             is TrashFragment -> {
                 when (item.itemId) {
                     R.id.select -> {
-                        currentFragment.setMultiSelect(true)
+                        currentFragment.toggleMultiSelect(true)
                         toggleMenuVisibility(currentFragment, true)
                         true
                     }
@@ -181,16 +181,16 @@ class MainActivity : AppCompatActivity() {
                         true
                     }
                     R.id.cancel -> {
-                        currentFragment.setMultiSelect(false)
+                        currentFragment.toggleMultiSelect(false)
                         toggleMenuVisibility(currentFragment, false)
                         true
                     }
                     R.id.restore -> {
-                        currentFragment.restoreSelectedMemos()
+                        currentFragment.restoreSelectedTrash()
                         true
                     }
                     R.id.delete -> {
-                        currentFragment.deleteSelectedMemos()
+                        currentFragment.deleteSelectedTrash()
                         true
                     }
                     R.id.all -> {

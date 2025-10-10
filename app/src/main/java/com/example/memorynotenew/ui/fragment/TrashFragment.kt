@@ -75,70 +75,74 @@ class TrashFragment : Fragment() {
         }
     }
 
-    fun setMultiSelect(isMultiSelect: Boolean) {
+    // 다중 선택 토글
+    fun toggleMultiSelect(isMultiSelect: Boolean) {
         trashAdapter.isMultiSelect = isMultiSelect
     }
 
+    // 전체 선택 토글
     fun toggleSelectAll() {
         trashAdapter.toggleSelectAll()
     }
 
-    fun deleteSelectedMemos() {
-        val selectedMemos = trashAdapter.getSelectedMemos() // 선택한 메모 가져오기
-        if (selectedMemos.isEmpty()) { // 없으면
+    // selectedTrash 삭제
+    fun deleteSelectedTrash() {
+        val selectedTrash = trashAdapter.getSelectedTrash() // selectedTrash 가져오기
+
+        if (selectedTrash.isEmpty()) { // 없으면
             ToastUtil.showToast(requireContext(), getString(R.string.select_memo_to_delete))
         } else { // 있으면
-            showDeleteDialog(selectedMemos)
+            showDeleteDialog(selectedTrash)
         }
     }
 
-    private fun showDeleteDialog(selectedMemos: List<Trash>) {
+    private fun showDeleteDialog(selectedTrash: List<Trash>) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.delete))
             .setMessage(getString(R.string.delete_dialog_msg))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
-                deleteTrash(selectedMemos)
+                deleteTrash(selectedTrash)
                 dialog.dismiss()
             }
             .show()
     }
 
-    private fun deleteTrash(selectedMemos: List<Trash>) {
-        selectedMemos.forEach {
-            memoViewModel.deleteTrash(it)
-        }
+    // 휴지통에서 완전히 삭제
+    private fun deleteTrash(selectedTrash: List<Trash>) {
+        selectedTrash.forEach { memoViewModel.deleteTrash(it) }
         trashAdapter.isMultiSelect = false
-        (activity as? MainActivity)?.toggleMenuVisibility(this@TrashFragment, isMultiSelect = false)
+        (activity as? MainActivity)?.toggleMenuVisibility(this, false)
     }
 
-    fun restoreSelectedMemos() {
-        val selectedMemos = trashAdapter.getSelectedMemos() // 선택한 메모 가져오기
-        if (selectedMemos.isEmpty()) { // 없으면
+    // selectedTrash 복원
+    fun restoreSelectedTrash() {
+        val selectedTrash = trashAdapter.getSelectedTrash() // selectedTrash 가져오기
+
+        if (selectedTrash.isEmpty()) { // 없으면
             ToastUtil.showToast(requireContext(), getString(R.string.select_memo_to_restore))
         } else { // 있으면
-            showRestoreDialog(selectedMemos)
+            showRestoreDialog(selectedTrash)
         }
     }
 
-    private fun showRestoreDialog(selectedMemos: List<Trash>) {
+    private fun showRestoreDialog(selectedTrash: List<Trash>) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.restore))
             .setMessage(getString(R.string.restore_dialog_msg))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.restore)) { dialog, _ ->
-                restoreMemo(selectedMemos)
+                restoreMemo(selectedTrash)
                 dialog.dismiss()
             }
             .show()
     }
 
-    private fun restoreMemo(selectedMemos: List<Trash>) {
-        selectedMemos.forEach { trash ->
-            memoViewModel.restoreMemo(trash)
-        }
+    // 메모 복원
+    private fun restoreMemo(selectedTrash: List<Trash>) {
+        selectedTrash.forEach { memoViewModel.restoreMemo(it) }
         trashAdapter.isMultiSelect = false
-        (activity as? MainActivity)?.toggleMenuVisibility(this@TrashFragment, isMultiSelect = false)
+        (activity as? MainActivity)?.toggleMenuVisibility(this, false)
     }
 
     fun showEmptyTrashDialog() {
