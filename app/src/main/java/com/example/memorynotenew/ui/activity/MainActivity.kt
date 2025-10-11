@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -22,6 +21,7 @@ import com.example.memorynotenew.ui.fragment.MemoFragment
 import com.example.memorynotenew.ui.fragment.PasswordFragment
 import com.example.memorynotenew.ui.fragment.TrashFragment
 import com.example.memorynotenew.utils.ToastUtil
+import com.example.memorynotenew.utils.ToastUtil.showToast
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -151,7 +151,7 @@ class MainActivity : AppCompatActivity() {
                             currentFragment.toggleMultiSelect(true)
                             toggleMenuVisibility(currentFragment,true)
                         } else {
-                            ToastUtil.showToast(this, getString(R.string.no_memos))
+                            this.showToast(getString(R.string.no_memos))
                         }
                         true
                     }
@@ -182,7 +182,7 @@ class MainActivity : AppCompatActivity() {
                             currentFragment.toggleMultiSelect(true)
                             toggleMenuVisibility(currentFragment, true)
                         } else {
-                            ToastUtil.showToast(this, getString(R.string.empty_trash))
+                            this.showToast(getString(R.string.empty_trash))
                         }
                         true
                     }

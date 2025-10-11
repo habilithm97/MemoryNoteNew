@@ -24,6 +24,7 @@ import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.ui.activity.MainActivity
 import com.example.memorynotenew.utils.PasswordManager
 import com.example.memorynotenew.utils.ToastUtil
+import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.viewmodel.MemoViewModel
 import com.google.android.gms.ads.AdRequest
 
@@ -91,7 +92,7 @@ class ListFragment : Fragment() {
                         val storedPassword = PasswordManager.getPassword(requireContext())
 
                         if (storedPassword.isNullOrEmpty()) { // 저장된 비밀번호가 없으면
-                            ToastUtil.showToast(requireContext(), getString(R.string.password_required))
+                            requireContext().showToast(getString(R.string.password_required))
                         } else { // 저장된 비밀번호가 있으면
                             val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK, memo)
                             replaceFragment(passwordFragment)
@@ -127,7 +128,7 @@ class ListFragment : Fragment() {
             replaceFragment(passwordFragment)
         } else { // 메모가 잠겨 있지 않으면
             memoViewModel.moveMemoToTrash(memo)
-            ToastUtil.showToast(requireContext(), getString(R.string.deleted_count, 1))
+            requireContext().showToast(getString(R.string.deleted_count, 1))
         }
     }
 
@@ -148,7 +149,7 @@ class ListFragment : Fragment() {
             )
             replaceFragment(passwordFragment)
         } else { // 잠긴 메모가 없으면
-            ToastUtil.showToast(requireContext(), getString(R.string.deleted_count, selectedMemos.size))
+            requireContext().showToast(getString(R.string.deleted_count, selectedMemos.size))
         }
         memoAdapter.isMultiSelect = false
         (activity as? MainActivity)?.toggleMenuVisibility(this, false)
@@ -276,7 +277,7 @@ class ListFragment : Fragment() {
         val selectedMemos = memoAdapter.getSelectedMemos() // selectedMemos 가져오기
 
         if (selectedMemos.isEmpty()) { // 없으면
-            ToastUtil.showToast(requireContext(), getString(R.string.select_memo_to_delete))
+            requireContext().showToast(getString(R.string.select_memo_to_delete))
         } else { // 있으면
             showDeleteDialog(selectedMemos, true)
         }

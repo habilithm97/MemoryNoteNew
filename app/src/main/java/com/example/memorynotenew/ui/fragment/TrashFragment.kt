@@ -13,7 +13,7 @@ import com.example.memorynotenew.adapter.TrashAdapter
 import com.example.memorynotenew.databinding.FragmentTrashBinding
 import com.example.memorynotenew.room.entity.Trash
 import com.example.memorynotenew.ui.activity.MainActivity
-import com.example.memorynotenew.utils.ToastUtil
+import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.viewmodel.MemoViewModel
 
 class TrashFragment : Fragment() {
@@ -90,7 +90,7 @@ class TrashFragment : Fragment() {
         val selectedTrash = trashAdapter.getSelectedTrash() // selectedTrash 가져오기
 
         if (selectedTrash.isEmpty()) { // 없으면
-            ToastUtil.showToast(requireContext(), getString(R.string.select_memo_to_delete))
+            requireContext().showToast(getString(R.string.select_memo_to_delete))
         } else { // 있으면
             showDeleteDialog(selectedTrash)
         }
@@ -120,7 +120,7 @@ class TrashFragment : Fragment() {
         val selectedTrash = trashAdapter.getSelectedTrash() // selectedTrash 가져오기
 
         if (selectedTrash.isEmpty()) { // 없으면
-            ToastUtil.showToast(requireContext(), getString(R.string.select_memo_to_restore))
+            requireContext().showToast(getString(R.string.select_memo_to_restore))
         } else { // 있으면
             showRestoreDialog(selectedTrash)
         }

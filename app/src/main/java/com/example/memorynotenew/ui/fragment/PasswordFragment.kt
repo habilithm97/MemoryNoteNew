@@ -20,6 +20,7 @@ import com.example.memorynotenew.databinding.FragmentPasswordBinding
 import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.utils.PasswordManager
 import com.example.memorynotenew.utils.ToastUtil
+import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.utils.VibrateUtil
 import com.example.memorynotenew.viewmodel.MemoViewModel
 import kotlinx.coroutines.delay
@@ -195,7 +196,7 @@ class PasswordFragment : Fragment() {
                     } else {
                         R.string.password_changed // 비밀번호 변경 완료!
                     }
-                    ToastUtil.showToast(requireContext(), getString(message))
+                    requireContext().showToast(getString(message))
                     confirmingPassword = null
                     requireActivity().supportFragmentManager.popBackStack()
                     return
@@ -255,7 +256,7 @@ class PasswordFragment : Fragment() {
             } ?: memo?.let { // 단일 삭제
                 memoViewModel.moveMemoToTrash(it)
             }
-            ToastUtil.showToast(requireContext(), getString(R.string.deleted_count, deleteCount))
+            requireContext().showToast(getString(R.string.deleted_count, deleteCount))
             requireActivity().supportFragmentManager.popBackStack()
         } else {
             reEnterPassword()
