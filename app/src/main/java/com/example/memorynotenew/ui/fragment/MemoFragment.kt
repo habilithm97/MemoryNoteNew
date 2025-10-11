@@ -37,7 +37,7 @@ class MemoFragment : Fragment() {
         // 소프트 키보드 높이 만큼 EditText 하단 패딩 적용
         ViewCompat.setOnApplyWindowInsetsListener(binding.editText) { editText, insets ->
             val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-            editText.updatePadding(bottom = imeInsets.bottom)
+            editText.updatePadding(imeInsets.bottom)
             insets
         }
         memo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

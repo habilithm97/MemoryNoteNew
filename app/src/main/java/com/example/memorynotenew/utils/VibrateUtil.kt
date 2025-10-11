@@ -8,20 +8,24 @@ import android.os.VibratorManager
 
 object VibrateUtil {
     fun vibrate(context: Context, duration: Long = 200) {
-        // Vibrator 객체 가져오기
+        // 진동은 UI와 무관 -> 전역 context 사용 -> 메모리 누수 방지
+        val appContext = context.applicationContext
+
         val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
+            val manager  = appContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            manager .defaultVibrator
         } else {
             @Suppress("DEPRECATION")
-            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            appContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
-        // 진동 실행
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator.vibrate(duration)
+        if (vibrator.hasVibrator()) { // 진동 가능 여부 확인 후 실행
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val effect = VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE)
+                vibrator.vibrate(effect)
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(duration)
+            }
         }
     }
 }

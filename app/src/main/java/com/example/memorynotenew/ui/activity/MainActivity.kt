@@ -20,7 +20,6 @@ import com.example.memorynotenew.ui.fragment.ListFragment
 import com.example.memorynotenew.ui.fragment.MemoFragment
 import com.example.memorynotenew.ui.fragment.PasswordFragment
 import com.example.memorynotenew.ui.fragment.TrashFragment
-import com.example.memorynotenew.utils.ToastUtil
 import com.example.memorynotenew.utils.ToastUtil.showToast
 
 class MainActivity : AppCompatActivity() {

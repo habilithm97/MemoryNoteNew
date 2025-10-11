@@ -23,7 +23,6 @@ import com.example.memorynotenew.databinding.FragmentListBinding
 import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.ui.activity.MainActivity
 import com.example.memorynotenew.utils.PasswordManager
-import com.example.memorynotenew.utils.ToastUtil
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.viewmodel.MemoViewModel
 import com.google.android.gms.ads.AdRequest
@@ -48,7 +47,7 @@ class ListFragment : Fragment() {
         // 소프트 키보드 높이 만큼 RecyclerView 하단 패딩 적용
         ViewCompat.setOnApplyWindowInsetsListener(binding.recyclerView) { recyclerView, insets ->
             val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-            recyclerView.updatePadding(bottom = imeInsets.bottom)
+            recyclerView.updatePadding(imeInsets.bottom)
             insets
         }
         setupAdapter()
