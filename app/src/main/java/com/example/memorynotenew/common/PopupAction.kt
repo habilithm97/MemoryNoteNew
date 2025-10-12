@@ -1,4 +1,6 @@
 package com.example.memorynotenew.common
 
-// 고정된 상수값들의 집합
-enum class PopupAction { DELETE, LOCK }
+enum class PopupAction {
+    DELETE, // 메모 삭제
+    LOCK // 메모 잠금 및 잠금 해제
+}

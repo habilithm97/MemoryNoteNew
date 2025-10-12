@@ -9,12 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.memorynotenew.R
-import com.example.memorynotenew.common.Constants.DELETE_COUNT
+import com.example.memorynotenew.common.Constants.COUNT
 import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.Constants.MEMOS
 import com.example.memorynotenew.common.Constants.PURPOSE
+import com.example.memorynotenew.common.PasswordInput
 import com.example.memorynotenew.common.PasswordPurpose
-import com.example.memorynotenew.common.PasswordMode
 import com.example.memorynotenew.common.PasswordString
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
 import com.example.memorynotenew.room.entity.Memo
@@ -36,7 +36,7 @@ class PasswordFragment : Fragment() {
     private var deleteCount: Int = 1
 
     private lateinit var passwordPurpose: PasswordPurpose
-    private lateinit var passwordMode: PasswordMode
+    private lateinit var passwordInput: PasswordInput
     private val memoViewModel: MemoViewModel by viewModels()
     
     private val dots: List<View> by lazy {
@@ -78,7 +78,7 @@ class PasswordFragment : Fragment() {
 
                     // DELETE일 때만 deleteCount 전달
                     if (purpose == PasswordPurpose.DELETE) {
-                        putInt(DELETE_COUNT, deleteCount)
+                        putInt(COUNT, deleteCount)
                     }
                 }
             }
@@ -95,7 +95,7 @@ class PasswordFragment : Fragment() {
         // DELETE일 때만 deleteCount 가져오기
         deleteCount = if (passwordPurpose == PasswordPurpose.DELETE) {
             // 기본값 1, arguments가 null이면 1로 안전하게 처리
-            arguments?.getInt(DELETE_COUNT) ?: 1
+            arguments?.getInt(COUNT) ?: 1
         } else { // DELETE가 아니면 1
             1
         }
@@ -114,10 +114,10 @@ class PasswordFragment : Fragment() {
 
         storedPassword = PasswordManager.getPassword(binding.root.context)
 
-        passwordMode = if (storedPassword.isNullOrEmpty()) {
-            PasswordMode.NEW // 새 비밀번호 입력 모드
+        passwordInput = if (storedPassword.isNullOrEmpty()) {
+            PasswordInput.NEW // 새 비밀번호 입력 모드
         } else {
-            PasswordMode.ENTER // 기존 비밀번호 입력 모드
+            PasswordInput.ENTER // 기존 비밀번호 입력 모드
         }
         setupSubTitle()
         setupKeypad()
@@ -125,9 +125,9 @@ class PasswordFragment : Fragment() {
     }
 
     private fun setupSubTitle() {
-        val subTitle = when (passwordMode) {
-            PasswordMode.NEW -> getString(PasswordString.NEW.resId) // 새 비밀번호 입력
-            PasswordMode.ENTER -> getString(PasswordString.ENTER.resId) // 기존 비밀번호 입력
+        val subTitle = when (passwordInput) {
+            PasswordInput.NEW -> getString(PasswordString.NEW.resId) // 새 비밀번호 입력
+            PasswordInput.ENTER -> getString(PasswordString.ENTER.resId) // 기존 비밀번호 입력
         }
         binding.textView.text = subTitle
     }
@@ -159,9 +159,9 @@ class PasswordFragment : Fragment() {
                 delay(500)
                 when (passwordPurpose) {
                     PasswordPurpose.SETTINGS -> { // 설정
-                        when (passwordMode) {
-                            PasswordMode.NEW -> newPassword() // 새 비밀번호 저장
-                            PasswordMode.ENTER -> updatePassword() // 비밀번호 변경
+                        when (passwordInput) {
+                            PasswordInput.NEW -> newPassword() // 새 비밀번호 저장
+                            PasswordInput.ENTER -> updatePassword() // 비밀번호 변경
                         }
                     }
                     PasswordPurpose.LOCK -> toggleMemoLock() // 메모 잠금 및 잠금 해제
@@ -209,7 +209,7 @@ class PasswordFragment : Fragment() {
 
     private fun updatePassword() {
         if (password.toString() == storedPassword) { // 저장된 비밀번호와 일치
-            passwordMode = PasswordMode.NEW
+            passwordInput = PasswordInput.NEW
             binding.textView.text = getString(PasswordString.NEW.resId) // 새 비밀번호 입력
         } else { // 저장된 비밀번호와 불일치
             reEnterPassword()

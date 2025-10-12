@@ -1,12 +1,13 @@
 package com.example.memorynotenew.common
 
-// 하나만 존재하는 싱글톤 객체
 object Constants {
     const val MEMO = "memo"
     const val MEMOS = "memos"
-    const val DELETE_COUNT = "delete_count"
-    const val PASSWORD_PREF = "password_preference"
-    const val PURPOSE = "password_purpose"
+
+    const val PW_PREF = "password_preference" // 비밀번호 설정 Preference
+    const val PURPOSE = "password_purpose" // 비밀번호 사용 목적
+    const val COUNT = "delete_count" // 삭제한 메모 개수
+
     // 30일 * 24시간 * 60분 * 60초 * 1000밀리초
     const val THIRTY_DAYS_MS = 30L * 24 * 60 * 60 * 1000
     // 1일 * 24시간 * 60분 * 60초 * 1000밀리초
