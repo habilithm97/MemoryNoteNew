@@ -13,14 +13,25 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.viewModels
 import com.example.memorynotenew.common.Constants.MEMO
+import com.example.memorynotenew.common.Constants.TRASH
 import com.example.memorynotenew.databinding.FragmentMemoBinding
 import com.example.memorynotenew.room.entity.Memo
+import com.example.memorynotenew.room.entity.Trash
 import com.example.memorynotenew.viewmodel.MemoViewModel
 
 class MemoFragment : Fragment() {
     private var _binding: FragmentMemoBinding? = null // nullable
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
+
     private var memo: Memo? = null
+    private val trash: Trash? by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arguments?.getParcelable(TRASH, Trash::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            arguments?.getParcelable(TRASH)
+        }
+    }
     private val memoViewModel: MemoViewModel by viewModels()
 
     override fun onCreateView(
@@ -37,7 +48,7 @@ class MemoFragment : Fragment() {
         // 소프트 키보드 높이 만큼 EditText 하단 패딩 적용
         ViewCompat.setOnApplyWindowInsetsListener(binding.editText) { editText, insets ->
             val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-            editText.updatePadding(imeInsets.bottom)
+            editText.updatePadding(bottom = imeInsets.bottom)
             insets
         }
         memo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -47,6 +58,16 @@ class MemoFragment : Fragment() {
             arguments?.getParcelable(MEMO)
         }
         memo?.let { binding.editText.setText(it.content) }
+
+        trash?.let {
+            with(binding) {
+                editText.visibility = View.GONE
+                textView.apply {
+                    visibility = View.VISIBLE
+                    text = it.content
+                }
+            }
+        }
     }
 
     override fun onPause() {

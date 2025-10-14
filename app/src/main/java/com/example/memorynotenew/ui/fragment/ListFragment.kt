@@ -47,7 +47,7 @@ class ListFragment : Fragment() {
         // 소프트 키보드 높이 만큼 RecyclerView 하단 패딩 적용
         ViewCompat.setOnApplyWindowInsetsListener(binding.recyclerView) { recyclerView, insets ->
             val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-            recyclerView.updatePadding(imeInsets.bottom)
+            recyclerView.updatePadding(bottom = imeInsets.bottom)
             insets
         }
         setupAdapter()

@@ -13,7 +13,10 @@ import com.example.memorynotenew.common.Constants.ONE_DAYS_MS
 import com.example.memorynotenew.databinding.ItemMemoBinding
 import com.example.memorynotenew.room.entity.Trash
 
-class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLBACK) {
+// 아이템 클릭 시 실행될 동작을 외부에서 전달 받음
+class TrashAdapter(private val onItemClick: (Trash) -> Unit) :
+    ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLBACK) {
+
     private var selectedMemos = mutableSetOf<Int>() // 선택된 메모 리스트 (중복 방지)
 
     var isMultiSelect = false
@@ -53,6 +56,15 @@ class TrashAdapter : ListAdapter<Trash, TrashAdapter.TrashViewHolder>(DIFF_CALLB
                             } else {
                                 selectedMemos.remove(adapterPosition)
                             }
+                        }
+                    }
+                }
+                with(root) {
+                    if (isMultiSelect) {
+                        setOnClickListener(null)
+                    } else {
+                        setOnClickListener {
+                            onItemClick(trash)
                         }
                     }
                 }

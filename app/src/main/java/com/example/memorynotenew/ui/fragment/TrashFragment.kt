@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.memorynotenew.R
 import com.example.memorynotenew.adapter.TrashAdapter
+import com.example.memorynotenew.common.Constants.TRASH
 import com.example.memorynotenew.databinding.FragmentTrashBinding
 import com.example.memorynotenew.room.entity.Trash
 import com.example.memorynotenew.ui.activity.MainActivity
@@ -19,7 +20,7 @@ import com.example.memorynotenew.viewmodel.MemoViewModel
 class TrashFragment : Fragment() {
     private var _binding: FragmentTrashBinding? = null // nullable
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
-    private val trashAdapter by lazy { TrashAdapter() }
+    private lateinit var trashAdapter: TrashAdapter
     private val memoViewModel: MemoViewModel by viewModels()
 
     override fun onCreateView(
@@ -33,9 +34,26 @@ class TrashFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupAdapter()
         setupRecyclerView()
         setupObserver()
         memoViewModel.deleteOldTrash()
+    }
+
+    private fun setupAdapter() {
+        trashAdapter = TrashAdapter(
+            onItemClick = {
+                val memoFragment = MemoFragment().apply {
+                    arguments = Bundle().apply {
+                        putParcelable(TRASH, it)
+                    }
+                }
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, memoFragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+        )
     }
 
     private fun setupRecyclerView() {

@@ -3,6 +3,7 @@ package com.example.memorynotenew.common
 object Constants {
     const val MEMO = "memo"
     const val MEMOS = "memos"
+    const val TRASH = "trash"
 
     const val PW_PREF = "password_preference" // 비밀번호 설정 Preference
     const val PURPOSE = "password_purpose" // 비밀번호 사용 목적
