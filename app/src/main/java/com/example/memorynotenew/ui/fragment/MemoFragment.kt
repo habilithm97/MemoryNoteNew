@@ -3,6 +3,7 @@ package com.example.memorynotenew.ui.fragment
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -65,6 +66,7 @@ class MemoFragment : Fragment() {
                 textView.apply {
                     visibility = View.VISIBLE
                     text = it.content
+                    movementMethod = ScrollingMovementMethod() // 스크롤 활성화
                 }
             }
         }
