@@ -42,4 +42,7 @@
     <string name="emptied_trash">Trash emptied.</string>
     <string name="no_memos">No memos.</string>
     <string name="empty_trash">Trash is empty.</string>
+
+    <string name="login">Login</string>
+    <string name="login_summary">You can back up memos to the servers.</string>
 </resources>

@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.ActivitySettingsBinding
+import com.example.memorynotenew.ui.fragment.LoginFragment
 import com.example.memorynotenew.ui.fragment.PasswordFragment
 import com.example.memorynotenew.ui.fragment.SettingsFragment
 import com.example.memorynotenew.utils.PasswordManager
@@ -48,7 +49,7 @@ class SettingsActivity : AppCompatActivity() {
 
         supportActionBar?.apply {
             this.title = title
-            setDisplayHomeAsUpEnabled(currentFragment is SettingsFragment)
+            setDisplayHomeAsUpEnabled(currentFragment is SettingsFragment || currentFragment is LoginFragment)
         }
     }
 
@@ -63,6 +64,7 @@ class SettingsActivity : AppCompatActivity() {
                 getString(R.string.password_change)
             }
         }
+        is LoginFragment -> getString(R.string.login)
         else -> ""
     }
 
