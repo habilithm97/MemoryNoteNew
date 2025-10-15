@@ -105,7 +105,7 @@ class ListFragment : Fragment() {
     private fun showDeleteDialog(selectedMemos: List<Memo>, isMultiDelete: Boolean) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.delete))
-            .setMessage(getString(R.string.delete_dialog_msg))
+            .setMessage(getString(R.string.delete_dialog))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
                 if (isMultiDelete) { // 다중 삭제

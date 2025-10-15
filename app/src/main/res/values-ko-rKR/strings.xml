@@ -6,25 +6,26 @@
     <string name="date_format">yyyy. M. d. HH:mm</string>
 
     <string name="delete">삭제</string>
-    <string name="delete_dialog_msg">선택한 메모를 삭제할까요?</string>
+    <string name="delete_dialog">선택한 메모를 삭제할까요?</string>
     <string name="cancel">취소</string>
 
     <string name="settings">설정</string>
     <string name="password_settings">비밀번호 설정</string>
     <string name="password_settings_summary">비밀번호를 저장 및 변경합니다.</string>
-    <string name="password_save">비밀번호 저장</string>
+    <string name="password_create">비밀번호 생성</string>
     <string name="password_new">새 비밀번호 입력</string>
     <string name="password_confirm">비밀번호 확인</string>
     <string name="password_reenter">비밀번호 재입력</string>
-    <string name="password_saved">비밀번호 저장 완료!</string>
+    <string name="password_created">비밀번호 생성 완료!</string>
     <string name="password_change">비밀번호 변경</string>
     <string name="password_enter">비밀번호 입력</string>
     <string name="password_changed">비밀번호 변경 완료!</string>
 
     <string name="lock">잠금</string>
     <string name="password_required">먼저 잠금 비밀번호를 설정해주세요.</string>
-    <string name="unlock">잠금 해제</string>
     <string name="lock_memo">메모 잠금</string>
+    <string name="delete_memo">메모 삭제</string>
+    <string name="unlock">잠금 해제</string>
     <string name="unlock_memo">메모 잠금 해제</string>
 
     <string name="select_memo">메모 선택</string>
@@ -33,14 +34,13 @@
     <string name="deleted_count">%1$d개의 메모가 삭제되었습니다.</string>
 
     <string name="trash">휴지통</string>
-    <string name="restore">복원</string>
     <string name="days_left">%1$d일 후 자동 삭제</string>
+    <string name="restore">복원</string>
     <string name="select_memo_to_restore">복원할 메모를 선택해주세요.</string>
-    <string name="restore_dialog_msg">선택한 메모를 복원할까요?</string>
+    <string name="restore_dialog">선택한 메모를 복원할까요?</string>
     <string name="empty">비우기</string>
-    <string name="empty_trash_confirm">휴지통을 비울까요?</string>
-    <string name="delete_memo">메모 삭제</string>
-
+    <string name="empty_dialog">휴지통을 비울까요?</string>
+    <string name="emptied_trash">휴지통을 비웠습니다.</string>
     <string name="no_memos">메모가 없습니다.</string>
     <string name="empty_trash">휴지통이 비었습니다.</string>
 </resources>

@@ -117,7 +117,7 @@ class TrashFragment : Fragment() {
     private fun showDeleteDialog(selectedTrash: List<Trash>) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.delete))
-            .setMessage(getString(R.string.delete_dialog_msg))
+            .setMessage(getString(R.string.delete_dialog))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
                 deleteTrash(selectedTrash)
@@ -131,6 +131,7 @@ class TrashFragment : Fragment() {
         selectedTrash.forEach { memoViewModel.deleteTrash(it) }
         trashAdapter.isMultiSelect = false
         (activity as? MainActivity)?.toggleMenuVisibility(this, false)
+        requireContext().showToast(getString(R.string.deleted_count, selectedTrash.size))
     }
 
     // selectedTrash 복원
@@ -147,7 +148,7 @@ class TrashFragment : Fragment() {
     private fun showRestoreDialog(selectedTrash: List<Trash>) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.restore))
-            .setMessage(getString(R.string.restore_dialog_msg))
+            .setMessage(getString(R.string.restore_dialog))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.restore)) { dialog, _ ->
                 restoreMemo(selectedTrash)
@@ -166,10 +167,11 @@ class TrashFragment : Fragment() {
     fun showEmptyTrashDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.empty))
-            .setMessage(getString(R.string.empty_trash_confirm))
+            .setMessage(getString(R.string.empty_dialog))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.empty)) { dialog, _ ->
                 memoViewModel.emptyTrash()
+                requireContext().showToast(getString(R.string.emptied_trash))
                 dialog.dismiss()
             }
             .show()

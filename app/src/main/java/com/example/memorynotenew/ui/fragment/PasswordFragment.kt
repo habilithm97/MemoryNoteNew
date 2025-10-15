@@ -191,7 +191,7 @@ class PasswordFragment : Fragment() {
                     PasswordManager.savePassword(root.context, password.toString()) // 비밀번호 저장
 
                     val message = if (storedPassword.isNullOrEmpty()) {
-                        R.string.password_saved // 비밀번호 저장 완료!
+                        R.string.password_created // 비밀번호 저장 완료!
                     } else {
                         R.string.password_changed // 비밀번호 변경 완료!
                     }

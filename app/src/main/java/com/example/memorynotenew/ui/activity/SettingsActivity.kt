@@ -58,7 +58,7 @@ class SettingsActivity : AppCompatActivity() {
             val storedPassword = PasswordManager.getPassword(this)
 
             if (storedPassword.isNullOrEmpty()) {
-                getString(R.string.password_save)
+                getString(R.string.password_create)
             } else {
                 getString(R.string.password_change)
             }

@@ -5,41 +5,41 @@
     <string name="date_format">yyyy. M. d. HH:mm</string>
 
     <string name="delete">Delete</string>
-    <string name="delete_dialog_msg">Do you want to delete the selected memo?</string>
+    <string name="delete_dialog">Delete selected memo?</string>
     <string name="cancel">Cancel</string>
 
     <string name="settings">Settings</string>
-    <string name="password_settings">Set Password</string>
+    <string name="password_settings">Password Settings</string>
     <string name="password_settings_summary">Save or change your password.</string>
-    <string name="password_save">Save Password</string>
+    <string name="password_create">Create Password</string>
     <string name="password_new">Enter New Password</string>
     <string name="password_confirm">Confirm Password</string>
     <string name="password_reenter">Re-enter Password</string>
-    <string name="password_saved">Password saved successfully!</string>
+    <string name="password_created">Password created!</string>
     <string name="password_change">Change Password</string>
     <string name="password_enter">Enter Password</string>
-    <string name="password_changed">Password changed successfully!</string>
+    <string name="password_changed">Password changed!</string>
 
     <string name="lock">Lock</string>
     <string name="password_required">Please set a lock password first.</string>
-    <string name="unlock">Unlock</string>
     <string name="lock_memo">Lock Memo</string>
+    <string name="delete_memo">Delete Memo</string>
+    <string name="unlock">Unlock</string>
     <string name="unlock_memo">Unlock Memo</string>
 
     <string name="select_memo">Select Memo</string>
     <string name="all">All</string>
     <string name="select_memo_to_delete">Please select a memo to delete.</string>
-    <string name="deleted_count">%1$d memos deleted.</string>
+    <string name="deleted_count">%1$d memo(s) deleted.</string>
 
     <string name="trash">Trash</string>
-    <string name="restore">Restore</string>
     <string name="days_left">Auto delete in %1$d day(s)</string>
+    <string name="restore">Restore</string>
     <string name="select_memo_to_restore">Please select a memo to restore.</string>
-    <string name="restore_dialog_msg">Do you want to restore the selected memo?</string>
+    <string name="restore_dialog">Restore selected memo?</string>
     <string name="empty">Empty</string>
-    <string name="empty_trash_confirm">Do you want to empty the trash?</string>
-    <string name="delete_memo">Delete Memo</string>
-
+    <string name="empty_dialog">Empty the trash?</string>
+    <string name="emptied_trash">Trash emptied.</string>
     <string name="no_memos">No memos.</string>
     <string name="empty_trash">Trash is empty.</string>
 </resources>
