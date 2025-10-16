@@ -13,8 +13,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
-        val loginPref = findPreference<Preference>(SIGN_IN_PREF)
-        loginPref?.setOnPreferenceClickListener {
+        val signInPref = findPreference<Preference>(SIGN_IN_PREF)
+        signInPref?.setOnPreferenceClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.container, SignInFragment())
                 .addToBackStack(null)
