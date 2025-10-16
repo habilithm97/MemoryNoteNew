@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         }
         setSupportActionBar(binding.toolbar)
 
-        // 백스택 변경을 감지할 리스너를 먼저 등록
+        // 백 스택 변경을 감지할 리스너를 먼저 등록
         // 프래그먼트 전환 시 갱신
         supportFragmentManager.addOnBackStackChangedListener {
             setupActionBar()

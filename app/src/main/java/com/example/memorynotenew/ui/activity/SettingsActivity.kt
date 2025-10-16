@@ -28,18 +28,31 @@ class SettingsActivity : AppCompatActivity() {
         }
         setSupportActionBar(binding.toolbar)
 
-        // 백스택 변경을 감지할 리스너를 먼저 등록
+        // 백 스택 변경을 감지할 리스너를 먼저 등록
         // 프래그먼트 전환 시 갱신
         supportFragmentManager.addOnBackStackChangedListener {
             setupActionBar()
         }
         // 최초 실행 시 SettingsFragment 삽입
         if (savedInstanceState == null) {
-            replaceFragment(SettingsFragment())
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.container, SettingsFragment())
+                .commit() // 비동기 -> 프래그먼트가 즉시 붙지 않음
+            // 프래그먼트가 attach된 후 안전하게 갱신
+            binding.root.post {
+                setupActionBar()
+            }
         }
-        // 뒤로가기 버튼 클릭 시 액티비티 종료
-        onBackPressedDispatcher.addCallback(this, true) {
-            finish()
+        // 뒤로가기 동작
+        onBackPressedDispatcher.addCallback(this) {
+            with(supportFragmentManager) {
+                // 백 스택 있으면 -> 이전 화면으로 이동
+                if (backStackEntryCount > 0) {
+                    popBackStack()
+                } else { // 백 스택 없으면 -> 액티비티 종료
+                    finish()
+                }
+            }
         }
     }
 
@@ -70,14 +83,16 @@ class SettingsActivity : AppCompatActivity() {
 
     // 업 버튼 동작
     override fun onSupportNavigateUp(): Boolean {
-        finish()
+        with(supportFragmentManager) {
+            // 백 스택 있으면 -> 이전 화면으로 이동
+            return if (backStackEntryCount > 0) {
+                popBackStack()
+                true
+            } else { // 백 스택 없으면 -> 액티비티 종료
+                finish()
+                true
+            }
+        }
         return true
-    }
-
-    private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.container, fragment)
-            .addToBackStack(null)
-            .commit()
     }
 }
