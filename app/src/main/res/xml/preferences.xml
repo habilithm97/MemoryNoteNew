@@ -2,10 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
-        android:icon="@drawable/login"
-        android:key="login_preference"
-        android:summary="@string/login_summary"
-        android:title="@string/login" />
+        android:icon="@drawable/sign_in"
+        android:key="sign_in_preference"
+        android:summary="@string/sign_in_summary"
+        android:title="@string/sign_in" />
 
     <Preference
         android:icon="@drawable/lock"

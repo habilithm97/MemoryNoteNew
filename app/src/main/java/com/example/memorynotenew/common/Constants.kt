@@ -5,7 +5,7 @@ object Constants {
     const val MEMOS = "memos"
     const val TRASH = "trash"
 
-    const val LOGIN_PREF = "login_preference"
+    const val SIGN_IN_PREF = "sign_in_preference"
     const val PW_PREF = "password_preference" // 비밀번호 설정 Preference
     const val PURPOSE = "password_purpose" // 비밀번호 사용 목적
     const val COUNT = "delete_count" // 삭제한 메모 개수

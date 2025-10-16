@@ -43,6 +43,10 @@
     <string name="no_memos">No memos.</string>
     <string name="empty_trash">Trash is empty.</string>
 
-    <string name="login">Login</string>
-    <string name="login_summary">You can back up memos to the servers.</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_in_summary">You can back up memos to the servers.</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="find">Find Email/Password</string>
 </resources>

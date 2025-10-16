@@ -44,6 +44,10 @@
     <string name="no_memos">메모가 없습니다.</string>
     <string name="empty_trash">휴지통이 비었습니다.</string>
 
-    <string name="login">로그인</string>
-    <string name="login_summary">메모를 서버에 백업할 수 있습니다.</string>
+    <string name="sign_in">로그인</string>
+    <string name="sign_in_summary">메모를 서버에 백업할 수 있습니다.</string>
+    <string name="email">이메일</string>
+    <string name="password">비밀번호</string>
+    <string name="sign_up">회원가입</string>
+    <string name="find">이메일/비밀번호 찾기</string>
 </resources>
