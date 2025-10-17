@@ -31,21 +31,21 @@
         <item name="android:layout_marginEnd">24dp</item>
     </style>
 
-    <style name="SignInButton" parent="SignInFieldMargin">
+    <style name="MainButton" parent="SignInFieldMargin">
         <item name="backgroundTint">@color/main</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:fontFamily">@font/bookkmyungjo_bold</item>
         <item name="android:textSize">18sp</item>
     </style>
 
-    <style name="SignUpButton" parent="SignInFieldMargin">
+    <style name="SubButton1" parent="SignInFieldMargin">
         <item name="android:backgroundTint">@color/transparent</item>
         <item name="android:textColor">@color/main</item>
         <item name="android:fontFamily">@font/bookkmyungjo_bold</item>
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="FindButton" parent="SignInFieldMargin">
+    <style name="SubButton2" parent="SignInFieldMargin">
         <item name="android:backgroundTint">@color/transparent</item>
         <item name="android:textColor">@color/gray</item>
         <item name="android:fontFamily">@font/bookkmyungjo_bold</item>

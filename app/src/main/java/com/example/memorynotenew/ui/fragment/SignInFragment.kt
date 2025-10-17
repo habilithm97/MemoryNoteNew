@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.FragmentSignInBinding
 
 class SignInFragment : Fragment() {
@@ -17,5 +18,29 @@ class SignInFragment : Fragment() {
     ): View {
         _binding = FragmentSignInBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        with(binding) {
+            // 회원가입 버튼
+            btnSignUp.setOnClickListener {
+                replaceFragment(SignUpFragment())
+            }
+        }
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        _binding = null // 메모리 누수 방지
     }
 }

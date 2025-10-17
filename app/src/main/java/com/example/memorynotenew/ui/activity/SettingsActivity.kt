@@ -12,6 +12,7 @@ import com.example.memorynotenew.databinding.ActivitySettingsBinding
 import com.example.memorynotenew.ui.fragment.SignInFragment
 import com.example.memorynotenew.ui.fragment.PasswordFragment
 import com.example.memorynotenew.ui.fragment.SettingsFragment
+import com.example.memorynotenew.ui.fragment.SignUpFragment
 import com.example.memorynotenew.utils.PasswordManager
 
 class SettingsActivity : AppCompatActivity() {
@@ -62,7 +63,9 @@ class SettingsActivity : AppCompatActivity() {
 
         supportActionBar?.apply {
             this.title = title
-            setDisplayHomeAsUpEnabled(currentFragment is SettingsFragment || currentFragment is SignInFragment)
+            setDisplayHomeAsUpEnabled(
+                currentFragment is SettingsFragment || currentFragment is SignInFragment
+                        || currentFragment is SignUpFragment)
         }
     }
 
@@ -78,6 +81,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         is SignInFragment -> getString(R.string.sign_in)
+        is SignUpFragment -> getString(R.string.sign_up)
         else -> ""
     }
 
