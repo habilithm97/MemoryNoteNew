@@ -21,21 +21,12 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnVerify"
-        style="@style/SubButton1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/email_verify"
-        android:textAllCaps="false" />
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/pwLayout"
         style="@style/SignInFieldMargin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
