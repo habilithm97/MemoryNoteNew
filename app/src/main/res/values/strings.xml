@@ -49,12 +49,15 @@
     <string name="password">Password</string>
     <string name="sign_up">Sign Up</string>
     <string name="find">Find Email/Password</string>
-    <string name="email_verify">Verify Email</string>
+    <string name="sign_up_1">Sign Up</string>
     <string name="enter_all">Please fill in all fields.</string>
     <string name="invalid_email">Invalid email address.</string>
     <string name="password_too_short">Password must be at least 8 characters.</string>
     <string name="password_mismatch">Passwords do not match.</string>
-    <string name="email_verification_sent">Verification sent.</string>
-    <string name="email_verification_failed">Verification failed.</string>
     <string name="sign_up_failed">Sign up failed.</string>
+    <string name="verify">Verify</string>
+    <string name="verified">Verified</string>
+    <string name="email_sent">Verification email has been sent. Please check your email.</string>
+    <string name="email_fail">Failed to send verification email.</string>
+    <string name="password_rule">8–16 characters, including letters and numbers.</string>
 </resources>

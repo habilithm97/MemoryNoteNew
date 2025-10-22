@@ -50,12 +50,15 @@
     <string name="password">비밀번호</string>
     <string name="sign_up">회원가입</string>
     <string name="find">이메일/비밀번호 찾기</string>
-    <string name="email_verify">이메일 인증</string>
+    <string name="sign_up_1">가입하기</string>
     <string name="enter_all">모든 항목을 입력해주세요.</string>
     <string name="invalid_email">올바른 이메일 형식이 아닙니다.</string>
     <string name="password_too_short">비밀번호는 8자 이상이어야 합니다.</string>
     <string name="password_mismatch">비밀번호가 일치하지 않습니다.</string>
-    <string name="email_verification_sent">인증 메일 전송 완료</string>
-    <string name="email_verification_failed">인증 메일 전송 실패</string>
     <string name="sign_up_failed">회원가입에 실패했습니다.</string>
+    <string name="verify">인증</string>
+    <string name="verified">인증 완료</string>
+    <string name="email_sent">인증 메일이 발송되었습니다. 이메일을 확인해주세요.</string>
+    <string name="email_fail">인증 메일 발송 실패</string>
+    <string name="password_rule">영문, 숫자 조합 8~16자리</string>
 </resources>

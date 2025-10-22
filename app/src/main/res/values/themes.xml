@@ -26,26 +26,26 @@
         <item name="android:textSize">20sp</item>
     </style>
 
-    <style name="SignInFieldMargin">
+    <style name="FieldMargin">
         <item name="android:layout_marginStart">24dp</item>
         <item name="android:layout_marginEnd">24dp</item>
     </style>
 
-    <style name="MainButton" parent="SignInFieldMargin">
+    <style name="MainButton" parent="FieldMargin">
         <item name="backgroundTint">@color/main</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:fontFamily">@font/bookkmyungjo_bold</item>
         <item name="android:textSize">18sp</item>
     </style>
 
-    <style name="SubButton1" parent="SignInFieldMargin">
+    <style name="SubButton1" parent="FieldMargin">
         <item name="android:backgroundTint">@color/transparent</item>
         <item name="android:textColor">@color/main</item>
         <item name="android:fontFamily">@font/bookkmyungjo_bold</item>
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="SubButton2" parent="SignInFieldMargin">
+    <style name="SubButton2" parent="FieldMargin">
         <item name="android:backgroundTint">@color/transparent</item>
         <item name="android:textColor">@color/gray</item>
         <item name="android:fontFamily">@font/bookkmyungjo_bold</item>
