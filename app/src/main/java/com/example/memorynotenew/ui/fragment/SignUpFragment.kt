@@ -6,6 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.FragmentSignUpBinding
 import com.example.memorynotenew.utils.ToastUtil.showToast
@@ -28,8 +31,18 @@ class SignUpFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 소프트 키보드 높이 만큼 rootLayout 하단 패딩 적용
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rootLayout) { rootLayout, insets ->
+            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+            rootLayout.updatePadding(bottom = imeInsets.bottom)
+            insets
+        }
         auth = FirebaseAuth.getInstance()
 
+        handleSignUp()
+    }
+
+    private fun handleSignUp() {
         with(binding) {
             btnSignUp.setOnClickListener {
                 val email = edtEmail.text.toString().trim()
@@ -61,13 +74,13 @@ class SignUpFragment : Fragment() {
                     if (task.isSuccessful) { // 회원가입 성공
                         val user = auth.currentUser // 현재 생성된 사용자
                         user?.sendEmailVerification()?.addOnCompleteListener { verifyTask ->
-                                if (verifyTask.isSuccessful) { // 인증 메일 전송 완료
-                                    requireContext().showToast(getString(R.string.email_verification_sent))
-                                    requireActivity().supportFragmentManager.popBackStack()
-                                } else { // 인증 메일 전송 실패
-                                    requireContext().showToast(getString(R.string.email_verification_failed))
-                                }
+                            if (verifyTask.isSuccessful) { // 인증 메일 전송 완료
+                                requireContext().showToast(getString(R.string.email_verification_sent))
+                                requireActivity().supportFragmentManager.popBackStack()
+                            } else { // 인증 메일 전송 실패
+                                requireContext().showToast(getString(R.string.email_verification_failed))
                             }
+                        }
                     } else { // 회원가입 실패
                         requireContext().showToast(getString(R.string.sign_up_failed))
                     }
