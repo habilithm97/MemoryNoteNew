@@ -59,5 +59,8 @@
     <string name="verified">Verified</string>
     <string name="email_sent">Verification email has been sent. Please check your email.</string>
     <string name="email_fail">Failed to send verification email.</string>
-    <string name="password_rule">8–16 characters, including letters and numbers.</string>
+    <string name="password_hint">Password (8–16, A–Z + 0–9)</string>
+    <string name="email_empty">Please enter your email.</string>
+    <string name="email_already_exists">Email already exists.</string>
+    <string name="email_verification_fail">Verification request failed</string>
 </resources>

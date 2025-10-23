@@ -13,6 +13,8 @@ import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.FragmentSignUpBinding
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import java.util.UUID
 
 class SignUpFragment : Fragment() {
     private var _binding: FragmentSignUpBinding? = null // nullable
@@ -39,7 +41,52 @@ class SignUpFragment : Fragment() {
         }
         auth = FirebaseAuth.getInstance()
 
+        handleVerification()
         handleSignUp()
+    }
+
+    private fun handleVerification() {
+        with(binding) {
+            btnVerify.setOnClickListener {
+                val email = edtEmail.text.toString().trim()
+
+                // 이메일을 입력해주세요.
+                if (email.isEmpty()) {
+                    requireContext().showToast(getString(R.string.email_empty))
+                    return@setOnClickListener
+                }
+                // 올바른 이메일 형식이 아닙니다.
+                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    requireContext().showToast(getString(R.string.invalid_email))
+                    return@setOnClickListener
+                }
+                // 임시 사용자 생성 및 인증 메일 발송
+                val tempPassword = UUID.randomUUID().toString() // 임시 비밀번호
+                    auth.createUserWithEmailAndPassword(email, tempPassword)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val tempUser = auth.currentUser // 임시 사용자
+                            tempUser?.sendEmailVerification() // 인증 메일 발송
+                                // 인증 메일 발송 완료. 이메일을 확인하세요.
+                                ?.addOnCompleteListener {
+                                    tvSentEmail.visibility = View.VISIBLE
+                                } // 인증 메일 발송 실패
+                                ?.addOnFailureListener {
+                                    tvSentEmail.text = getString(R.string.email_fail)
+                                }
+                        } else { // 생성 실패
+                            val exception = task.exception
+                            if (exception is FirebaseAuthUserCollisionException) {
+                                // 이메일이 이미 존재합니다.
+                                tvSentEmail.text = getString(R.string.email_already_exists)
+                            } else { // 인증 요청 실패
+                                tvSentEmail.text = getString(R.string.email_verification_fail)
+                                requireContext().showToast("${exception?.message}")
+                            }
+                        }
+                    }
+            }
+        }
     }
 
     private fun handleSignUp() {
@@ -69,6 +116,7 @@ class SignUpFragment : Fragment() {
                     requireContext().showToast(getString(R.string.password_mismatch))
                     return@setOnClickListener
                 }
+                /*
                 // 회원가입
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                     if (task.isSuccessful) { // 회원가입 성공
@@ -84,7 +132,7 @@ class SignUpFragment : Fragment() {
                     } else { // 회원가입 실패
                         requireContext().showToast(getString(R.string.sign_up_failed))
                     }
-                }
+                }*/
             }
         }
     }
