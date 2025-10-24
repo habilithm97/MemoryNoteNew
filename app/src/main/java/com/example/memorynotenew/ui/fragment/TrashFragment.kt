@@ -108,7 +108,7 @@ class TrashFragment : Fragment() {
         val selectedTrash = trashAdapter.getSelectedTrash() // selectedTrash 가져오기
 
         if (selectedTrash.isEmpty()) { // 없으면
-            requireContext().showToast(getString(R.string.select_memo_to_delete))
+            requireContext().showToast(getString(R.string.restore_select))
         } else { // 있으면
             showDeleteDialog(selectedTrash)
         }
@@ -139,7 +139,7 @@ class TrashFragment : Fragment() {
         val selectedTrash = trashAdapter.getSelectedTrash() // selectedTrash 가져오기
 
         if (selectedTrash.isEmpty()) { // 없으면
-            requireContext().showToast(getString(R.string.select_memo_to_restore))
+            requireContext().showToast(getString(R.string.restore_select))
         } else { // 있으면
             showRestoreDialog(selectedTrash)
         }

@@ -276,7 +276,7 @@ class ListFragment : Fragment() {
         val selectedMemos = memoAdapter.getSelectedMemos() // selectedMemos 가져오기
 
         if (selectedMemos.isEmpty()) { // 없으면
-            requireContext().showToast(getString(R.string.select_memo_to_delete))
+            requireContext().showToast(getString(R.string.delete_select))
         } else { // 있으면
             showDeleteDialog(selectedMemos, true)
         }

@@ -3,64 +3,65 @@
 
     <string name="memo">Memo</string>
     <string name="date_format">yyyy. M. d. HH:mm</string>
+    <string name="cancel">Cancel</string>
+    <string name="settings">Settings</string>
+    <string name="select_memo">Select Memo</string>
+    <string name="all">All</string>
+    <string name="no_memos">No memos.</string>
 
     <string name="delete">Delete</string>
-    <string name="delete_dialog">Delete selected memo?</string>
-    <string name="cancel">Cancel</string>
+    <string name="delete_dialog">Delete selected memo(s)?</string>
+    <string name="delete_memo">Delete Memo</string>
+    <string name="delete_select">Select memo(s) to delete.</string>
+    <string name="deleted_count">%1$d memo(s) deleted.</string>
+    <string name="days_left">Auto-delete in %1$d days</string>
 
-    <string name="settings">Settings</string>
-    <string name="password_settings">Password Settings</string>
-    <string name="password_settings_summary">Save or change your password.</string>
+    <string name="password">Password</string>
+    <string name="password_required">Set a lock password first.</string>
+    <string name="password_setting">Password Setting</string>
+    <string name="password_summary">Save and change password.</string>
     <string name="password_create">Create Password</string>
     <string name="password_new">Enter New Password</string>
     <string name="password_confirm">Confirm Password</string>
     <string name="password_reenter">Re-enter Password</string>
-    <string name="password_created">Password created!</string>
+    <string name="password_created">Password created</string>
     <string name="password_change">Change Password</string>
     <string name="password_enter">Enter Password</string>
-    <string name="password_changed">Password changed!</string>
+    <string name="password_changed">Password changed</string>
+    <string name="password_hint">Password (8–16, A–Z + 0–9)</string>
+    <string name="password_invalid">Password does not meet requirements.</string>
+    <string name="password_mismatch">Passwords do not match.</string>
 
     <string name="lock">Lock</string>
-    <string name="password_required">Please set a lock password first.</string>
-    <string name="lock_memo">Lock Memo</string>
-    <string name="delete_memo">Delete Memo</string>
     <string name="unlock">Unlock</string>
+    <string name="lock_memo">Lock Memo</string>
     <string name="unlock_memo">Unlock Memo</string>
 
-    <string name="select_memo">Select Memo</string>
-    <string name="all">All</string>
-    <string name="select_memo_to_delete">Please select a memo to delete.</string>
-    <string name="deleted_count">%1$d memo(s) deleted.</string>
-
     <string name="trash">Trash</string>
-    <string name="days_left">Auto delete in %1$d day(s)</string>
     <string name="restore">Restore</string>
-    <string name="select_memo_to_restore">Please select a memo to restore.</string>
-    <string name="restore_dialog">Restore selected memo?</string>
+    <string name="restore_select">Select memo(s) to restore.</string>
+    <string name="restore_dialog">Restore selected memo(s)?</string>
     <string name="empty">Empty</string>
     <string name="empty_dialog">Empty the trash?</string>
     <string name="emptied_trash">Trash emptied.</string>
-    <string name="no_memos">No memos.</string>
     <string name="empty_trash">Trash is empty.</string>
 
     <string name="sign_in">Sign In</string>
-    <string name="sign_in_summary">You can back up memos to the servers.</string>
+    <string name="sign_in_summary">Back up memo(s) to the server.</string>
     <string name="email">Email</string>
-    <string name="password">Password</string>
     <string name="sign_up">Sign Up</string>
-    <string name="find">Find Email/Password</string>
-    <string name="sign_up_1">Sign Up</string>
-    <string name="enter_all">Please fill in all fields.</string>
-    <string name="invalid_email">Invalid email address.</string>
-    <string name="password_too_short">Password must be at least 8 characters.</string>
-    <string name="password_mismatch">Passwords do not match.</string>
-    <string name="sign_up_failed">Sign up failed.</string>
+    <string name="forgot">Forgot email/password.</string>
     <string name="verify">Verify</string>
+    <string name="email_enter">Enter your email.</string>
+    <string name="email_invalid">Invalid email address.</string>
+    <string name="email_exists">Email already exists.</string>
+    <string name="email_sent">Verification email sent. Check your email.</string>
+    <string name="email_failed">Failed to send verification email.</string>
+    <string name="verify_failed">Verification failed.</string>
     <string name="verified">Verified</string>
-    <string name="email_sent">Verification email has been sent. Please check your email.</string>
-    <string name="email_fail">Failed to send verification email.</string>
-    <string name="password_hint">Password (8–16, A–Z + 0–9)</string>
-    <string name="email_empty">Please enter your email.</string>
-    <string name="email_already_exists">Email already exists.</string>
-    <string name="email_verification_fail">Verification request failed</string>
+    <string name="email_verified">Email verified.</string>
+    <string name="email_unverified">Email verification is not completed.</string>
+    <string name="sign_up_button">Sign Up</string>
+    <string name="enter_all">Fill in all fields.</string>
+
 </resources>
