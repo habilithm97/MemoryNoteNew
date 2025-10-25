@@ -32,6 +32,7 @@
     <string name="password_invalid">Password does not meet requirements.</string>
     <string name="password_mismatch">Passwords do not match.</string>
     <string name="password_weak">Weak password.</string>
+    <string name="password_wrong">Password is wrong.</string>
 
     <string name="lock">Lock</string>
     <string name="unlock">Unlock</string>
@@ -59,5 +60,9 @@
     <string name="sign_up_failed">Sign-up failed.</string>
     <string name="email_sent">Verification email sent. Check your inbox.</string>
     <string name="email_failed">Failed to send verification email.</string>
+    <string name="email_not_verified">Email not verified.</string>
+    <string name="email_not_found">Email not found.</string>
+    <string name="network_error">Network error occurred.</string>
+    <string name="sign_in_failed">Sign-in failed.</string>
 
 </resources>
