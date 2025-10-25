@@ -31,6 +31,7 @@
     <string name="password_hint">Password (8–16, A–Z + 0–9)</string>
     <string name="password_invalid">Password does not meet requirements.</string>
     <string name="password_mismatch">Passwords do not match.</string>
+    <string name="password_weak">Weak password.</string>
 
     <string name="lock">Lock</string>
     <string name="unlock">Unlock</string>
@@ -51,17 +52,12 @@
     <string name="email">Email</string>
     <string name="sign_up">Sign Up</string>
     <string name="forgot">Forgot email/password.</string>
-    <string name="verify">Verify</string>
-    <string name="email_enter">Enter your email.</string>
-    <string name="email_invalid">Invalid email address.</string>
-    <string name="email_exists">Email already exists.</string>
-    <string name="email_sent">Verification email sent. Check your email.</string>
-    <string name="email_failed">Failed to send verification email.</string>
-    <string name="verify_failed">Verification failed.</string>
-    <string name="verified">Verified</string>
-    <string name="email_verified">Email verified.</string>
-    <string name="email_unverified">Email verification is not completed.</string>
     <string name="sign_up_button">Sign Up</string>
     <string name="enter_all">Fill in all fields.</string>
+    <string name="email_invalid">Invalid email address.</string>
+    <string name="email_exists">Email already exists.</string>
+    <string name="sign_up_failed">Sign-up failed.</string>
+    <string name="email_sent">Verification email sent. Check your inbox.</string>
+    <string name="email_failed">Failed to send verification email.</string>
 
 </resources>
