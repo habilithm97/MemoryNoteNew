@@ -64,5 +64,7 @@
     <string name="email_not_found">Email not found.</string>
     <string name="network_error">Network error occurred.</string>
     <string name="sign_in_failed">Sign-in failed.</string>
+    <string name="back_up">Back-up</string>
+    <string name="back_up_summary">Back-up your memos.</string>
 
 </resources>

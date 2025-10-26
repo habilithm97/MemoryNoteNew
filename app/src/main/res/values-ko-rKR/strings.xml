@@ -65,4 +65,6 @@
     <string name="email_not_found">등록된 이메일이 없습니다.</string>
     <string name="network_error">네트워크 오류가 발생했습니다.</string>
     <string name="sign_in_failed">로그인에 실패했습니다.</string>
+    <string name="back_up">백업</string>
+    <string name="back_up_summary">메모를 백업하세요.</string>
 </resources>

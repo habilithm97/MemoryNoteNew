@@ -13,4 +13,11 @@
         android:summary="@string/password_summary"
         android:title="@string/password_setting" />
 
+    <Preference
+        android:enabled="false"
+        android:icon="@drawable/back_up"
+        android:key="back_up_preference"
+        android:summary="@string/back_up_summary"
+        android:title="@string/back_up" />
+
 </PreferenceScreen>
