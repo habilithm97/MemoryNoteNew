@@ -27,7 +27,7 @@
     <string name="password_created">Password created</string>
     <string name="password_change">Change Password</string>
     <string name="password_enter">Enter Password</string>
-    <string name="password_changed">Password changed</string>
+    <string name="password_changed">Password changed.</string>
     <string name="password_hint">Password (8–16, A–Z + 0–9)</string>
     <string name="password_invalid">Password does not meet requirements.</string>
     <string name="password_mismatch">Passwords do not match.</string>
@@ -49,7 +49,7 @@
     <string name="empty_trash">Trash is empty.</string>
 
     <string name="sign_in">Sign In</string>
-    <string name="sign_in_summary">Back up memo(s) to the server.</string>
+    <string name="sign_in_summary">Back up memos to the server.</string>
     <string name="email">Email</string>
     <string name="sign_up">Sign Up</string>
     <string name="forgot">Forgot email/password.</string>
@@ -66,5 +66,9 @@
     <string name="sign_in_failed">Sign-in failed.</string>
     <string name="back_up">Back-up</string>
     <string name="back_up_summary">Back-up your memos.</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_out_summary">Backup will stop.</string>
+    <string name="sign_out_dialog">Sign out?</string>
+    <string name="ok">Ok</string>
 
 </resources>

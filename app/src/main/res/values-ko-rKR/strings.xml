@@ -67,4 +67,8 @@
     <string name="sign_in_failed">로그인에 실패했습니다.</string>
     <string name="back_up">백업</string>
     <string name="back_up_summary">메모를 백업하세요.</string>
+    <string name="sign_out">로그아웃</string>
+    <string name="sign_out_summary">백업이 중단됩니다.</string>
+    <string name="sign_out_dialog">로그아웃할까요?</string>
+    <string name="ok">확인</string>
 </resources>

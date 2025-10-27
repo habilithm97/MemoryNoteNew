@@ -20,4 +20,10 @@
         android:summary="@string/back_up_summary"
         android:title="@string/back_up" />
 
+    <Preference
+        android:icon="@drawable/sign_out"
+        android:key="sign_out_preference"
+        android:summary="@string/sign_out_summary"
+        android:title="@string/sign_out" />
+
 </PreferenceScreen>
