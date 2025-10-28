@@ -158,7 +158,7 @@ class PasswordFragment : Fragment() {
             lifecycleScope.launch {
                 delay(500)
                 when (passwordPurpose) {
-                    PasswordPurpose.SETTINGS -> { // 설정
+                    PasswordPurpose.SETTING -> { // 설정
                         when (passwordInput) {
                             PasswordInput.NEW -> newPassword() // 새 비밀번호 저장
                             PasswordInput.ENTER -> updatePassword() // 비밀번호 변경
