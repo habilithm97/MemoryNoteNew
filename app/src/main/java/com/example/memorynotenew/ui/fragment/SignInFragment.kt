@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -22,6 +23,7 @@ class SignInFragment : Fragment() {
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,9 +40,9 @@ class SignInFragment : Fragment() {
 
         with(binding) {
             // 소프트 키보드 높이 만큼 rootLayout 하단 패딩 적용
-            ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { rootLayout, insets ->
+            ViewCompat.setOnApplyWindowInsetsListener(linearLayout) { linearLayout, insets ->
                 val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-                rootLayout.updatePadding(bottom = imeInsets.bottom)
+                linearLayout.updatePadding(bottom = imeInsets.bottom)
                 insets
             }
             // 회원가입 버튼
@@ -50,6 +52,7 @@ class SignInFragment : Fragment() {
             btnSignIn.setOnClickListener {
                 handleSignIn()
             }
+            this@SignInFragment.progressBar = progressBar
         }
     }
 
@@ -68,9 +71,13 @@ class SignInFragment : Fragment() {
                 requireContext().showToast(getString(R.string.email_invalid))
                 return
             }
+            showProgress(true)
+
             // 로그인
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
+                    showProgress(false)
+
                     if (task.isSuccessful) { // 성공
                         val user = auth.currentUser
 
@@ -93,6 +100,10 @@ class SignInFragment : Fragment() {
                     }
                 }
         }
+    }
+
+    private fun showProgress(show: Boolean) {
+        progressBar.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun replaceFragment(fragment: Fragment) {

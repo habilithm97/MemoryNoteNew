@@ -2,15 +2,12 @@ package com.example.memorynotenew.ui.fragment
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ProgressBar
-import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.memorynotenew.R
@@ -20,8 +17,6 @@ import com.example.memorynotenew.common.Constants.SIGN_IN_PREF
 import com.example.memorynotenew.common.Constants.SIGN_OUT_PREF
 import com.example.memorynotenew.common.PasswordPurpose
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -29,7 +24,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var signInPref: Preference? = null
     private var backupPref: Preference? = null
     private var signOutPref: Preference? = null
-    private lateinit var progressBar: ProgressBar
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -70,43 +64,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
             .setMessage(getString(R.string.sign_out_dialog))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
-                dialog.dismiss() // 대화상자 닫기
-                showProgress(true) // ProgressBar 표시
+                dialog.dismiss()
 
-                viewLifecycleOwner.lifecycleScope.launch {
-                    delay(1000) // 1초 대기
-                    auth.signOut() // Firebase 로그아웃
-                    showProgress(false) // ProgressBar 숨기기
-                    onResume() // 화면 갱신
-                }
+                auth.signOut()
+                onResume()
             }
             .show()
-    }
-
-    private fun showProgress(show: Boolean) {
-        progressBar.visibility = if (show) View.VISIBLE else View.GONE
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        // 기본 Preference 화면
-        val rootView = super.onCreateView(inflater, container, savedInstanceState)
-
-        progressBar = ProgressBar(requireContext()).apply {
-            isIndeterminate = true // 진행 표시 없음
-            visibility = View.GONE
-        }
-        return FrameLayout(requireContext()).apply {
-            addView(rootView)
-            addView(progressBar, FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER
-            ))
-        }
     }
 
     override fun onResume() {
