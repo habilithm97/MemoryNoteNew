@@ -45,7 +45,7 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="SubButton2" parent="FieldMargin">
+    <style name="SubButton2">
         <item name="android:backgroundTint">@color/transparent</item>
         <item name="android:textColor">@color/gray</item>
         <item name="android:fontFamily">@font/bookkmyungjo_bold</item>

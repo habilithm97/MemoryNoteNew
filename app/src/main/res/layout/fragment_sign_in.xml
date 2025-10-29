@@ -15,7 +15,8 @@
             android:id="@+id/emailLayout"
             style="@style/FieldMargin"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:endIconMode="clear_text">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edtEmail"
@@ -72,15 +73,37 @@
             android:text="@string/sign_up"
             android:textAllCaps="false" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnFind"
-            style="@style/SubButton2"
+        <LinearLayout
+            style="@style/FieldMargin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/forgot"
-            android:textAllCaps="false" />
+            android:gravity="center">
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnForgotEmail"
+                style="@style/SubButton2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/email_forgot"
+                android:textAllCaps="false" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="?android:attr/listDivider" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnForgotPw"
+                style="@style/SubButton2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/password_forgot"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <ProgressBar
