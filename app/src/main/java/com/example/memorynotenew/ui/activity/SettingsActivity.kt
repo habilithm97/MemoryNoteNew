@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.ActivitySettingsBinding
+import com.example.memorynotenew.ui.fragment.FindPwFragment
 import com.example.memorynotenew.ui.fragment.SignInFragment
 import com.example.memorynotenew.ui.fragment.PasswordFragment
 import com.example.memorynotenew.ui.fragment.SettingsFragment
@@ -65,7 +66,8 @@ class SettingsActivity : AppCompatActivity() {
             this.title = title
             setDisplayHomeAsUpEnabled(
                 currentFragment is SettingsFragment || currentFragment is SignInFragment
-                        || currentFragment is SignUpFragment)
+                        || currentFragment is SignUpFragment || currentFragment is FindPwFragment
+            )
         }
     }
 
@@ -82,6 +84,7 @@ class SettingsActivity : AppCompatActivity() {
         }
         is SignInFragment -> getString(R.string.sign_in)
         is SignUpFragment -> getString(R.string.sign_up)
+        is FindPwFragment -> getString(R.string.password_change)
         else -> ""
     }
 

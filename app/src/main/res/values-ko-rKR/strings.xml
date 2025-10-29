@@ -72,4 +72,6 @@
     <string name="sign_out_dialog">로그아웃할까요?</string>
     <string name="ok">확인</string>
     <string name="email_forgot">이메일 찾기</string>
+    <string name="find_by_email">이메일 주소로 찾기</string>
+    <string name="verify">인증하기</string>
 </resources>

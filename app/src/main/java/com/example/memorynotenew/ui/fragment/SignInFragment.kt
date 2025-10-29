@@ -39,7 +39,7 @@ class SignInFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
 
         with(binding) {
-            // 소프트 키보드 높이 만큼 rootLayout 하단 패딩 적용
+            // 소프트 키보드 높이 만큼 linearLayout 하단 패딩 적용
             ViewCompat.setOnApplyWindowInsetsListener(linearLayout) { linearLayout, insets ->
                 val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
                 linearLayout.updatePadding(bottom = imeInsets.bottom)
@@ -49,10 +49,16 @@ class SignInFragment : Fragment() {
             btnSignUp.setOnClickListener {
                 replaceFragment(SignUpFragment())
             }
+            // 로그인 버튼
             btnSignIn.setOnClickListener {
                 handleSignIn()
             }
             this@SignInFragment.progressBar = progressBar
+
+            // 비밀번호 찾기 버튼
+            btnForgotPw.setOnClickListener {
+                replaceFragment(FindPwFragment())
+            }
         }
     }
 

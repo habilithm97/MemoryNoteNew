@@ -71,4 +71,6 @@
     <string name="sign_out_dialog">Sign out?</string>
     <string name="ok">Ok</string>
     <string name="email_forgot">Forgot Email</string>
+    <string name="find_by_email">Find by Email</string>
+    <string name="verify">Verify</string>
 </resources>
