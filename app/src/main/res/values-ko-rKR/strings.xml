@@ -35,6 +35,8 @@
     <string name="password_weak">비밀번호의 보안 수준이 약합니다.</string>
     <string name="password_wrong">비밀번호가 틀렸습니다.</string>
     <string name="password_forgot">비밀번호 찾기</string>
+    <string name="password_reset_failed">비밀번호 재설정에 실패했습니다.</string>
+    <string name="password_reset_email_sent">비밀번호 재설정 메일을 보냈습니다. 이메일을 확인해주세요.</string>
 
     <string name="lock">잠금</string>
     <string name="unlock">잠금 해제</string>

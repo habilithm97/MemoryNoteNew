@@ -61,12 +61,17 @@ class SettingsActivity : AppCompatActivity() {
     private fun setupActionBar() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
         val title = getFragmentTitle(currentFragment)
+        val fragments = listOf(
+            SettingsFragment::class,
+            SignInFragment::class,
+            SignUpFragment::class,
+            FindPwFragment::class
+        )
 
         supportActionBar?.apply {
             this.title = title
             setDisplayHomeAsUpEnabled(
-                currentFragment is SettingsFragment || currentFragment is SignInFragment
-                        || currentFragment is SignUpFragment || currentFragment is FindPwFragment
+                fragments.any { it.isInstance(currentFragment) }
             )
         }
     }

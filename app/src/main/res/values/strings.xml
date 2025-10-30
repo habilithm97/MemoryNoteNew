@@ -34,6 +34,8 @@
     <string name="password_weak">Weak password.</string>
     <string name="password_wrong">Password is wrong.</string>
     <string name="password_forgot">Forgot Password</string>
+    <string name="password_reset_failed">Password reset failed.</string>
+    <string name="password_reset_email_sent">Password reset email sent. Check your inbox.</string>
 
     <string name="lock">Lock</string>
     <string name="unlock">Unlock</string>
