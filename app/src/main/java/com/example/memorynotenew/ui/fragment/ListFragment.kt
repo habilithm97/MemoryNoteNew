@@ -91,7 +91,7 @@ class ListFragment : Fragment() {
                         val storedPassword = PasswordManager.getPassword(requireContext())
 
                         if (storedPassword.isNullOrEmpty()) { // 저장된 비밀번호가 없으면
-                            requireContext().showToast(getString(R.string.password_required))
+                            requireContext().showToast(getString(R.string.set_lock_password_first))
                         } else { // 저장된 비밀번호가 있으면
                             val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK, memo)
                             replaceFragment(passwordFragment)
@@ -105,7 +105,7 @@ class ListFragment : Fragment() {
     private fun showDeleteDialog(selectedMemos: List<Memo>, isMultiDelete: Boolean) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.delete))
-            .setMessage(getString(R.string.delete_dialog))
+            .setMessage(getString(R.string.dialog_delete))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
                 if (isMultiDelete) { // 다중 삭제
@@ -127,7 +127,7 @@ class ListFragment : Fragment() {
             replaceFragment(passwordFragment)
         } else { // 메모가 잠겨 있지 않으면
             memoViewModel.moveMemoToTrash(memo)
-            requireContext().showToast(getString(R.string.deleted_count, 1))
+            requireContext().showToast(getString(R.string.delete_memo_result, 1))
         }
     }
 
@@ -148,7 +148,7 @@ class ListFragment : Fragment() {
             )
             replaceFragment(passwordFragment)
         } else { // 잠긴 메모가 없으면
-            requireContext().showToast(getString(R.string.deleted_count, selectedMemos.size))
+            requireContext().showToast(getString(R.string.delete_memo_result, selectedMemos.size))
         }
         memoAdapter.isMultiSelect = false
         (activity as? MainActivity)?.toggleMenuVisibility(this, false)
@@ -276,7 +276,7 @@ class ListFragment : Fragment() {
         val selectedMemos = memoAdapter.getSelectedMemos() // selectedMemos 가져오기
 
         if (selectedMemos.isEmpty()) { // 없으면
-            requireContext().showToast(getString(R.string.delete_select))
+            requireContext().showToast(getString(R.string.select_memo_to_delete))
         } else { // 있으면
             showDeleteDialog(selectedMemos, true)
         }

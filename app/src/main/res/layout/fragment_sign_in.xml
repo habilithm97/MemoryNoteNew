@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/bookkmyungjo_light"
-            android:text="@string/email_not_verified"
+            android:text="@string/email_verification_required"
             android:textColor="@color/red"
             android:visibility="gone" />
 
@@ -67,7 +67,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSignUp"
             style="@style/SubButton1"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/sign_up"
@@ -86,7 +86,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/email_forgot"
+                android:text="@string/find_email"
                 android:textAllCaps="false" />
 
             <View
@@ -100,7 +100,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/password_forgot"
+                android:text="@string/find_password"
                 android:textAllCaps="false" />
 
         </LinearLayout>

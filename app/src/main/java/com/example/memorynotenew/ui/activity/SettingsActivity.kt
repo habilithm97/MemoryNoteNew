@@ -67,7 +67,6 @@ class SettingsActivity : AppCompatActivity() {
             SignUpFragment::class,
             FindPwFragment::class
         )
-
         supportActionBar?.apply {
             this.title = title
             setDisplayHomeAsUpEnabled(
@@ -82,14 +81,14 @@ class SettingsActivity : AppCompatActivity() {
             val storedPassword = PasswordManager.getPassword(this)
 
             if (storedPassword.isNullOrEmpty()) {
-                getString(R.string.password_create)
+                getString(R.string.create_lock_password)
             } else {
-                getString(R.string.password_change)
+                getString(R.string.change_lock_password)
             }
         }
         is SignInFragment -> getString(R.string.sign_in)
         is SignUpFragment -> getString(R.string.sign_up)
-        is FindPwFragment -> getString(R.string.password_change)
+        is FindPwFragment -> getString(R.string.change_lock_password)
         else -> ""
     }
 

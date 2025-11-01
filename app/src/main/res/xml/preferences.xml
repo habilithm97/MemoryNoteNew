@@ -10,15 +10,15 @@
     <Preference
         android:icon="@drawable/lock"
         android:key="password_preference"
-        android:summary="@string/password_summary"
-        android:title="@string/password_setting" />
+        android:summary="@string/lock_password_setting_summary"
+        android:title="@string/lock_password_setting" />
 
     <Preference
         android:enabled="false"
         android:icon="@drawable/back_up"
         android:key="back_up_preference"
-        android:summary="@string/back_up_summary"
-        android:title="@string/back_up" />
+        android:summary="@string/backup_summary"
+        android:title="@string/backup" />
 
     <Preference
         android:icon="@drawable/sign_out"

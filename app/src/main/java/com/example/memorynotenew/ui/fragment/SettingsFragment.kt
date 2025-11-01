@@ -50,7 +50,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun showSignOutDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.sign_out))
-            .setMessage(getString(R.string.sign_out_dialog))
+            .setMessage(getString(R.string.dialog_sign_out))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.dismiss()

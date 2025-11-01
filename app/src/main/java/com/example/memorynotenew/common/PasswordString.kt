@@ -4,8 +4,8 @@ import androidx.annotation.StringRes
 import com.example.memorynotenew.R
 
 enum class PasswordString(@StringRes val resId: Int) {
-    NEW(R.string.password_new),
-    CONFIRM(R.string.password_confirm),
-    RE_ENTER(R.string.password_reenter),
-    ENTER(R.string.password_enter)
+    NEW(R.string.enter_new_password),
+    CONFIRM(R.string.confirm_password),
+    RE_ENTER(R.string.reenter_password),
+    ENTER(R.string.enter_password)
 }

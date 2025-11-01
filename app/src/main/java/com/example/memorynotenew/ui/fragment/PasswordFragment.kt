@@ -191,9 +191,9 @@ class PasswordFragment : Fragment() {
                     PasswordManager.savePassword(root.context, password.toString()) // 비밀번호 저장
 
                     val message = if (storedPassword.isNullOrEmpty()) {
-                        R.string.password_created // 비밀번호 저장 완료!
+                        R.string.lock_password_saved // 비밀번호 저장 완료!
                     } else {
-                        R.string.password_changed // 비밀번호 변경 완료!
+                        R.string.change_lock_password // 비밀번호 변경 완료!
                     }
                     requireContext().showToast(getString(message))
                     confirmingPassword = null
@@ -255,7 +255,7 @@ class PasswordFragment : Fragment() {
             } ?: memo?.let { // 단일 삭제
                 memoViewModel.moveMemoToTrash(it)
             }
-            requireContext().showToast(getString(R.string.deleted_count, deleteCount))
+            requireContext().showToast(getString(R.string.delete_memo_result, deleteCount))
             requireActivity().supportFragmentManager.popBackStack()
         } else {
             reEnterPassword()

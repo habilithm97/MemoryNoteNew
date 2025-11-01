@@ -55,17 +55,17 @@ class SignUpFragment : Fragment() {
 
                 // 모든 항목을 입력해주세요.
                 if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                    requireContext().showToast(getString(R.string.enter_all))
+                    requireContext().showToast(getString(R.string.fill_all_fields))
                     return@setOnClickListener
                 }
                 // 올바른 이메일 형식이 아닙니다.
                 if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    requireContext().showToast(getString(R.string.email_invalid))
+                    requireContext().showToast(getString(R.string.invalid_email_format))
                     return@setOnClickListener
                 }
                 // 비밀번호 조건이 맞지 않습니다.
                 if (!passwordRegex.matches(password)) {
-                    requireContext().showToast(getString(R.string.password_invalid))
+                    requireContext().showToast(getString(R.string.invalid_password))
                     return@setOnClickListener
                 }
                 // 비밀번호가 일치하지 않습니다.
@@ -82,19 +82,19 @@ class SignUpFragment : Fragment() {
                                 ?.addOnCompleteListener { emailTask ->
                                     if (emailTask.isSuccessful) {
                                         // 인증 메일을 보냈습니다. 이메일을 확인해주세요.
-                                        requireContext().showToast(getString(R.string.email_sent))
+                                        requireContext().showToast(getString(R.string.verification_email_sent))
                                         requireActivity().supportFragmentManager.popBackStack()
                                     } else { // 인증 메일 발송에 실패했습니다.
-                                        requireContext().showToast(getString(R.string.email_failed))
+                                        requireContext().showToast(getString(R.string.verification_email_failed))
                                         requireActivity().supportFragmentManager.popBackStack()
                                     }
                                 }
                         } else { // 실패
                             val message = when (task.exception) {
                                 is FirebaseAuthUserCollisionException -> // 이메일이 이미 존재합니다.
-                                    getString(R.string.email_exists)
+                                    getString(R.string.email_already_exists)
                                 is FirebaseAuthWeakPasswordException -> // 비밀번호의 보안 수준이 약합니다.
-                                    getString(R.string.password_weak)
+                                    getString(R.string.weak_password)
                                 // 회원가입에 실패했습니다.
                                 else -> getString(R.string.sign_up_failed)
                             }

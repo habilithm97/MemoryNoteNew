@@ -42,6 +42,7 @@ class FindPwFragment : Fragment() {
                 linearLayout.updatePadding(bottom = imeInsets.bottom)
                 insets
             }
+            // 인증하기 버튼
             btnVertify.setOnClickListener {
                 handleFindPassword()
             }
@@ -54,7 +55,7 @@ class FindPwFragment : Fragment() {
 
             // 올바른 이메일 형식이 아닙니다.
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                requireContext().showToast(getString(R.string.email_invalid))
+                requireContext().showToast(getString(R.string.invalid_email_format))
                 return
             }
             // 비밀번호 재설정 요청

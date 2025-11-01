@@ -76,7 +76,7 @@ class TrashFragment : Fragment() {
                     recyclerView.visibility = View.GONE
                     textView.apply {
                         visibility = View.VISIBLE
-                        text = getString(R.string.empty_trash)
+                        text = getString(R.string.trash_is_empty)
                     }
                 } else { // 휴지통이 비어 있지 않으면
                     recyclerView.visibility = View.VISIBLE
@@ -108,7 +108,7 @@ class TrashFragment : Fragment() {
         val selectedTrash = trashAdapter.getSelectedTrash() // selectedTrash 가져오기
 
         if (selectedTrash.isEmpty()) { // 없으면
-            requireContext().showToast(getString(R.string.restore_select))
+            requireContext().showToast(getString(R.string.select_memo_to_restore))
         } else { // 있으면
             showDeleteDialog(selectedTrash)
         }
@@ -117,7 +117,7 @@ class TrashFragment : Fragment() {
     private fun showDeleteDialog(selectedTrash: List<Trash>) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.delete))
-            .setMessage(getString(R.string.delete_dialog))
+            .setMessage(getString(R.string.dialog_delete))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
                 deleteTrash(selectedTrash)
@@ -131,7 +131,7 @@ class TrashFragment : Fragment() {
         selectedTrash.forEach { memoViewModel.deleteTrash(it) }
         trashAdapter.isMultiSelect = false
         (activity as? MainActivity)?.toggleMenuVisibility(this, false)
-        requireContext().showToast(getString(R.string.deleted_count, selectedTrash.size))
+        requireContext().showToast(getString(R.string.delete_memo_result, selectedTrash.size))
     }
 
     // selectedTrash 복원
@@ -139,7 +139,7 @@ class TrashFragment : Fragment() {
         val selectedTrash = trashAdapter.getSelectedTrash() // selectedTrash 가져오기
 
         if (selectedTrash.isEmpty()) { // 없으면
-            requireContext().showToast(getString(R.string.restore_select))
+            requireContext().showToast(getString(R.string.select_memo_to_restore))
         } else { // 있으면
             showRestoreDialog(selectedTrash)
         }
@@ -148,7 +148,7 @@ class TrashFragment : Fragment() {
     private fun showRestoreDialog(selectedTrash: List<Trash>) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.restore))
-            .setMessage(getString(R.string.restore_dialog))
+            .setMessage(getString(R.string.dialog_restore))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.restore)) { dialog, _ ->
                 restoreMemo(selectedTrash)
@@ -167,11 +167,11 @@ class TrashFragment : Fragment() {
     fun showEmptyTrashDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.empty))
-            .setMessage(getString(R.string.empty_dialog))
+            .setMessage(getString(R.string.dialog_empty))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.empty)) { dialog, _ ->
                 memoViewModel.emptyTrash()
-                requireContext().showToast(getString(R.string.emptied_trash))
+                requireContext().showToast(getString(R.string.trash_emptied))
                 dialog.dismiss()
             }
             .show()

@@ -69,12 +69,12 @@ class SignInFragment : Fragment() {
 
             // 모든 항목을 입력해주세요.
             if (email.isEmpty() || password.isEmpty()) {
-                requireContext().showToast(getString(R.string.enter_all))
+                requireContext().showToast(getString(R.string.fill_all_fields))
                 return
             }
             // 올바른 이메일 형식이 아닙니다.
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                requireContext().showToast(getString(R.string.email_invalid))
+                requireContext().showToast(getString(R.string.invalid_email_format))
                 return
             }
             showProgress(true)
@@ -97,7 +97,7 @@ class SignInFragment : Fragment() {
                             // 등록된 이메일이 없습니다.
                             is FirebaseAuthInvalidUserException -> getString(R.string.email_not_found)
                             // 비밀번호가 틀렸습니다.
-                            is FirebaseAuthInvalidCredentialsException -> getString(R.string.password_wrong)
+                            is FirebaseAuthInvalidCredentialsException -> getString(R.string.incorrect_password)
                             // 네트워크 오류가 발생했습니다.
                             is FirebaseNetworkException -> getString(R.string.network_error)
                             else -> getString(R.string.sign_in_failed) // 로그인에 실패했습니다.

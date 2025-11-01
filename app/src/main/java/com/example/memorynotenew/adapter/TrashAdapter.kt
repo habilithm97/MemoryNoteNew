@@ -37,7 +37,7 @@ class TrashAdapter(private val onItemClick: (Trash) -> Unit) :
                 // 남은 보관일 계산 (삭제된 시각, 최대 보관일 30일)
                 val daysLeft = calculateDaysLeft(trash.deletedAt, MAX_TRASH_DAYS)
                 tvDate.apply {
-                    text = context.getString(R.string.days_left, daysLeft)
+                    text = context.getString(R.string.delete_after_day, daysLeft)
                     setTextColor(ContextCompat.getColor(context, R.color.orange))
                 }
                 imageView.visibility = View.GONE // 휴지통에서는 잠금 필요 없음

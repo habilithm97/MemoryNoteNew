@@ -38,7 +38,7 @@
         <item name="android:textSize">18sp</item>
     </style>
 
-    <style name="SubButton1" parent="FieldMargin">
+    <style name="SubButton1">
         <item name="android:backgroundTint">@color/transparent</item>
         <item name="android:textColor">@color/main</item>
         <item name="android:fontFamily">@font/bookkmyungjo_bold</item>

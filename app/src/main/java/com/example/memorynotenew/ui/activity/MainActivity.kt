@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity() {
                             currentFragment.toggleMultiSelect(true)
                             toggleMenuVisibility(currentFragment, true)
                         } else {
-                            this.showToast(getString(R.string.empty_trash))
+                            this.showToast(getString(R.string.trash_is_empty))
                         }
                         true
                     }
