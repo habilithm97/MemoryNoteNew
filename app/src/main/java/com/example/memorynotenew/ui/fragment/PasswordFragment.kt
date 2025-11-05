@@ -1,6 +1,6 @@
 package com.example.memorynotenew.ui.fragment
 
-import android.os.Build
+import  android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -193,7 +193,7 @@ class PasswordFragment : Fragment() {
                     val message = if (storedPassword.isNullOrEmpty()) {
                         R.string.lock_password_saved // 비밀번호 저장 완료!
                     } else {
-                        R.string.change_lock_password // 비밀번호 변경 완료!
+                        R.string.lock_password_changed // 비밀번호 변경 완료!
                     }
                     requireContext().showToast(getString(message))
                     confirmingPassword = null

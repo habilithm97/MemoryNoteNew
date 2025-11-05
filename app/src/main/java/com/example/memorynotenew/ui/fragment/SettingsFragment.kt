@@ -2,23 +2,28 @@ package com.example.memorynotenew.ui.fragment
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.view.View
+import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.memorynotenew.R
-import com.example.memorynotenew.common.Constants.BACK_UP_PREF
 import com.example.memorynotenew.common.Constants.PW_PREF
 import com.example.memorynotenew.common.Constants.SIGN_IN_PREF
 import com.example.memorynotenew.common.Constants.SIGN_OUT_PREF
+import com.example.memorynotenew.common.Constants.SYNC_PREF
 import com.example.memorynotenew.common.PasswordPurpose
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
     private lateinit var auth: FirebaseAuth
     private var signInPref: Preference? = null
-    private var backupPref: Preference? = null
+    private var syncPref: Preference? = null
     private var signOutPref: Preference? = null
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -26,7 +31,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         auth = FirebaseAuth.getInstance()
         signInPref = findPreference(SIGN_IN_PREF)
         val passwordPref = findPreference<Preference>(PW_PREF)
-        backupPref = findPreference(BACK_UP_PREF)
+        syncPref = findPreference(SYNC_PREF)
         signOutPref = findPreference(SIGN_OUT_PREF)
 
         // 로그인 Preference
@@ -40,11 +45,43 @@ class SettingsFragment : PreferenceFragmentCompat() {
             replaceFragment(passwordFragment)
             true
         }
+        // 동기화 Preference
+        syncPref?.setOnPreferenceClickListener {
+            showSyncDialog()
+            true
+        }
         // 로그아웃 Preference
         signOutPref?.setOnPreferenceClickListener {
             showSignOutDialog()
             true
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        this@SettingsFragment.progressBar = progressBar
+    }
+
+    private fun showSyncDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.sync))
+            .setMessage(getString(R.string.dialog_sync))
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                dialog.dismiss()
+
+                startSync()
+            }
+            .show()
+    }
+
+    private fun startSync() {
+        showProgress(true)
+    }
+
+    private fun showProgress(show: Boolean) {
+        progressBar.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun showSignOutDialog() {
@@ -71,8 +108,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             title = if (isVerified) user?.email else getString(R.string.sign_in)
             isEnabled = !isVerified // 인증x -> 활성화
         }
-        // 백업 Preference
-        backupPref?.isEnabled = isVerified // 인증o -> 활성화
+        // 동기화 Preference
+        syncPref?.isEnabled = isVerified // 인증o -> 활성화
         // 로그아웃 Preference
         signOutPref?.isVisible = isSignedIn // 로그인o -> 로그아웃 표시
     }
