@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.memorynotenew.common.Constants
 import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.room.entity.Trash
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
@@ -13,31 +14,31 @@ class FirebaseRepository {
     private val trashCollection = db.collection(Constants.TRASH)
 
     // Room -> Firebase
-    suspend fun backupMemos(memos: List<Memo>) {
-        if (memos.isEmpty()) return
+    private suspend fun <T> backupItems(items: List<T>, collection: CollectionReference, itemType: String) {
+        if (items.isEmpty()) return
         try {
-            val batch = db.batch() // 여러 작업을 한 번에 처리하도록 준비
-            memos.forEach { memo ->
-                batch.set(memoCollection.document(memo.id.toString()), memo)
+            val batch = db.batch() // 여러 작업을 한 번에 처리하는 batch
+            items.forEach { item ->
+                val id = when (item) {
+                    is Memo -> item.id.toString()
+                    is Trash -> item.id.toString()
+                    else -> throw IllegalArgumentException("Unsupported type.")
+                }
+                batch.set(collection.document(id), item)
             }
             // 한 번에 Firebase에 저장하고 끝날 때까지 대기
             batch.commit().await()
-            Log.d("FirebaseRepository", "메모 ${memos.size}개 백업 성공")
+            Log.d("FirebaseRepository", "$itemType backup successful: ${items.size} items")
         } catch (e: Exception) {
-            Log.e("FirebaseRepository", "메모 백업 실패: ${e.message}", e)
+            Log.e("FirebaseRepository", "$itemType backup failed: ${e.message}", e)
         }
     }
+
+    suspend fun backupMemos(memos: List<Memo>) {
+        backupItems(memos, memoCollection, Constants.MEMO)
+    }
+
     suspend fun backupTrash(trash: List<Trash>) {
-        if (trash.isEmpty()) return
-        try {
-            val batch = db.batch()
-            trash.forEach {
-                batch.set(trashCollection.document(it.id.toString()), it)
-            }
-            batch.commit().await()
-            Log.d("FirebaseRepository", "휴지통 메모 ${trash.size}개 백업 성공")
-        } catch (e: Exception) {
-            Log.e("FirebaseRepository", "휴지통 메모 백업 실패: ${e.message}", e)
-        }
+        backupItems(trash, trashCollection, Constants.TRASH)
     }
 }

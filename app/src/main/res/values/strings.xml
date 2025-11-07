@@ -56,7 +56,7 @@
     <string name="password_reset_failed">Password reset failed.</string>
     <string name="password_reset_email_sent">Password reset email sent. Check your inbox.</string>
     <string name="backup_summary">Backup memo(s) with the server.</string>
-    <string name="sign_out_summary">Stop sync.</string>
+    <string name="sign_out_summary">Stop backup.</string>
     <string name="select_memo_to_restore">Select memo(s) to restore.</string>
     <string name="dialog_restore">Restore selected memo(s)?</string>
     <string name="dialog_empty">Empty trash?</string>
