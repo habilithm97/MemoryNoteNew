@@ -7,7 +7,7 @@ object Constants {
 
     const val SIGN_IN_PREF = "sign_in_preference"
     const val PW_PREF = "password_preference"
-    const val SYNC_PREF = "sync_preference"
+    const val BACKUP_PREF = "backup_preference"
     const val SIGN_OUT_PREF = "sign_out_preference"
 
     const val PURPOSE = "password_purpose" // 비밀번호 사용 목적

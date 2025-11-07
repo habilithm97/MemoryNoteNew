@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.Flow
 // DB 접근 메서드 정의 (DB 작업 캡슐화)
 @Dao
 interface MemoDao {
-
     // suspend : 코루틴 내에서 일시 중단 가능 (비동기 실행)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMemo(memo: Memo)

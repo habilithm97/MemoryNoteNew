@@ -1,16 +1,19 @@
 package com.example.memorynotenew.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.memorynotenew.common.Constants.THIRTY_DAYS_MS
+import com.example.memorynotenew.repository.FirebaseRepository
 import com.example.memorynotenew.repository.MemoRepository
 import com.example.memorynotenew.room.database.MemoDatabase
 import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.room.entity.Trash
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 /* Context는 UI 컴포넌트 종료 시 사라지지만,
@@ -21,8 +24,16 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
         MemoDatabase.getInstance(application).memoDao(),
         MemoDatabase.getInstance(application).trashDao()
     )
+    private val firebaseRepository =  FirebaseRepository()
+
     val getAllMemos: LiveData<List<Memo>> = memoRepository.getAllMemos().asLiveData()
     val getAllTrash: LiveData<List<Trash>> = memoRepository.getAllTrash().asLiveData()
+
+    private var backupStarted = false
+
+    init {
+        startBackup()
+    }
 
     fun insertMemo(memo: Memo) {
         // viewModelScope : ViewModel 생명주기 동안 코루틴 실행, 종료 시 자동 취소
@@ -96,6 +107,35 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
             // 오늘부터 30일 전 시간
             val cutoffTime = System.currentTimeMillis() - THIRTY_DAYS_MS
             memoRepository.deleteOldTrash(cutoffTime)
+        }
+    }
+
+    // Room -> Firebase 실시간 백업
+    fun startBackup() {
+        if (backupStarted) return
+        backupStarted = true
+
+        viewModelScope.launch {
+            memoRepository.getAllMemos()
+                .distinctUntilChanged() // 동일 데이터 중복 업로드 방지
+                .collect { memos ->
+                    try {
+                        firebaseRepository.backupMemos(memos)
+                    } catch (e: Exception) {
+                        Log.e("Backup", "메모 백업 실패: ${e.message}")
+                    }
+                }
+        }
+        viewModelScope.launch {
+            memoRepository.getAllTrash()
+                .distinctUntilChanged()
+                .collect { trash ->
+                    try {
+                        firebaseRepository.backupTrash(trash)
+                    } catch (e: Exception) {
+                        Log.e("Backup", "휴지통 백업 실패: ${e.message}")
+                    }
+                }
         }
     }
 }

@@ -14,10 +14,10 @@
 
     <Preference
         android:enabled="false"
-        android:icon="@drawable/sync"
-        android:key="sync_preference"
-        android:summary="@string/sync_summary"
-        android:title="@string/sync" />
+        android:icon="@drawable/backup"
+        android:key="backup_preference"
+        android:summary="@string/backup_summary"
+        android:title="@string/backup" />
 
     <Preference
         android:icon="@drawable/sign_out"

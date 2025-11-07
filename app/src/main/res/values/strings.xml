@@ -19,7 +19,7 @@
     <string name="delete_memo">Delete Memo</string>
     <string name="empty">Empty</string>
     <string name="ok">Ok</string>
-    <string name="sync">Sync</string>
+    <string name="backup">Backup</string>
     <string name="sign_in">Sign In</string>
     <string name="email">Email</string>
     <string name="sign_up">Sign Up</string>
@@ -55,7 +55,7 @@
     <string name="find_password">Forgot password?</string>
     <string name="password_reset_failed">Password reset failed.</string>
     <string name="password_reset_email_sent">Password reset email sent. Check your inbox.</string>
-    <string name="sync_summary">Sync memo(s) with the server</string>
+    <string name="backup_summary">Backup memo(s) with the server.</string>
     <string name="sign_out_summary">Stop sync.</string>
     <string name="select_memo_to_restore">Select memo(s) to restore.</string>
     <string name="dialog_restore">Restore selected memo(s)?</string>
@@ -69,5 +69,5 @@
     <string name="verification_email_sent">Verification email sent. Check your inbox.</string>
     <string name="verification_email_failed">Failed to send verification email.</string>
     <string name="email_verification_required">Email verification required.</string>
-    <string name="dialog_sync">Sync now?</string>
+    <string name="dialog_backup">Backup?</string>
 </resources>
