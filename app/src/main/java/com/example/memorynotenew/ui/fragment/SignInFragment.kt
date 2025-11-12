@@ -10,9 +10,11 @@ import android.widget.ProgressBar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.fragment.app.viewModels
 import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.FragmentSignInBinding
 import com.example.memorynotenew.utils.ToastUtil.showToast
+import com.example.memorynotenew.viewmodel.MemoViewModel
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -24,6 +26,7 @@ class SignInFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var progressBar: ProgressBar
+    private val memoViewModel: MemoViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -89,6 +92,7 @@ class SignInFragment : Fragment() {
 
                         if (user != null && user.isEmailVerified) { // 이메일 인증 완료
                             requireActivity().supportFragmentManager.popBackStack()
+                            memoViewModel.onUserChanged()
                         } else { // 이메일 인증이 필요합니다.
                             textView.visibility = View.VISIBLE
                         }

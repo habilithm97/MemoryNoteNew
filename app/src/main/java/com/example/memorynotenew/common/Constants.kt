@@ -4,6 +4,7 @@ object Constants {
     const val MEMO = "memo"
     const val MEMOS = "memos"
     const val TRASH = "trash"
+    const val USERS = "users"
 
     const val SIGN_IN_PREF = "sign_in_preference"
     const val PW_PREF = "password_preference"

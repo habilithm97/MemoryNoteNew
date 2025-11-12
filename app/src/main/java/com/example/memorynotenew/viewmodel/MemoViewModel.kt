@@ -14,6 +14,7 @@ import com.example.memorynotenew.room.database.MemoDatabase
 import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.room.entity.Trash
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -31,9 +32,11 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     val getAllMemos: LiveData<List<Memo>> = memoRepository.getAllMemos().asLiveData()
     val getAllTrash: LiveData<List<Trash>> = memoRepository.getAllTrash().asLiveData()
 
-    private var backupStarted = false
+    // 백업용 코루틴 작업
+    private var memoBackupJob: Job? = null
+    private var trashBackupJob: Job? = null
 
-    init { // ViewModel 생성 시 자동으로 백업 시작
+    init { // ViewModel 생성 시 백업 시작
         startBackup()
     }
 
@@ -45,6 +48,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     fun insertMemo(memo: Memo) = launchIO { memoRepository.insertMemo(memo) }
     fun updateMemo(memo: Memo) = launchIO { memoRepository.updateMemo(memo) }
     fun deleteMemo(memo: Memo) = launchIO { memoRepository.deleteMemo(memo) }
+
     // 휴지통으로 이동
     fun moveMemoToTrash(memo: Memo) = launchIO {
         // Trash 객체 생성
@@ -58,6 +62,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
             deleteMemo(memo) // 메모 삭제
         }
     }
+
     // 메모 복원
     fun restoreMemo(trash: Trash) = launchIO {
         // Memo 객체 생성
@@ -72,10 +77,13 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
             deleteTrash(trash) // 휴지통에서 삭제
         }
     }
+
     // 휴지통에서 완전히 삭제
     fun deleteTrash(trash: Trash) = launchIO { memoRepository.deleteTrash(trash) }
+
     // 휴지통 비우기
     fun emptyTrash() = launchIO { memoRepository.deleteAllTrash() }
+
     // 30일 지난 휴지통 메모 자동 삭제
     fun deleteOldTrash() = launchIO {
         // 오늘부터 30일 전 시간
@@ -83,40 +91,47 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
         memoRepository.deleteOldTrash(cutoffTime)
     }
 
-    // Room -> Firebase 실시간 백업
     fun startBackup() {
-        // 백업 중복 실행 방지
-        if (backupStarted) return
-        backupStarted = true
+        // 기존 Flow 취소 (중복 실행 방지)
+        memoBackupJob?.cancel()
+        trashBackupJob?.cancel()
 
-        startBackupFlow(
+        memoBackupJob = backupItemsFlow(
             items = memoRepository.getAllMemos(),
-            backup = { firebaseRepository.backupMemos(it) },
-            itemType = Constants.MEMOS
+            itemType = Constants.MEMOS,
+            // firebaseRepository로 백업 위임
+            backup = firebaseRepository::backupMemos
         )
-        startBackupFlow(
+        trashBackupJob = backupItemsFlow(
             items = memoRepository.getAllTrash(),
-            backup = { firebaseRepository.backupTrash(it) },
-            itemType = Constants.TRASH
+            itemType = Constants.TRASH,
+            backup = firebaseRepository::backupTrash
         )
     }
 
-    private fun <T> startBackupFlow(
-        items: Flow<List<T>>, // Room DB 데이터 스트림 (백업용)
-        backup: suspend (List<T>) -> Unit, // 전달 받은 리스트를 백업하는 함수
-        itemType: String
-    ) {
-        viewModelScope.launch {
+    // Flow<List<T>>를 구독하여 데이터 변경 시 자동으로 Firebase에 백업
+    private fun <T> backupItemsFlow(
+        items: Flow<List<T>>,
+        itemType: String,
+        backup: suspend (List<T>) -> Unit // 실제 백업 함수
+    ): Job {
+        return viewModelScope.launch {
             items
                 .distinctUntilChanged() // 동일 데이터 중복 백업 방지
-                .collect { // 새 데이터 수집 시 실행
-                if (it.isEmpty()) return@collect
-                try {
-                    backup(it)
-                } catch (e: Exception) {
-                    Log.e("MemoViewModel", "$itemType backup failed: ${e.message}", e)
+                .collect { // 데이터 변경 시 수집
+                if (it.isNotEmpty()) {
+                    try {
+                        backup(it) // FirebaseRepository로 백업 실행
+                    } catch (e: Exception) {
+                        Log.e("MemoViewModel", "$itemType backup failed: ${e.message}", e)
+                    }
                 }
             }
         }
+    }
+
+    // 사용자 변경 시 백업 Flow 재시작
+    fun onUserChanged() {
+        startBackup()
     }
 }
