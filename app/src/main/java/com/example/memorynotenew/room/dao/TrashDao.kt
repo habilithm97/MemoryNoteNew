@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface TrashDao {
     // suspend : 코루틴 내에서 일시 중단 가능 (비동기 실행)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTrash(trash: Trash)
+    suspend fun insertTrash(trash: Trash): Long
 
     @Delete
     suspend fun deleteTrash(trash: Trash)

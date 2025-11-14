@@ -7,7 +7,7 @@ object Constants {
     const val USERS = "users"
 
     const val SIGN_IN_PREF = "sign_in_preference"
-    const val PW_PREF = "password_preference"
+    const val LOCK_PW_PREF = "lock_pw_preference"
     const val BACKUP_PREF = "backup_preference"
     const val SIGN_OUT_PREF = "sign_out_preference"
 

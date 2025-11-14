@@ -2,14 +2,13 @@ package com.example.memorynotenew.ui.fragment
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.memorynotenew.R
 import com.example.memorynotenew.common.Constants.BACKUP_PREF
-import com.example.memorynotenew.common.Constants.PW_PREF
+import com.example.memorynotenew.common.Constants.LOCK_PW_PREF
 import com.example.memorynotenew.common.Constants.SIGN_IN_PREF
 import com.example.memorynotenew.common.Constants.SIGN_OUT_PREF
 import com.example.memorynotenew.common.PasswordPurpose
@@ -22,34 +21,35 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var signInPref: Preference? = null
     private var backupPref: Preference? = null
     private var signOutPref: Preference? = null
+    // 프래그먼트 생명주기에 맞춰 생성/관리되는 ViewModel
     private val memoViewModel: MemoViewModel by viewModels()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
         auth = FirebaseAuth.getInstance()
-        signInPref = findPreference(SIGN_IN_PREF)
-        val passwordPref = findPreference<Preference>(PW_PREF)
-        backupPref = findPreference(BACKUP_PREF)
-        signOutPref = findPreference(SIGN_OUT_PREF)
 
         // 로그인 Preference
+        signInPref = findPreference(SIGN_IN_PREF)
         signInPref?.setOnPreferenceClickListener {
             replaceFragment(SignInFragment())
             true
         }
-        // 비밀번호 설정 Preference
-        passwordPref?.setOnPreferenceClickListener {
+        // 잠금 비밀번호 설정 Preference
+        val lockPwPref = findPreference<Preference>(LOCK_PW_PREF)
+        lockPwPref?.setOnPreferenceClickListener {
             val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.SETTING)
             replaceFragment(passwordFragment)
             true
         }
         // 백업 Preference
+        backupPref = findPreference(BACKUP_PREF)
         backupPref?.setOnPreferenceClickListener {
             showBackupDialog()
             true
         }
         // 로그아웃 Preference
+        signOutPref = findPreference(SIGN_OUT_PREF)
         signOutPref?.setOnPreferenceClickListener {
             showSignOutDialog()
             true
@@ -64,7 +64,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.dismiss()
 
-                memoViewModel.startBackup()
+                memoViewModel.startBackup() // 실시간 백업 시작
             }
             .show()
     }
@@ -77,27 +77,30 @@ class SettingsFragment : PreferenceFragmentCompat() {
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.dismiss()
 
-                auth.signOut()
+                auth.signOut() // 로그아웃
+                memoViewModel.onUserChanged() // 사용자 변경 알리기
                 updateUI()
-                memoViewModel.onUserChanged()
             }
             .show()
     }
 
     private fun updateUI() {
-        val user = auth.currentUser // 현재 Firebase에 로그인된 사용자 (로그아웃 상태 -> null)
-        val isVerified = user?.isEmailVerified ?: false // 이메일 인증 여부 (null -> false)
-        val isSignedIn = user != null // 로그인 여부
+        val user = auth.currentUser
+        val isVerified = user?.isEmailVerified ?: false // 이메일 인증 여부
+        val isSignedIn = user != null // 로그인 상태 여부
 
         // 로그인 Preference
-        signInPref?.apply { // 인증o -> 이메일, 인증x -> "로그인"
-            title = if (isVerified) user?.email else getString(R.string.sign_in)
-            isEnabled = !isVerified // 인증x -> 활성화
+        signInPref?.apply {
+            /* 이메일 인증 -> 이메일 표시
+            로그인x, 이메일 인증x -> "로그인" 표시 */
+            title = user?.let { if (isVerified) it.email else getString(R.string.sign_in) }
+                ?: getString(R.string.sign_in)
+            isEnabled = !isSignedIn // 로그인x -> 클릭 가능
         }
         // 백업 Preference
-        backupPref?.isEnabled = isSignedIn && isVerified
+        backupPref?.isEnabled = isSignedIn // 로그인x -> 클릭 가능
         // 로그아웃 Preference
-        signOutPref?.isVisible = isSignedIn && isVerified
+        signOutPref?.isVisible = isSignedIn // 로그인x -> 클릭 가능
     }
 
     private fun replaceFragment(fragment: Fragment) {

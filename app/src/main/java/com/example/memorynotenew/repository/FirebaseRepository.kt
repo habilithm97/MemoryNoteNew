@@ -41,11 +41,26 @@ class FirebaseRepository {
                 }
                 batch.set(collection.document(id), it)
             }
-            // batch 커밋 후 완료 대기
             batch.commit().await()
             Log.d("FirebaseRepository", "$itemType backup successful: ${items.size} items")
         } catch (e: Exception) {
             Log.e("FirebaseRepository", "$itemType backup failed: ${e.message}", e)
+        }
+    }
+
+    suspend fun delete(itemId: String, baseCollection: String) {
+        try {
+            val uid = auth.currentUser?.uid ?: return
+            // Firebase 경로 : users/{uid}/{baseCollection}/{itemId}
+            db.collection(Constants.USERS)
+                .document(uid)
+                .collection(baseCollection)
+                .document(itemId)
+                .delete()
+                .await() // 코루틴에서 작업이 끝날 때까지 기다림 (비동기 처리)
+            Log.d("FirebaseRepository", "$baseCollection item $itemId deleted successfully")
+        } catch (e: Exception) {
+            Log.e("FirebaseRepository", "Failed to delete $itemId from $baseCollection: ${e.message}", e)
         }
     }
 }

@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 interface MemoDao {
     // suspend : 코루틴 내에서 일시 중단 가능 (비동기 실행)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMemo(memo: Memo)
+    suspend fun insertMemo(memo: Memo): Long
 
     @Update
     suspend fun updateMemo(memo: Memo)

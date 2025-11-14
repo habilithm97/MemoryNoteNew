@@ -8,7 +8,7 @@
 
     <Preference
         android:icon="@drawable/lock"
-        android:key="password_preference"
+        android:key="lock_pw_preference"
         android:summary="@string/lock_password_setting_summary"
         android:title="@string/lock_password_setting" />
 
