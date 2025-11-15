@@ -71,4 +71,6 @@
     <string name="find_by_email">이메일 주소로 찾기</string>
     <string name="verify">인증하기</string>
     <string name="dialog_backup">백업할까요?</string>
+
+    <string name="backup_running_title">실시간 백업 중</string>
 </resources>

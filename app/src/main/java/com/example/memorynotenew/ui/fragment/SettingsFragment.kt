@@ -1,9 +1,17 @@
 package com.example.memorynotenew.ui.fragment
 
 import android.app.AlertDialog
+import android.graphics.Color
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.memorynotenew.R
@@ -14,6 +22,7 @@ import com.example.memorynotenew.common.Constants.SIGN_OUT_PREF
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.viewmodel.MemoViewModel
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -53,6 +62,28 @@ class SettingsFragment : PreferenceFragmentCompat() {
         signOutPref?.setOnPreferenceClickListener {
             showSignOutDialog()
             true
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        with(viewLifecycleOwner) {
+            lifecycleScope.launch {
+                // STARTED 상태에서만 collect 실행
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    // 실시간 백업 상태 Flow 관찰
+                    memoViewModel.isBackupRunning.collect { running ->
+                        backupPref?.apply {
+                            title = if (running) {
+                                getString(R.string.backup_running_title)
+                            } else {
+                                getString(R.string.backup)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

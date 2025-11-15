@@ -10,6 +10,8 @@ object Constants {
     const val LOCK_PW_PREF = "lock_pw_preference"
     const val BACKUP_PREF = "backup_preference"
     const val SIGN_OUT_PREF = "sign_out_preference"
+    const val BACKUP_SHARED_PREF = "backup_shared_preference"
+    const val BACKUP_RUNNING = "backup_running_"
 
     const val PURPOSE = "password_purpose" // 비밀번호 사용 목적
     const val COUNT = "delete_count" // 삭제한 메모 개수

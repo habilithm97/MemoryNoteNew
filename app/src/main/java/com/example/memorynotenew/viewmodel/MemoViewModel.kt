@@ -1,6 +1,7 @@
 package com.example.memorynotenew.viewmodel
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -13,9 +14,12 @@ import com.example.memorynotenew.repository.MemoRepository
 import com.example.memorynotenew.room.database.MemoDatabase
 import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.room.entity.Trash
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -33,13 +37,43 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     val getAllMemos: LiveData<List<Memo>> = memoRepository.getAllMemos().asLiveData()
     val getAllTrash: LiveData<List<Trash>> = memoRepository.getAllTrash().asLiveData()
 
-    // 백업용 코루틴 (중복 실행 방지)
+    // 백업 코루틴 (중복 실행 방지)
     private var memoBackupJob: Job? = null
     private var trashBackupJob: Job? = null
 
+    private val auth = FirebaseAuth.getInstance()
+    // 실시간 백업 상태 저장
+    private val backupSharedPref = application.getSharedPreferences(
+        Constants.BACKUP_SHARED_PREF,
+        Context.MODE_PRIVATE // 이 앱에서만 접근 가능
+    )
+    private val currentUserId: String?
+        get() = auth.currentUser?.uid
+
+    /* StateFlow : 코틀린 Flow의 일종, 값이 바뀔 때마다 구독자에게 자동으로 알려줌
+     -> UI에서 실시간 백업 상태를 관찰하고 동적으로 화면 갱신 가능 */
+
+    // 실시간 백업 상태를 저장하는 내부 StateFlow
+    private val _isBackupRunning = MutableStateFlow(false)
+    // 외부에서 읽기 전용으로 접근할 수 있는 StateFlow
+    val isBackupRunning = _isBackupRunning.asStateFlow()
+
     init {
-        // ViewModel 생성 시 자동 백업 시작
-        startBackup()
+        // ViewModel 생성 시 로그인 상태에 따라 실시간 백업 자동 관리
+
+        auth.addAuthStateListener { // 로그인 상태 변화 감지
+            val user = it.currentUser
+            if (user != null) { // 로그인 o
+                /* 사용자의 실시간 백업 상태 가져오기
+                 파일 : BACKUP_SHARED_PREF
+                 키 : BACKUP_RUNNING + user.uid
+                 값이 없으면 false */
+                val running = backupSharedPref.getBoolean(Constants.BACKUP_RUNNING + user.uid, false)
+                if (running) startBackup()
+            } else { // 로그인 x
+                stopBackup()
+            }
+        }
     }
 
     private fun <T> launchIO(block: suspend () -> T) {
@@ -110,10 +144,17 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun startBackup() {
-        // 기존 Flow 취소 (중복 실행 방지)
+        if (_isBackupRunning.value) return // 중복 실행 방지
+        _isBackupRunning.value = true // 실시간 백업 ON
+
+        currentUserId?.let { // 현재 사용자 기준으로 백업 상태 저장
+            backupSharedPref.edit().putBoolean(Constants.BACKUP_RUNNING + it, true).apply()
+        }
+        // 기존 백업 Flow 취소 (중복 실행 방지)
         memoBackupJob?.cancel()
         trashBackupJob?.cancel()
 
+        // 새로운 백업 Flow 시작
         memoBackupJob = backupItemsFlow(
             items = memoRepository.getAllMemos(),
             itemType = Constants.MEMOS,
@@ -146,8 +187,21 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private fun stopBackup() {
+        if (!_isBackupRunning.value) return // 중복 실행 방지
+
+        memoBackupJob?.cancel()
+        trashBackupJob?.cancel()
+
+        _isBackupRunning.value = false
+
+        currentUserId?.let {
+            backupSharedPref.edit().putBoolean(Constants.BACKUP_RUNNING + it, false).apply()
+        }
+    }
+
     // 사용자 변경 시 백업 Flow 재시작
     fun onUserChanged() {
-        startBackup()
+        stopBackup()
     }
 }
