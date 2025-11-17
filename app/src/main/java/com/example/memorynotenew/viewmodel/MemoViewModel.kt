@@ -60,7 +60,6 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         // ViewModel 생성 시 로그인 상태에 따라 실시간 백업 자동 관리
-
         auth.addAuthStateListener { // 로그인 상태 변화 감지
             val user = it.currentUser
             if (user != null) { // 로그인 o
@@ -69,7 +68,9 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
                  키 : BACKUP_RUNNING + user.uid
                  값이 없으면 false */
                 val running = backupSharedPref.getBoolean(Constants.BACKUP_RUNNING + user.uid, false)
-                if (running) startBackup()
+                if (running) {
+                    startBackup()
+                }
             } else { // 로그인 x
                 stopBackup()
             }
@@ -187,7 +188,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun stopBackup() {
+    fun stopBackup() {
         if (!_isBackupRunning.value) return // 중복 실행 방지
 
         memoBackupJob?.cancel()

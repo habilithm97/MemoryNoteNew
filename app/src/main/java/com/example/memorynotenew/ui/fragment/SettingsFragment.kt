@@ -1,11 +1,7 @@
 package com.example.memorynotenew.ui.fragment
 
 import android.app.AlertDialog
-import android.graphics.Color
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -88,14 +84,25 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun showBackupDialog() {
+        val isRunning = memoViewModel.isBackupRunning.value
+
+        val title = if (isRunning) getString(R.string.backup_stop) else getString(R.string.backup)
+        val message = if (isRunning) getString(R.string.backup_stop_dialog) else getString(R.string.backup_dialog)
+
         AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.backup))
-            .setMessage(getString(R.string.dialog_backup))
+            .setTitle(title)
+            .setMessage(message)
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.dismiss()
+                // 클릭 시점 다시 읽어서 안전하게 토글
+                val currentlyRunning = memoViewModel.isBackupRunning.value
 
-                memoViewModel.startBackup() // 실시간 백업 시작
+                if (currentlyRunning) {
+                    memoViewModel.stopBackup()
+                } else {
+                    memoViewModel.startBackup()
+                }
             }
             .show()
     }
