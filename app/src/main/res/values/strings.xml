@@ -67,11 +67,5 @@
     <string name="verification_email_failed">Failed to send verification email.</string>
     <string name="email_verification_required">Email verification required.</string>
 
-    <string name="backup_title">Real-time Backup</string>
-    <string name="backup_running_title">Backing Up</string>
-    <string name="backup_summary">Securely store memo(s) on the server.</string>
-    <string name="backup">Backup</string>
-    <string name="backup_dialog">Backup?</string>
-    <string name="backup_stop">Stop Backup</string>
-    <string name="backup_stop_dialog">Stop backup?</string>
+    <string name="sign_in_summary">Keep memos safe with real-time backup.</string>
 </resources>

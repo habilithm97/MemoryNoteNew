@@ -68,11 +68,5 @@
     <string name="find_by_email">이메일 주소로 찾기</string>
     <string name="verify">인증하기</string>
 
-    <string name="backup_title">실시간 백업</string>
-    <string name="backup_running_title">실시간 백업 중</string>
-    <string name="backup_summary">메모를 서버에 안전하게 보관합니다.</string>
-    <string name="backup">백업</string>
-    <string name="backup_dialog">백업할까요?</string>
-    <string name="backup_stop">백업 중단</string>
-    <string name="backup_stop_dialog">백업을 중단할까요?</string>
+    <string name="sign_in_summary">실시간 백업을 통해 메모를 안전하게 보관합니다.</string>
 </resources>
