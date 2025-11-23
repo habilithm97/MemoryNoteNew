@@ -4,7 +4,6 @@
     <Preference
         android:icon="@drawable/sign_in"
         android:key="sign_in_preference"
-        android:summary="@string/sign_in_summary"
         android:title="@string/sign_in" />
 
     <Preference
@@ -12,6 +11,20 @@
         android:key="lock_pw_preference"
         android:summary="@string/lock_password_setting_summary"
         android:title="@string/lock_password_setting" />
+
+    <Preference
+        android:enabled="false"
+        android:icon="@drawable/backup"
+        android:key="backup_preference"
+        android:summary="@string/backup_summary"
+        android:title="@string/backup" />
+
+    <Preference
+        android:enabled="false"
+        android:icon="@drawable/load"
+        android:key="load_preference"
+        android:summary="@string/load_summary"
+        android:title="@string/load" />
 
     <Preference
         android:icon="@drawable/sign_out"

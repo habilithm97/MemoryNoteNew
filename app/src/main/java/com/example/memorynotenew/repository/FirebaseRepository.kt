@@ -10,7 +10,7 @@ import kotlinx.coroutines.tasks.await
 
 class FirebaseRepository {
     private val db = FirebaseFirestore.getInstance()
-    private val auth = FirebaseAuth.getInstance()
+    val auth = FirebaseAuth.getInstance()
 
     suspend fun backupMemos(memos: List<Memo>) {
         backupItems(memos, Constants.MEMO, Constants.MEMOS)

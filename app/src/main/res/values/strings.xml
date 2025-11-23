@@ -67,5 +67,8 @@
     <string name="verification_email_failed">Failed to send verification email.</string>
     <string name="email_verification_required">Email verification required.</string>
 
-    <string name="sign_in_summary">Keep memos safe with real-time backup.</string>
+    <string name="backup">Back-up</string>
+    <string name="backup_summary">Secure memo(s) storage on the server.</string>
+    <string name="load">Load</string>
+    <string name="load_summary">Loads backed-up memo(s).</string>
 </resources>

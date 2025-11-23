@@ -26,7 +26,6 @@ class SignInFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var progressBar: ProgressBar
-    private val memoViewModel: MemoViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -92,7 +91,6 @@ class SignInFragment : Fragment() {
 
                         if (user != null && user.isEmailVerified) { // 이메일 인증 완료
                             requireActivity().supportFragmentManager.popBackStack()
-                            memoViewModel.onUserChanged()
                         } else { // 이메일 인증이 필요합니다.
                             textView.visibility = View.VISIBLE
                         }

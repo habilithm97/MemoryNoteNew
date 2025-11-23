@@ -7,6 +7,8 @@ import androidx.fragment.app.viewModels
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.memorynotenew.R
+import com.example.memorynotenew.common.Constants.BACKUP_PREF
+import com.example.memorynotenew.common.Constants.LOAD_PREF
 import com.example.memorynotenew.common.Constants.LOCK_PW_PREF
 import com.example.memorynotenew.common.Constants.SIGN_IN_PREF
 import com.example.memorynotenew.common.Constants.SIGN_OUT_PREF
@@ -18,6 +20,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private lateinit var auth: FirebaseAuth
     private var signInPref: Preference? = null
+    private var backupPref: Preference? = null
+    private var loadPref: Preference? = null
     private var signOutPref: Preference? = null
     // 프래그먼트 생명주기에 맞춰 생성/관리되는 ViewModel
     private val memoViewModel: MemoViewModel by viewModels()
@@ -40,6 +44,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
             replaceFragment(passwordFragment)
             true
         }
+        // 백업 Preference
+        backupPref = findPreference(BACKUP_PREF)
+        backupPref?.setOnPreferenceClickListener {
+            memoViewModel.backup()
+            true
+        }
+        // 불러오기 Preference
+        loadPref = findPreference(LOAD_PREF)
+        loadPref?.setOnPreferenceClickListener {
+            true
+        }
         // 로그아웃 Preference
         signOutPref = findPreference(SIGN_OUT_PREF)
         signOutPref?.setOnPreferenceClickListener {
@@ -57,7 +72,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 dialog.dismiss()
 
                 auth.signOut() // 로그아웃
-                memoViewModel.onUserChanged() // 사용자 변경 알리기
                 updateUI()
             }
             .show()
@@ -71,13 +85,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // 로그인 Preference
         signInPref?.apply {
             /* 이메일 인증 -> 이메일 표시
-            로그인x, 이메일 인증x -> "로그인" 표시 */
+            로그인 x, 이메일 인증 x -> "로그인" 표시 */
             title = user?.let { if (isVerified) it.email else getString(R.string.sign_in) }
                 ?: getString(R.string.sign_in)
-            isEnabled = !isSignedIn // 로그인x -> 클릭 가능
+            isEnabled = !isSignedIn // 로그인 x -> 활성화
         }
+        // 백업 Preference
+        backupPref?.isEnabled = isSignedIn // 로그인 o -> 활성화
+
+        // 불러오기 Preference
+        loadPref?.isEnabled = isSignedIn // 로그인 o -> 활성화
+
         // 로그아웃 Preference
-        signOutPref?.isVisible = isSignedIn // 로그인x -> 클릭 가능
+        signOutPref?.isVisible = isSignedIn // 로그인 o -> 가시화
     }
 
     private fun replaceFragment(fragment: Fragment) {
