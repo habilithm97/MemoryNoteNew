@@ -47,7 +47,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // 백업 Preference
         backupPref = findPreference(BACKUP_PREF)
         backupPref?.setOnPreferenceClickListener {
-            memoViewModel.backup()
+            showBackupDialog()
             true
         }
         // 불러오기 Preference
@@ -61,6 +61,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
             showSignOutDialog()
             true
         }
+    }
+
+    private fun showBackupDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.backup))
+            .setMessage(getString(R.string.backup_dialog))
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                dialog.dismiss()
+
+                memoViewModel.backupMemos()
+                requireActivity().finish()
+            }
+            .show()
     }
 
     private fun showSignOutDialog() {

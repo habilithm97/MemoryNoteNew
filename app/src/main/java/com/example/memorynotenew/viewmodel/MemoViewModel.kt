@@ -6,8 +6,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.memorynotenew.common.Constants
+import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.Constants.THIRTY_DAYS_MS
+import com.example.memorynotenew.common.Constants.USERS
 import com.example.memorynotenew.repository.FirebaseRepository
 import com.example.memorynotenew.repository.MemoRepository
 import com.example.memorynotenew.room.database.MemoDatabase
@@ -73,49 +74,37 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun backup() = launchIO {
+    fun backupMemos() = launchIO {
         try {
-            // Flow에서 현재 리스트를 한 번만 가져옴
+            // Flow에서 메모 리스트를 한 번만 가져옴
             val memos = memoRepository.getAllMemos().first()
-            val trash = memoRepository.getAllTrash().first()
 
-            // 로컬 데이터 -> Firestore
-            with(firebaseRepository) {
-                backupMemos(memos)
-                backupTrash(trash)
-            }
-            // 로그인된 현재 사용자 UID (없으면 백업 중단)
+            firebaseRepository.backup(memos) // 로컬 -> 서버
+
             val uid = firebaseRepository.auth.currentUser?.uid ?: return@launchIO
             val db = FirebaseFirestore.getInstance()
 
-            /** 서버에 남아 있는 로컬에 없는 문서 삭제 **/
+            /** 잔여 서버 문서 삭제 **/
             // Firestore 경로 : users/{uid}/memo
-            val memoCollection = db.collection(Constants.USERS)
+            val memoCollection = db.collection(USERS)
                 .document(uid)
-                .collection(Constants.MEMO)
+                .collection(MEMO)
 
-            // Firestore에서 memo 컬렉션 전체 문서 가져오기
-            val memoSnapshots = memoCollection.get().await()
+            // memoCollection 문서 가져오기
+            val snapshots = memoCollection.get().await()
 
-            // 서버의 memo 문서를 하나씩 순회
-            memoSnapshots.documents.forEach { doc ->
-                // 로컬 memos에 doc.id와 동일한 id가 없는 경우 -> 서버에만 존재하는 문서
-                if (memos.none { it.id.toString() == doc.id }) {
-                    doc.reference.delete() // 서버에서 해당 문서 삭제
+            // 서버의 문서를 하나씩 순회
+            snapshots.documents.forEach { doc ->
+                // 로컬에 doc.id와 동일한 id가 없는 경우 -> 서버에만 존재하는 문서
+                if (memos.none {
+                    it.id.toString() == doc.id}) {
+                    doc.reference.delete() // 서버에만 해당 문서 삭제
+                    Log.d("MemoViewModel", "[DELETE] Removed server-only memo id = ${doc.id}")
                 }
             }
-            val trashCollection = db.collection(Constants.USERS)
-                .document(uid)
-                .collection(Constants.TRASH)
-            val trashSnapshots = trashCollection.get().await()
-            trashSnapshots.documents.forEach { doc ->
-                if (trash.none { it.id.toString() == doc.id }) {
-                    doc.reference.delete()
-                }
-            }
-            Log.d("MemoViewModel", "Back-up: memos=${memos.size}, trash=${trash.size}")
+            Log.d("MemoViewModel", "[SUCCESS] Backup completed for memo(s) (count = ${memos.size})")
         } catch (e: Exception) {
-            Log.e("MemoViewModel", "Back-up failed: ${e.message}", e)
+            Log.e("MemoViewModel", "[FAIL] Backup failed: ${e.message}", e)
         }
     }
 }

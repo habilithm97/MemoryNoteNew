@@ -10,11 +10,9 @@ import android.widget.ProgressBar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.fragment.app.viewModels
 import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.FragmentSignInBinding
 import com.example.memorynotenew.utils.ToastUtil.showToast
-import com.example.memorynotenew.viewmodel.MemoViewModel
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
