@@ -2,6 +2,7 @@ package com.example.memorynotenew.ui.fragment
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.preference.Preference
@@ -13,6 +14,7 @@ import com.example.memorynotenew.common.Constants.LOCK_PW_PREF
 import com.example.memorynotenew.common.Constants.SIGN_IN_PREF
 import com.example.memorynotenew.common.Constants.SIGN_OUT_PREF
 import com.example.memorynotenew.common.PasswordPurpose
+import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.viewmodel.MemoViewModel
 import com.google.firebase.auth.FirebaseAuth
 
@@ -63,6 +65,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        memoViewModel.backupResult.observe(viewLifecycleOwner) {
+            if (it.isSuccess) {
+                val msg = getString(R.string.backup_success, it.count)
+                requireContext().showToast(msg)
+            } else {
+                requireContext().showToast(getString(R.string.backup_failed))
+            }
+            requireActivity().finish()
+        }
+    }
+
+
     private fun showBackupDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.backup))
@@ -72,7 +89,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 dialog.dismiss()
 
                 memoViewModel.backupMemos()
-                requireActivity().finish()
             }
             .show()
     }

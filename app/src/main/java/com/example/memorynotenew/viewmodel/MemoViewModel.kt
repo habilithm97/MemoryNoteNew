@@ -4,11 +4,13 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.Constants.THIRTY_DAYS_MS
 import com.example.memorynotenew.common.Constants.USERS
+import com.example.memorynotenew.model.BackupResult
 import com.example.memorynotenew.repository.FirebaseRepository
 import com.example.memorynotenew.repository.MemoRepository
 import com.example.memorynotenew.room.database.MemoDatabase
@@ -37,6 +39,9 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     private fun <T> launchIO(block: suspend () -> T) {
         viewModelScope.launch(Dispatchers.IO) { block() }
     }
+    // 백업 결과를 내부에서 업데이트하고 외부엔 읽기만 허용하는 LiveData
+    private val _backupResult = MutableLiveData<BackupResult>()
+    val backupResult: LiveData<BackupResult> get() = _backupResult
 
     fun insertMemo(memo: Memo) = launchIO { memoRepository.insertMemo(memo) }
     fun updateMemo(memo: Memo) = launchIO { memoRepository.updateMemo(memo) }
@@ -84,7 +89,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
             val uid = firebaseRepository.auth.currentUser?.uid ?: return@launchIO
             val db = FirebaseFirestore.getInstance()
 
-            /** 잔여 서버 문서 삭제 **/
+            /** 잔여 서버 문서 삭제 */
             // Firestore 경로 : users/{uid}/memo
             val memoCollection = db.collection(USERS)
                 .document(uid)
@@ -102,8 +107,10 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
                     Log.d("MemoViewModel", "[DELETE] Removed server-only memo id = ${doc.id}")
                 }
             }
+            _backupResult.postValue(BackupResult(true, memos.size))
             Log.d("MemoViewModel", "[SUCCESS] Backup completed for memo(s) (count = ${memos.size})")
         } catch (e: Exception) {
+            _backupResult.postValue(BackupResult(false))
             Log.e("MemoViewModel", "[FAIL] Backup failed: ${e.message}", e)
         }
     }

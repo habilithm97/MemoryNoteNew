@@ -1,7 +1,6 @@
 package com.example.memorynotenew.repository
 
 import android.util.Log
-import com.example.memorynotenew.common.Constants
 import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.Constants.USERS
 import com.example.memorynotenew.room.entity.Memo

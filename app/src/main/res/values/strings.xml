@@ -70,6 +70,8 @@
     <string name="backup">Backup</string>
     <string name="backup_summary">Safely store memo(s) on the server.</string>
     <string name="load">Load</string>
-    <string name="load_summary">Load backup memo(s).</string>
+    <string name="load_summary">Load backed up memo(s).</string>
     <string name="backup_dialog">Backup memo(s)? (Trash will not be included.)</string>
+    <string name="backup_success">Backed up %1$d memo(s).</string>
+    <string name="backup_failed">Backup failed.</string>
 </resources>
