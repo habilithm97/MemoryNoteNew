@@ -12,6 +12,7 @@ class MemoRepository(private val memoDao: MemoDao, private val trashDao: TrashDa
     suspend fun updateMemo(memo: Memo) = memoDao.updateMemo(memo)
     suspend fun deleteMemo(memo: Memo) = memoDao.deleteMemo(memo)
     fun getAllMemos(): Flow<List<Memo>> = memoDao.getAllMemos()
+    suspend fun deleteAllMemos() = memoDao.deleteAllMemos()
 
     suspend fun insertTrash(trash: Trash): Long = trashDao.insertTrash(trash)
     suspend fun deleteTrash(trash: Trash) = trashDao.deleteTrash(trash)

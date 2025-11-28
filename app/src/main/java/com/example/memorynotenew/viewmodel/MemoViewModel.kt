@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.Constants.THIRTY_DAYS_MS
 import com.example.memorynotenew.common.Constants.USERS
-import com.example.memorynotenew.model.BackupResult
 import com.example.memorynotenew.repository.FirebaseRepository
 import com.example.memorynotenew.repository.MemoRepository
 import com.example.memorynotenew.room.database.MemoDatabase
@@ -39,9 +38,14 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     private fun <T> launchIO(block: suspend () -> T) {
         viewModelScope.launch(Dispatchers.IO) { block() }
     }
-    // 백업 결과를 내부에서 업데이트하고 외부엔 읽기만 허용하는 LiveData
+    data class BackupResult(val isSuccess: Boolean)
+    data class LoadResult(val isSuccess: Boolean)
+
     private val _backupResult = MutableLiveData<BackupResult>()
     val backupResult: LiveData<BackupResult> get() = _backupResult
+
+    private val _loadResult = MutableLiveData<LoadResult>()
+    val loadResult: LiveData<LoadResult> get() = _loadResult
 
     fun insertMemo(memo: Memo) = launchIO { memoRepository.insertMemo(memo) }
     fun updateMemo(memo: Memo) = launchIO { memoRepository.updateMemo(memo) }
@@ -81,16 +85,15 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
 
     fun backupMemos() = launchIO {
         try {
-            // Flow에서 메모 리스트를 한 번만 가져옴
+            val uid = firebaseRepository.auth.currentUser?.uid ?: return@launchIO
+
+            // 로컬에서 메모 리스트를 한 번만 가져옴
             val memos = memoRepository.getAllMemos().first()
 
             firebaseRepository.backup(memos) // 로컬 -> 서버
 
-            val uid = firebaseRepository.auth.currentUser?.uid ?: return@launchIO
-            val db = FirebaseFirestore.getInstance()
-
             /** 잔여 서버 문서 삭제 */
-            // Firestore 경로 : users/{uid}/memo
+            val db = FirebaseFirestore.getInstance()
             val memoCollection = db.collection(USERS)
                 .document(uid)
                 .collection(MEMO)
@@ -107,11 +110,34 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
                     Log.d("MemoViewModel", "[DELETE] Removed server-only memo id = ${doc.id}")
                 }
             }
-            _backupResult.postValue(BackupResult(true, memos.size))
-            Log.d("MemoViewModel", "[SUCCESS] Backup completed for memo(s) (count = ${memos.size})")
+            _backupResult.postValue(BackupResult(true))
+            Log.d("MemoViewModel", "[SUCCESS] Backup completed successfully.")
         } catch (e: Exception) {
             _backupResult.postValue(BackupResult(false))
             Log.e("MemoViewModel", "[FAIL] Backup failed: ${e.message}", e)
+        }
+    }
+
+    fun loadMemos() = launchIO {
+        try {
+            firebaseRepository.auth.currentUser?.uid ?: return@launchIO
+
+            // 서버에 백업된 메모 가져오기
+            val serverMemos = firebaseRepository.load()
+
+            // 로컬 메모 전체 삭제 (휴지통은 그대로)
+            memoRepository.deleteAllMemos()
+
+            // 서버에서 가져온 메모들을 로컬에 추가
+            serverMemos.forEach {
+                val memoToInsert = it.copy(id = 0)
+                memoRepository.insertMemo(memoToInsert)
+            }
+            _loadResult.postValue(LoadResult(true))
+            Log.d("MemoViewModel", "[SUCCESS] Load completed successfully.")
+        } catch (e: Exception) {
+            _loadResult.postValue(LoadResult(false))
+            Log.e("MemoViewModel", "[FAIL] Load failed: ${e.message}", e)
         }
     }
 }

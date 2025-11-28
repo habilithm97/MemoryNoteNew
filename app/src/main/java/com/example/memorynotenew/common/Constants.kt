@@ -12,6 +12,10 @@ object Constants {
     const val LOAD_PREF = "load_preference"
     const val SIGN_OUT_PREF = "sign_out_preference"
 
+    const val CONTENT = "content"
+    const val DATE = "date"
+    const val IS_LOCKED = "isLocked"
+
     const val PURPOSE = "password_purpose" // 비밀번호 사용 목적
     const val COUNT = "delete_count" // 삭제한 메모 개수
 

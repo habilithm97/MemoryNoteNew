@@ -29,4 +29,7 @@ interface MemoDao {
     -UI 생명주기와 독립적 (LiveData와의 차이점) */
     @Query("select * from memos order by date")
     fun getAllMemos(): Flow<List<Memo>>
+
+    @Query("delete from memos")
+    suspend fun deleteAllMemos()
 }

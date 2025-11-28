@@ -55,6 +55,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // 불러오기 Preference
         loadPref = findPreference(LOAD_PREF)
         loadPref?.setOnPreferenceClickListener {
+            showLoadDialog()
             true
         }
         // 로그아웃 Preference
@@ -68,17 +69,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        memoViewModel.backupResult.observe(viewLifecycleOwner) {
-            if (it.isSuccess) {
-                val msg = getString(R.string.backup_success, it.count)
-                requireContext().showToast(msg)
-            } else {
-                requireContext().showToast(getString(R.string.backup_failed))
+        with(memoViewModel) {
+            backupResult.observe(viewLifecycleOwner) {
+                handleResult(it.isSuccess, R.string.backup_success, R.string.backup_failed)
             }
-            requireActivity().finish()
+            loadResult.observe(viewLifecycleOwner) {
+                handleResult(it.isSuccess, R.string.load_success, R.string.load_failed)
+            }
         }
     }
 
+    private fun handleResult(isSuccess: Boolean, successMsg: Int, failMsg: Int) {
+        val msg = if (isSuccess) successMsg else failMsg
+        requireContext().showToast(getString(msg))
+        requireActivity().finish()
+    }
 
     private fun showBackupDialog() {
         AlertDialog.Builder(requireContext())
@@ -89,6 +94,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 dialog.dismiss()
 
                 memoViewModel.backupMemos()
+            }
+            .show()
+    }
+
+    private fun showLoadDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.load))
+            .setMessage(getString(R.string.load_dialog))
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                dialog.dismiss()
+
+                memoViewModel.loadMemos()
             }
             .show()
     }

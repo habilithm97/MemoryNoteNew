@@ -1,6 +1,9 @@
 package com.example.memorynotenew.repository
 
 import android.util.Log
+import com.example.memorynotenew.common.Constants.CONTENT
+import com.example.memorynotenew.common.Constants.DATE
+import com.example.memorynotenew.common.Constants.IS_LOCKED
 import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.Constants.USERS
 import com.example.memorynotenew.room.entity.Memo
@@ -9,12 +12,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class FirebaseRepository {
-    private val db = FirebaseFirestore.getInstance()
     val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
     suspend fun backup(memos: List<Memo>) {
         if (memos.isEmpty()) {
-            Log.d("FirebaseRepository", "[SKIP] No memos to back up")
+            Log.d("FirebaseRepository", "[SKIP] No memos to back up.")
             return
         }
         try {
@@ -29,9 +32,42 @@ class FirebaseRepository {
                 batch.set(memoCollection.document(it.id.toString()), it)
             }
             batch.commit().await()
-            Log.d("FirebaseRepository", "[SUCCESS] Backup completed for memo(s) (count = ${memos.size})")
+            Log.d("FirebaseRepository", "[SUCCESS] Backup completed successfully.")
         } catch (e: Exception) {
             Log.e("FirebaseRepository", "[FAIL] Backup failed: ${e.message}", e)
+        }
+    }
+
+    suspend fun load(): List<Memo> {
+        try {
+            val uid = auth.currentUser?.uid ?: return emptyList()
+
+            val memoCollection = db.collection(USERS)
+                .document(uid)
+                .collection(MEMO)
+
+            val snapshot = memoCollection.get().await()
+            if (snapshot.isEmpty) {
+                Log.d("FirebaseRepository", "[SKIP] No memos found on server.")
+                return emptyList()
+            }
+            val memos = snapshot.documents.mapNotNull {
+                val content = it.getString(CONTENT) ?: return@mapNotNull null
+                val date = it.getLong(DATE) ?: return@mapNotNull null
+                val isLocked = it.getBoolean(IS_LOCKED) ?: false
+
+                Memo(
+                    id = 0,
+                    content = content,
+                    date = date,
+                    isLocked = isLocked
+                )
+            }
+            return memos
+            Log.d("FirebaseRepository", "[SUCCESS] Loaded ${memos.size} memos from server.")
+        } catch (e: Exception) {
+            Log.e("FirebaseRepository", "[FAIL] Load failed: ${e.message}", e)
+            return emptyList()
         }
     }
 
