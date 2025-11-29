@@ -64,7 +64,7 @@ class FirebaseRepository {
                 )
             }
             return memos
-            Log.d("FirebaseRepository", "[SUCCESS] Loaded ${memos.size} memos from server.")
+            Log.d("FirebaseRepository", "[SUCCESS] Load completed successfully.")
         } catch (e: Exception) {
             Log.e("FirebaseRepository", "[FAIL] Load failed: ${e.message}", e)
             return emptyList()
