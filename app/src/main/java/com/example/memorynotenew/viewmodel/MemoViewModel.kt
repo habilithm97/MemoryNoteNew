@@ -47,6 +47,9 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     private val _loadResult = MutableLiveData<LoadResult>()
     val loadResult: LiveData<LoadResult> get() = _loadResult
 
+    val memos: List<Memo>
+        get() = getAllMemos.value ?: emptyList()
+
     fun insertMemo(memo: Memo) = launchIO { memoRepository.insertMemo(memo) }
     fun updateMemo(memo: Memo) = launchIO { memoRepository.updateMemo(memo) }
     fun deleteMemo(memo: Memo) = launchIO { memoRepository.deleteMemo(memo) }

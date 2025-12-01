@@ -122,6 +122,15 @@ class PasswordFragment : Fragment() {
         setupSubTitle()
         setupKeypad()
         setupBtnCancel()
+
+        memoViewModel.backupResult.observe(viewLifecycleOwner) {
+            if (it.isSuccess) {
+                requireContext().showToast(getString(R.string.backup_success))
+            } else {
+                requireContext().showToast(getString(R.string.backup_failed))
+            }
+            requireActivity().finish()
+        }
     }
 
     private fun setupSubTitle() {
@@ -167,6 +176,7 @@ class PasswordFragment : Fragment() {
                     PasswordPurpose.LOCK -> toggleMemoLock() // 메모 잠금 및 잠금 해제
                     PasswordPurpose.OPEN -> openMemo() // 메모 열기
                     PasswordPurpose.DELETE -> deleteMemo() // 메모 삭제
+                    PasswordPurpose.BACKUP -> backupMemo() // 메모 백업
                 }
             }
         }
@@ -257,6 +267,15 @@ class PasswordFragment : Fragment() {
             }
             requireContext().showToast(getString(R.string.delete_memo_result, deleteCount))
             requireActivity().supportFragmentManager.popBackStack()
+        } else {
+            reEnterPassword()
+        }
+        clearPassword()
+    }
+
+    private fun backupMemo() {
+        if (password.toString() == storedPassword) { // 저장된 비밀번호와 일치
+            memoViewModel.backupMemos()
         } else {
             reEnterPassword()
         }

@@ -14,6 +14,7 @@ import com.example.memorynotenew.common.Constants.LOCK_PW_PREF
 import com.example.memorynotenew.common.Constants.SIGN_IN_PREF
 import com.example.memorynotenew.common.Constants.SIGN_OUT_PREF
 import com.example.memorynotenew.common.PasswordPurpose
+import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.viewmodel.MemoViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -76,6 +77,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             loadResult.observe(viewLifecycleOwner) {
                 handleResult(it.isSuccess, R.string.load_success, R.string.load_failed)
             }
+            // LiveData를 활성화하여 memoViewModel.memos가 최신값을 가지도록 함
+            getAllMemos.observe(viewLifecycleOwner) {}
         }
     }
 
@@ -93,9 +96,23 @@ class SettingsFragment : PreferenceFragmentCompat() {
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.dismiss()
 
-                memoViewModel.backupMemos()
+                handleBackupRequest()
             }
             .show()
+    }
+
+    private fun handleBackupRequest() {
+        // 현재 메모 리스트에서 하나라도 잠겼으면 true 반환
+        val hasLockedMemo = memoViewModel.memos.any { it.isLocked }
+
+        if (hasLockedMemo) {
+            val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.BACKUP)
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.container, passwordFragment)
+                .commit()
+        } else {
+            memoViewModel.backupMemos()
+        }
     }
 
     private fun showLoadDialog() {
