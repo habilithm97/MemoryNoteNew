@@ -8,6 +8,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.memorynotenew.R
+import com.example.memorynotenew.common.Constants.PURPOSE
+import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.databinding.ActivitySettingsBinding
 import com.example.memorynotenew.ui.fragment.FindPwFragment
 import com.example.memorynotenew.ui.fragment.SignInFragment
@@ -58,38 +60,48 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupActionBar() {
+    fun setupActionBar() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.container)
         val title = getFragmentTitle(currentFragment)
-        val fragments = listOf(
-            SettingsFragment::class,
-            SignInFragment::class,
-            SignUpFragment::class,
-            FindPwFragment::class
-        )
+
+        val showUpButton = when (currentFragment) {
+            is SettingsFragment,
+            is SignInFragment,
+            is SignUpFragment,
+            is FindPwFragment -> true
+            is PasswordFragment -> false
+            else -> false
+        }
         supportActionBar?.apply {
             this.title = title
-            setDisplayHomeAsUpEnabled(
-                fragments.any { it.isInstance(currentFragment) }
-            )
+            setDisplayHomeAsUpEnabled(showUpButton)
         }
     }
 
     private fun getFragmentTitle(currentFragment: Fragment?): String = when(currentFragment) {
         is SettingsFragment -> getString(R.string.settings)
-        is PasswordFragment -> {
-            val storedPassword = PasswordManager.getPassword(this)
-
-            if (storedPassword.isNullOrEmpty()) {
-                getString(R.string.create_lock_password)
-            } else {
-                getString(R.string.change_lock_password)
-            }
-        }
+        is PasswordFragment -> getPasswordFragmentTitle(currentFragment)
         is SignInFragment -> getString(R.string.sign_in)
         is SignUpFragment -> getString(R.string.sign_up)
         is FindPwFragment -> getString(R.string.change_lock_password)
         else -> ""
+    }
+
+    private fun getPasswordFragmentTitle(currentFragment: PasswordFragment): String {
+        val purposeString = currentFragment.arguments?.getString(PURPOSE)
+        val purpose = purposeString?.let { PasswordPurpose.valueOf(it) }
+
+        return when (purpose) {
+            PasswordPurpose.BACKUP -> getString(R.string.backup_memo) // 메모 백업
+            else -> {
+                val storedPassword = PasswordManager.getPassword(this)
+                if (storedPassword.isNullOrEmpty()) {
+                    getString(R.string.create_lock_password) // 잠금 비밀번호 생성
+                } else {
+                    getString(R.string.change_lock_password) // 잠금 비밀번호 변경
+                }
+            }
+        }
     }
 
     // 업 버튼 동작

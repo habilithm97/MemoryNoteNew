@@ -18,6 +18,7 @@ import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.common.PasswordString
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
 import com.example.memorynotenew.room.entity.Memo
+import com.example.memorynotenew.ui.activity.SettingsActivity
 import com.example.memorynotenew.utils.PasswordManager
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.utils.VibrateUtil
@@ -304,6 +305,11 @@ class PasswordFragment : Fragment() {
                 updateDots()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as? SettingsActivity)?.setupActionBar()
     }
 
     override fun onDestroyView() {

@@ -125,6 +125,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             try {
                 val serverMemos = memoViewModel.firebaseRepository.load()
 
+                // UI 업데이트는 메인 스레드에서 실행
                 withContext(Dispatchers.Main) {
                     if (serverMemos.isEmpty()) {
                         requireContext().showToast(getString(R.string.backup_empty))
