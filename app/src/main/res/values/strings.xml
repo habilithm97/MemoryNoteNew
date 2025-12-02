@@ -69,12 +69,13 @@
 
     <string name="backup">Backup</string>
     <string name="backup_summary">Safely store memo(s) on the server.</string>
-    <string name="backup_dialog">Backup memo(s)? (Trash will not be included.)</string>
+    <string name="backup_dialog">Backup memo(s)?\n\n*Trash won\'t be backed up.\n*Overwrite to the server with the current memo(s) as-is.</string>
     <string name="backup_success">Backup completed successfully.</string>
     <string name="backup_failed">Backup failed.</string>
 
     <string name="load">Load</string>
     <string name="load_summary">Load backed up memo(s).</string>
+    <string name="backup_empty">No backed up memo(s).</string>
     <string name="load_dialog">Load backed up memo(s)?</string>
     <string name="load_success">Load completed successfully.</string>
     <string name="load_failed">Load failed.</string>

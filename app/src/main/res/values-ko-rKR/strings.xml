@@ -70,13 +70,14 @@
 
     <string name="backup">백업</string>
     <string name="backup_summary">메모를 서버에 안전하게 보관합니다.</string>
-    <string name="backup_dialog">메모를 백업할까요? (휴지통은 백업되지 않습니다.)</string>
+    <string name="backup_dialog">메모를 백업할까요?\n\n*휴지통은 백업되지 않습니다.\n*현재 메모를 그대로 서버에 덮어쓰기합니다.</string>
     <string name="backup_success">메모 백업에 성공했습니다.</string>
     <string name="backup_failed">메모 백업에 실패했습니다.</string>
 
     <string name="load">불러오기</string>
     <string name="load_summary">백업한 메모를 불러옵니다.</string>
-    <string name="load_dialog">백업된 메모를 불러올까요?(</string>
+    <string name="backup_empty">백업된 메모가 없습니다.</string>
+    <string name="load_dialog">백업된 메모를 불러올까요?</string>
     <string name="load_success">메모 불러오기에 성공했습니다.</string>
     <string name="load_failed">메모 불러오기에 실패했습니다.</string>
 </resources>

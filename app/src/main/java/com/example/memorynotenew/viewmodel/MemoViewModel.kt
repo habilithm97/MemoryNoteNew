@@ -29,7 +29,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
         MemoDatabase.getInstance(application).memoDao(),
         MemoDatabase.getInstance(application).trashDao()
     )
-    private val firebaseRepository =  FirebaseRepository()
+    val firebaseRepository =  FirebaseRepository()
 
     val getAllMemos: LiveData<List<Memo>> = memoRepository.getAllMemos().asLiveData()
     val getAllTrash: LiveData<List<Trash>> = memoRepository.getAllTrash().asLiveData()

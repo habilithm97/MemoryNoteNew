@@ -2,9 +2,11 @@ package com.example.memorynotenew.ui.fragment
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.example.memorynotenew.R
@@ -14,10 +16,12 @@ import com.example.memorynotenew.common.Constants.LOCK_PW_PREF
 import com.example.memorynotenew.common.Constants.SIGN_IN_PREF
 import com.example.memorynotenew.common.Constants.SIGN_OUT_PREF
 import com.example.memorynotenew.common.PasswordPurpose
-import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.viewmodel.MemoViewModel
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -56,7 +60,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // 불러오기 Preference
         loadPref = findPreference(LOAD_PREF)
         loadPref?.setOnPreferenceClickListener {
-            showLoadDialog()
+            handleLoadRequest()
             true
         }
         // 로그아웃 Preference
@@ -112,6 +116,25 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 .commit()
         } else {
             memoViewModel.backupMemos()
+        }
+    }
+
+    private fun handleLoadRequest() {
+        // 프래그먼트에서 안전하게 코루틴 실행
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val serverMemos = memoViewModel.firebaseRepository.load()
+
+                withContext(Dispatchers.Main) {
+                    if (serverMemos.isEmpty()) {
+                        requireContext().showToast(getString(R.string.backup_empty))
+                    } else {
+                        showLoadDialog()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("SettingsFragment", "An error occurred while checking memos.")
+            }
         }
     }
 
