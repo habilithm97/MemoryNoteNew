@@ -27,8 +27,7 @@ abstract class MemoDatabase : RoomDatabase() {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    MemoDatabase::class.java, DB_NAME
-                )
+                    MemoDatabase::class.java, DB_NAME)
                     .addMigrations(MIGRATION_2_3)
                     .build()
                 INSTANCE = instance // 새로 생성한 instance를 INSTANCE에 저장
@@ -49,7 +48,7 @@ abstract class MemoDatabase : RoomDatabase() {
         }
         private val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                // Memo 테이블에 iv 컬럼 추가 (기존 데이터는 null)
+                // Memo 테이블에 iv 컬럼 추가
                 db.execSQL("ALTER TABLE MEMOS ADD COLUMN iv TEXT")
             }
         }

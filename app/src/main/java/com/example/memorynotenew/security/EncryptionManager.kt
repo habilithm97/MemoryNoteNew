@@ -13,7 +13,7 @@ object EncryptionManager {
     private const val KEY_ALIAS = "memo_aes_key"
     private const val ANDROID_KS = "AndroidKeyStore"
 
-    fun getOrCreateKey(): SecretKey {
+    private fun getOrCreateKey(): SecretKey {
         val keystore = KeyStore.getInstance(ANDROID_KS).apply {
             load(null) // Keystore 초기화
         }

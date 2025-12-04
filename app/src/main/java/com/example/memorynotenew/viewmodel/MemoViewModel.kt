@@ -1,6 +1,7 @@
 package com.example.memorynotenew.viewmodel
 
 import android.app.Application
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -15,6 +16,7 @@ import com.example.memorynotenew.repository.MemoRepository
 import com.example.memorynotenew.room.database.MemoDatabase
 import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.room.entity.Trash
+import com.example.memorynotenew.security.EncryptionManager
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -93,7 +95,16 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
             // 로컬에서 메모 리스트를 한 번만 가져옴
             val memos = memoRepository.getAllMemos().first()
 
-            firebaseRepository.backup(memos) // 로컬 -> 서버
+            // 암호화된 메모 리스트 생성
+            val encryptedMemos = memos.map {
+                // content 암호화 -> Pair 구조 분해로 각각 꺼냄
+                val (cipherBytes, ivBytes) = EncryptionManager.encrypt(it.content)
+                it.copy( // 기존 Memo 객체를 그대로 유지하면서 content와 iv만 암호화된 값으로 교체
+                    content = Base64.encodeToString(cipherBytes, Base64.DEFAULT),
+                    iv = Base64.encodeToString(ivBytes, Base64.DEFAULT)
+                )
+            }
+            firebaseRepository.backup(encryptedMemos) // 로컬 (암호문) -> 서버
 
             /** 잔여 서버 문서 삭제 */
             val db = FirebaseFirestore.getInstance()
