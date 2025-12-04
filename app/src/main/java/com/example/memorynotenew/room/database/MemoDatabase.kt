@@ -12,7 +12,7 @@ import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.room.entity.Trash
 
 // Room이 내부적으로 구현체 자동 생성 (annotation processing) -> 추상 클래스로 선언
-@Database(entities = [Memo::class, Trash::class], version = 2, exportSchema = false)
+@Database(entities = [Memo::class, Trash::class], version = 3, exportSchema = false)
 abstract class MemoDatabase : RoomDatabase() {
     abstract fun memoDao(): MemoDao
     abstract fun trashDao() : TrashDao
@@ -27,23 +27,30 @@ abstract class MemoDatabase : RoomDatabase() {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    MemoDatabase::class.java, DB_NAME)
-                    .addMigrations(MIGRATION_1_2)
+                    MemoDatabase::class.java, DB_NAME
+                )
+                    .addMigrations(MIGRATION_2_3)
                     .build()
                 INSTANCE = instance // 새로 생성한 instance를 INSTANCE에 저장
                 instance
             }
         }
         private val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
+            override fun migrate(db: SupportSQLiteDatabase) {
                 // Trash 테이블 생성
-                database.execSQL(
+                db.execSQL(
                     "CREATE TABLE IF NOT EXISTS `trash` (" + // 이미 있으면 생성 안 함
                             "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                             "`memoId` INTEGER NOT NULL, " +
                             "`content` TEXT NOT NULL, " +
                             "`deletedAt` INTEGER NOT NULL)"
                 )
+            }
+        }
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Memo 테이블에 iv 컬럼 추가 (기존 데이터는 null)
+                db.execSQL("ALTER TABLE MEMOS ADD COLUMN iv TEXT")
             }
         }
     }

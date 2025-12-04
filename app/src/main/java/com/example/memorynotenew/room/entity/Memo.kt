@@ -18,5 +18,6 @@ data class Memo(
     // Firestore에서 "isLocked" 필드 이름을 명시적으로 지정
     @get:PropertyName(IS_LOCKED)
     @set:PropertyName(IS_LOCKED)
-    var isLocked: Boolean = false
+    var isLocked: Boolean = false,
+    var iv: String? = null
 ) : Parcelable // 컴포넌트 간 데이터 전달을 위한 직렬화 (객체 -> 바이트 형태)
