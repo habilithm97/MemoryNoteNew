@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.memorynotenew.common.Constants.CONTENT
 import com.example.memorynotenew.common.Constants.DATE
 import com.example.memorynotenew.common.Constants.IS_LOCKED
+import com.example.memorynotenew.common.Constants.IV
 import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.Constants.USERS
 import com.example.memorynotenew.room.entity.Memo
@@ -55,12 +56,14 @@ class FirebaseRepository {
                 val content = it.getString(CONTENT) ?: return@mapNotNull null
                 val date = it.getLong(DATE) ?: return@mapNotNull null
                 val isLocked = it.getBoolean(IS_LOCKED) ?: false
+                val iv = it.getString(IV) ?: return@mapNotNull null
 
                 Memo(
                     id = 0,
                     content = content,
                     date = date,
-                    isLocked = isLocked
+                    isLocked = isLocked,
+                    iv = iv
                 )
             }
             return memos

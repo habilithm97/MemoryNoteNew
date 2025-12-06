@@ -31,7 +31,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
         MemoDatabase.getInstance(application).memoDao(),
         MemoDatabase.getInstance(application).trashDao()
     )
-    val firebaseRepository =  FirebaseRepository()
+    val firebaseRepository = FirebaseRepository()
 
     val getAllMemos: LiveData<List<Memo>> = memoRepository.getAllMemos().asLiveData()
     val getAllTrash: LiveData<List<Trash>> = memoRepository.getAllTrash().asLiveData()
@@ -40,6 +40,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     private fun <T> launchIO(block: suspend () -> T) {
         viewModelScope.launch(Dispatchers.IO) { block() }
     }
+
     data class BackupResult(val isSuccess: Boolean)
     data class LoadResult(val isSuccess: Boolean)
 
@@ -119,7 +120,8 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
             snapshots.documents.forEach { doc ->
                 // 로컬에 doc.id와 동일한 id가 없는 경우 -> 서버에만 존재하는 문서
                 if (memos.none {
-                    it.id.toString() == doc.id}) {
+                        it.id.toString() == doc.id
+                    }) {
                     doc.reference.delete() // 서버에만 해당 문서 삭제
                     Log.d("MemoViewModel", "[DELETE] Removed server-only memo id = ${doc.id}")
                 }
@@ -142,10 +144,20 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
             // 로컬 메모 전체 삭제 (휴지통은 그대로)
             memoRepository.deleteAllMemos()
 
-            // 서버에서 가져온 메모들을 로컬에 추가
             serverMemos.forEach {
-                val memoToInsert = it.copy(id = 0)
-                memoRepository.insertMemo(memoToInsert)
+                // 서버 저장용 Base64 문자열
+                val cipherTextBase64 = it.content.trim()
+                val ivBase64 = it.iv?.trim()
+
+                // Base64 -> ByteArray (AES 복호화는 ByteArray로만 가능)
+                val cipherText = Base64.decode(cipherTextBase64, Base64.DEFAULT)
+                val iv = Base64.decode(ivBase64, Base64.DEFAULT)
+
+                // 복호화 (암호문 -> 평문)
+                val plainText = EncryptionManager.decrypt(cipherText, iv)
+
+                val decryptedMemo = it.copy(id = 0, content = plainText)
+                memoRepository.insertMemo(decryptedMemo)
             }
             _loadResult.postValue(LoadResult(true))
             Log.d("MemoViewModel", "[SUCCESS] Load completed successfully.")

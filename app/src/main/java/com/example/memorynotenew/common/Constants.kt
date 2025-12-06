@@ -15,6 +15,7 @@ object Constants {
     const val CONTENT = "content"
     const val DATE = "date"
     const val IS_LOCKED = "isLocked"
+    const val IV = "iv"
 
     const val PURPOSE = "password_purpose" // 비밀번호 사용 목적
     const val COUNT = "delete_count" // 삭제한 메모 개수
