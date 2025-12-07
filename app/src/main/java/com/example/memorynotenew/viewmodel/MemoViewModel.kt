@@ -40,7 +40,6 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     private fun <T> launchIO(block: suspend () -> T) {
         viewModelScope.launch(Dispatchers.IO) { block() }
     }
-
     data class BackupResult(val isSuccess: Boolean)
     data class LoadResult(val isSuccess: Boolean)
 
@@ -121,7 +120,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
                 // 로컬에 doc.id와 동일한 id가 없는 경우 -> 서버에만 존재하는 문서
                 if (memos.none {
                         it.id.toString() == doc.id
-                    }) {
+                }) {
                     doc.reference.delete() // 서버에만 해당 문서 삭제
                     Log.d("MemoViewModel", "[DELETE] Removed server-only memo id = ${doc.id}")
                 }

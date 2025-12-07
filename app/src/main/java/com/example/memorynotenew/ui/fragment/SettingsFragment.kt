@@ -1,9 +1,15 @@
 package com.example.memorynotenew.ui.fragment
 
 import android.app.AlertDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -69,6 +75,35 @@ class SettingsFragment : PreferenceFragmentCompat() {
             showSignOutDialog()
             true
         }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        // 원래 PreferenceFragmentCompat 레이아웃 가져오기
+        val root = super.onCreateView(inflater, container, savedInstanceState) as LinearLayout
+
+        // 하단 버튼 생성
+        val btnDeleteAccont = Button(requireContext()).apply {
+            text = getString(R.string.delete_account)
+            setTextColor(Color.RED)
+            setBackgroundResource(android.R.color.transparent)
+            setOnClickListener {}
+        }
+        // 버튼을 Preference 아래에 추가
+        root.addView(btnDeleteAccont)
+
+        btnDeleteAccont.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            gravity = Gravity.CENTER_HORIZONTAL
+            topMargin = 16
+            bottomMargin = 16
+        }
+        return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
