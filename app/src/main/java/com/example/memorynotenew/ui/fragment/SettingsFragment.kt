@@ -90,7 +90,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             text = getString(R.string.delete_account)
             setTextColor(Color.RED)
             setBackgroundResource(android.R.color.transparent)
-            setOnClickListener {}
+            setOnClickListener { replaceFragment(DeleteAccountFragment()) }
         }
         // 버튼을 Preference 아래에 추가
         root.addView(btnDeleteAccont)

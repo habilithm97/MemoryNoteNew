@@ -82,4 +82,5 @@
     <string name="load_failed">Load failed.</string>
 
     <string name="delete_account">Delete Account</string>
+    <string name="delete_account_confirm">To continue, type “delete account”.</string>
 </resources>
