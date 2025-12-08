@@ -12,10 +12,26 @@
         android:orientation="vertical">
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/confirmLayout"
+            style="@style/FieldMargin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:endIconMode="clear_text">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/delete_account_confirm" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/pwLayout"
             style="@style/FieldMargin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             app:endIconMode="clear_text"
             app:passwordToggleEnabled="true">
 
@@ -25,22 +41,6 @@
                 android:layout_height="match_parent"
                 android:hint="@string/password"
                 android:inputType="textPassword" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/confirmLayout"
-            style="@style/FieldMargin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:endIconMode="clear_text">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edtConfirm"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="@string/delete_account_confirm" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

@@ -99,7 +99,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply {
-            gravity = Gravity.CENTER_HORIZONTAL
+            gravity = Gravity.START
             topMargin = 16
             bottomMargin = 16
         }

@@ -82,5 +82,9 @@
     <string name="load_failed">Load failed.</string>
 
     <string name="delete_account">Delete Account</string>
-    <string name="delete_account_confirm">To continue, type “delete account”.</string>
+    <string name="delete_account_confirm">To continue, type [delete account].</string>
+    <string name="delete_account_action">Delete Account</string>
+    <string name="confirm_mismatch">Confirmation text does not match.</string>
+    <string name="delete_account_success">Account deleted successfully.</string>
+    <string name="delete_account_failed">Failed to delete account.</string>
 </resources>
