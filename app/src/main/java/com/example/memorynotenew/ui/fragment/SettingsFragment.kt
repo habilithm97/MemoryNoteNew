@@ -31,7 +31,7 @@ import kotlinx.coroutines.withContext
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
-    private lateinit var auth: FirebaseAuth
+    private val auth by lazy { FirebaseAuth.getInstance() }
     private var signInPref: Preference? = null
     private var backupPref: Preference? = null
     private var loadPref: Preference? = null
@@ -41,8 +41,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
-
-        auth = FirebaseAuth.getInstance()
 
         // 로그인 Preference
         signInPref = findPreference(SIGN_IN_PREF)
@@ -90,19 +88,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
             text = getString(R.string.delete_account)
             setTextColor(Color.RED)
             setBackgroundResource(android.R.color.transparent)
-            setOnClickListener { replaceFragment(DeleteAccountFragment()) }
+            setOnClickListener {
+                replaceFragment(DeleteAccountFragment())
+            }
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = Gravity.START
+                topMargin = 16
+                bottomMargin = 16
+            }
+            // 로그인 여부에 따른 가시성 토글
+            visibility = auth.currentUser?.let { View.VISIBLE } ?: View.GONE
         }
-        // 버튼을 Preference 아래에 추가
         root.addView(btnDeleteAccont)
-
-        btnDeleteAccont.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        ).apply {
-            gravity = Gravity.START
-            topMargin = 16
-            bottomMargin = 16
-        }
         return root
     }
 

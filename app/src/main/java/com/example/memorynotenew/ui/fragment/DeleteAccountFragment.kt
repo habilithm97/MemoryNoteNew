@@ -47,8 +47,8 @@ class DeleteAccountFragment : Fragment() {
 
     private fun deleteAccount() {
         with(binding) {
-            val password = edtPw.text.toString().trim()
-            val confirmText = edtConfirm.text.toString().trim()
+            val password = edtPw.text.toString()
+            val confirmText = edtConfirm.text.toString()
             val requiredText = getString(R.string.delete_account) // "회원탈퇴"
 
             if (password.isBlank() || confirmText.isBlank()) { // "모든 항목을 입력해주세요."
@@ -59,8 +59,7 @@ class DeleteAccountFragment : Fragment() {
                 requireContext().showToast(getString(R.string.confirm_mismatch))
                 return
             }
-            FirebaseAuth.getInstance().currentUser?.let { currentUser ->
-                with(currentUser) {
+            auth.currentUser?.let { with(it) {
                     email?.let { email ->
                         val credential = EmailAuthProvider.getCredential(email, password)
                         reauthenticate(credential) // 비밀번호 재인증
