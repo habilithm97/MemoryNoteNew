@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="@string/delete_account"
+            android:text="@string/delete_account_action"
             android:textAllCaps="false" />
 
     </LinearLayout>

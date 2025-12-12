@@ -31,48 +31,20 @@ import kotlinx.coroutines.withContext
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
-    private val auth by lazy { FirebaseAuth.getInstance() }
     private var signInPref: Preference? = null
     private var backupPref: Preference? = null
     private var loadPref: Preference? = null
     private var signOutPref: Preference? = null
+    private lateinit var btnDeleteAccount: Button
+    private val auth by lazy { FirebaseAuth.getInstance() }
+
     // 프래그먼트 생명주기에 맞춰 생성/관리되는 ViewModel
     private val memoViewModel: MemoViewModel by viewModels()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
-        // 로그인 Preference
-        signInPref = findPreference(SIGN_IN_PREF)
-        signInPref?.setOnPreferenceClickListener {
-            replaceFragment(SignInFragment())
-            true
-        }
-        // 잠금 비밀번호 설정 Preference
-        val lockPwPref = findPreference<Preference>(LOCK_PW_PREF)
-        lockPwPref?.setOnPreferenceClickListener {
-            val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.SETTING)
-            replaceFragment(passwordFragment)
-            true
-        }
-        // 백업 Preference
-        backupPref = findPreference(BACKUP_PREF)
-        backupPref?.setOnPreferenceClickListener {
-            showBackupDialog()
-            true
-        }
-        // 불러오기 Preference
-        loadPref = findPreference(LOAD_PREF)
-        loadPref?.setOnPreferenceClickListener {
-            handleLoadRequest()
-            true
-        }
-        // 로그아웃 Preference
-        signOutPref = findPreference(SIGN_OUT_PREF)
-        signOutPref?.setOnPreferenceClickListener {
-            showSignOutDialog()
-            true
-        }
+        initPreferences()
     }
 
     override fun onCreateView(
@@ -80,17 +52,68 @@ class SettingsFragment : PreferenceFragmentCompat() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // 원래 PreferenceFragmentCompat 레이아웃 가져오기
+        // 기존 PreferenceFragmentCompat 레이아웃 가져오기
         val root = super.onCreateView(inflater, container, savedInstanceState) as LinearLayout
+        btnDeleteAccount = createDeleteAccountButton()
+        root.addView(btnDeleteAccount)
+        return root
+    }
 
-        // 하단 버튼 생성
-        val btnDeleteAccont = Button(requireContext()).apply {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        observeViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        updateUI()
+    }
+
+    private fun initPreferences() {
+        // 로그인 Preference
+        signInPref = findPreference<Preference?>(SIGN_IN_PREF)?.apply {
+            setOnPreferenceClickListener {
+                replaceFragment(SignInFragment())
+                true
+            }
+        }
+        // 잠금 비밀번호 설정 Preference
+        findPreference<Preference>(LOCK_PW_PREF)?.setOnPreferenceClickListener {
+            val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.SETTING)
+            replaceFragment(passwordFragment)
+            true
+        }
+        // 백업 Preference
+        backupPref = findPreference<Preference?>(BACKUP_PREF)?.apply {
+            setOnPreferenceClickListener {
+                showBackupDialog()
+                true
+            }
+        }
+        // 불러오기 Preference
+        loadPref = findPreference<Preference?>(LOAD_PREF)?.apply {
+            setOnPreferenceClickListener {
+                handleLoadRequest()
+                true
+            }
+        }
+        // 로그아웃 Preference
+        signOutPref = findPreference<Preference?>(SIGN_OUT_PREF)?.apply {
+            setOnPreferenceClickListener {
+                showSignOutDialog()
+                true
+            }
+        }
+    }
+
+    private fun createDeleteAccountButton(): Button =
+        Button(requireContext()).apply {
             text = getString(R.string.delete_account)
             setTextColor(Color.RED)
             setBackgroundResource(android.R.color.transparent)
-            setOnClickListener {
-                replaceFragment(DeleteAccountFragment())
-            }
+            setOnClickListener { replaceFragment(DeleteAccountFragment()) }
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -99,32 +122,52 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 topMargin = 16
                 bottomMargin = 16
             }
-            // 로그인 여부에 따른 가시성 토글
-            visibility = auth.currentUser?.let { View.VISIBLE } ?: View.GONE
         }
-        root.addView(btnDeleteAccont)
-        return root
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    private fun observeViewModel() {
         with(memoViewModel) {
-            backupResult.observe(viewLifecycleOwner) {
+            backupResult.observe(viewLifecycleOwner) { // "메모 백업에 성공/실패했습니다."
                 handleResult(it.isSuccess, R.string.backup_success, R.string.backup_failed)
             }
-            loadResult.observe(viewLifecycleOwner) {
+            loadResult.observe(viewLifecycleOwner) { // "메모 불러오기에 성공/실패했습니다."
                 handleResult(it.isSuccess, R.string.load_success, R.string.load_failed)
             }
-            // LiveData를 활성화하여 memoViewModel.memos가 최신값을 가지도록 함
-            getAllMemos.observe(viewLifecycleOwner) {}
+            getAllMemos.observe(viewLifecycleOwner) {} // 최신값
         }
     }
 
-    private fun handleResult(isSuccess: Boolean, successMsg: Int, failMsg: Int) {
-        val msg = if (isSuccess) successMsg else failMsg
-        requireContext().showToast(getString(msg))
-        requireActivity().finish()
+    private fun updateUI() {
+        val user = auth.currentUser
+        val isVerified = user?.isEmailVerified == true // 이메일 인증 여부
+        val isSignedIn = user != null && isVerified // 이메일 인증까지 고려한 로그인 상태
+
+        // 로그인 Preference
+        signInPref?.apply {
+            title = when {
+                user == null -> getString(R.string.sign_in) // 사용자 x -> "로그인" 표시
+                isVerified -> user.email // 인증 o -> 이메일 표시
+                else -> getString(R.string.sign_in) // 인증 x -> "로그인" 표시
+            }
+            isEnabled = !isSignedIn // 로그인 x -> 활성화
+        }
+        // 백업 Preference
+        backupPref?.isEnabled = isSignedIn // 로그인 o -> 활성화
+
+        // 불러오기 Preference
+        loadPref?.isEnabled = isSignedIn // 로그인 o -> 활성화
+
+        // 로그아웃 Preference
+        signOutPref?.isVisible = isSignedIn // 로그인 o -> 가시화
+
+        // 로그인 여부에 따른 회원탈퇴 버튼 가시성 토글
+        btnDeleteAccount.visibility = if (isSignedIn) View.VISIBLE else View.GONE
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun showBackupDialog() {
@@ -163,6 +206,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 // UI 업데이트는 메인 스레드에서 실행
                 withContext(Dispatchers.Main) {
                     if (serverMemos.isEmpty()) {
+                        // "백업된 메모가 없습니다."
                         requireContext().showToast(getString(R.string.backup_empty))
                     } else {
                         showLoadDialog()
@@ -195,45 +239,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.dismiss()
 
-                auth.signOut() // 로그아웃
+                auth.signOut()
                 updateUI()
             }
             .show()
     }
 
-    private fun updateUI() {
-        val user = auth.currentUser
-        val isVerified = user?.isEmailVerified ?: false // 이메일 인증 여부
-        val isSignedIn = user != null // 로그인 상태 여부
-
-        // 로그인 Preference
-        signInPref?.apply {
-            /* 이메일 인증 -> 이메일 표시
-            로그인 x, 이메일 인증 x -> "로그인" 표시 */
-            title = user?.let { if (isVerified) it.email else getString(R.string.sign_in) }
-                ?: getString(R.string.sign_in)
-            isEnabled = !isSignedIn // 로그인 x -> 활성화
-        }
-        // 백업 Preference
-        backupPref?.isEnabled = isSignedIn // 로그인 o -> 활성화
-
-        // 불러오기 Preference
-        loadPref?.isEnabled = isSignedIn // 로그인 o -> 활성화
-
-        // 로그아웃 Preference
-        signOutPref?.isVisible = isSignedIn // 로그인 o -> 가시화
-    }
-
-    private fun replaceFragment(fragment: Fragment) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.container, fragment)
-            .addToBackStack(null)
-            .commit()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        updateUI()
+    private fun handleResult(isSuccess: Boolean, successMsg: Int, failMsg: Int) {
+        val msg = if (isSuccess) successMsg else failMsg
+        requireContext().showToast(getString(msg))
+        requireActivity().finish()
     }
 }
