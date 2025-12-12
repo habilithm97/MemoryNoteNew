@@ -25,9 +25,7 @@ import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.viewmodel.MemoViewModel
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -59,12 +57,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
         return root
     }
 
+    // 뷰가 생성될 때 한 번만 초기화
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         observeViewModel()
     }
 
+    // 화면이 보여질 때마다 UI 갱신
     override fun onResume() {
         super.onResume()
 
@@ -88,6 +88,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // 백업 Preference
         backupPref = findPreference<Preference?>(BACKUP_PREF)?.apply {
             setOnPreferenceClickListener {
+                it.isEnabled = false // 중복 클릭 방지
                 showBackupDialog()
                 true
             }
@@ -95,6 +96,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // 불러오기 Preference
         loadPref = findPreference<Preference?>(LOAD_PREF)?.apply {
             setOnPreferenceClickListener {
+                it.isEnabled = false
                 handleLoadRequest()
                 true
             }
@@ -174,11 +176,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.backup))
             .setMessage(getString(R.string.backup_dialog))
-            .setNegativeButton(getString(R.string.cancel), null)
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                dialog.dismiss()
+
+                backupPref?.isEnabled = true
+            }
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.dismiss()
 
                 handleBackupRequest()
+                backupPref?.isEnabled = true
+            }
+            .setOnCancelListener {
+                backupPref?.isEnabled = true
             }
             .show()
     }
@@ -203,17 +213,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
             try {
                 val serverMemos = memoViewModel.firebaseRepository.load()
 
-                // UI 업데이트는 메인 스레드에서 실행
-                withContext(Dispatchers.Main) {
-                    if (serverMemos.isEmpty()) {
-                        // "백업된 메모가 없습니다."
-                        requireContext().showToast(getString(R.string.backup_empty))
-                    } else {
-                        showLoadDialog()
-                    }
+                if (serverMemos.isEmpty()) {
+                    // "백업된 메모가 없습니다."
+                    requireContext().showToast(getString(R.string.backup_empty))
+                } else {
+                    showLoadDialog()
                 }
             } catch (e: Exception) {
-                Log.e("SettingsFragment", "An error occurred while checking memos.")
+                Log.e("SettingsFragment", "An error occurred while checking memos.", e)
             }
         }
     }
@@ -222,11 +229,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.load))
             .setMessage(getString(R.string.load_dialog))
-            .setNegativeButton(getString(R.string.cancel), null)
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                dialog.dismiss()
+
+                loadPref?.isEnabled = true
+            }
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                 dialog.dismiss()
 
                 memoViewModel.loadMemos()
+                loadPref?.isEnabled = true
+            }
+            .setOnCancelListener {
+                loadPref?.isEnabled = true
             }
             .show()
     }
