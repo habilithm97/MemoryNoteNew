@@ -1,6 +1,7 @@
 package com.example.memorynotenew.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,8 +16,6 @@ import com.example.memorynotenew.databinding.FragmentSignInBinding
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
 
 class SignInFragment : Fragment() {
     private var _binding: FragmentSignInBinding? = null // nullable
@@ -94,12 +93,14 @@ class SignInFragment : Fragment() {
                     if (it.isSuccessful) {
                         val user = auth.currentUser
 
-                        if (user != null && user.isEmailVerified) { // 이메일 인증 완료
+                        if (user != null && user.isEmailVerified) {
                             requireActivity().supportFragmentManager.popBackStack()
                         } else { // "이메일 인증이 필요합니다."
                             textView.visibility = View.VISIBLE
                         }
                     } else {
+                        Log.e("SignInFragment", "Sign in failed.", it.exception)
+
                         val message = when (it.exception) {
                             // "네트워크 오류가 발생했습니다."
                             is FirebaseNetworkException -> getString(R.string.network_error)
