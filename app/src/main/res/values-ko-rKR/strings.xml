@@ -32,7 +32,6 @@
     <string name="password_mismatch">비밀번호가 일치하지 않습니다.</string>
     <string name="weak_password">비밀번호의 보안 수준이 약합니다.</string>
     <string name="incorrect_password">비밀번호가 틀렸습니다.</string>
-    <string name="find_password">비밀번호 찾기</string>
     <string name="password_reset_failed">비밀번호 재설정에 실패했습니다.</string>
     <string name="password_reset_email_sent">비밀번호 재설정 메일을 보냈습니다. 이메일을 확인해주세요.</string>
     <string name="lock">잠금</string>
@@ -63,7 +62,6 @@
     <string name="network_error">네트워크 오류가 발생했습니다.</string>
     <string name="dialog_sign_out">로그아웃할까요?</string>
     <string name="find_email">이메일 찾기</string>
-    <string name="find_by_email">이메일 주소로 찾기</string>
     <string name="verify">인증하기</string>
 
     <string name="backup">백업</string>
@@ -90,4 +88,7 @@
     <string name="lock_password_sub_title">잠금 비밀번호를 잊어버리면 다시 찾을 수 없습니다. 꼭 기억해주세요.</string>
     <string name="sign_in_failed">등록된 이메일이 없거나 비밀번호가 틀렸습니다.</string>
     <string name="resend">재발송</string>
+    <string name="forgot_password">비밀번호 찾기</string>
+    <string name="reset_password">비밀번호 재설정</string>
+    <string name="reset_request">재설정 요청</string>
 </resources>

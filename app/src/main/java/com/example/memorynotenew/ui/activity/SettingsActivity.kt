@@ -12,7 +12,7 @@ import com.example.memorynotenew.common.Constants.PURPOSE
 import com.example.memorynotenew.common.PasswordPurpose
 import com.example.memorynotenew.databinding.ActivitySettingsBinding
 import com.example.memorynotenew.ui.fragment.DeleteAccountFragment
-import com.example.memorynotenew.ui.fragment.FindPwFragment
+import com.example.memorynotenew.ui.fragment.ForgotPasswordFragment
 import com.example.memorynotenew.ui.fragment.SignInFragment
 import com.example.memorynotenew.ui.fragment.PasswordFragment
 import com.example.memorynotenew.ui.fragment.SettingsFragment
@@ -69,7 +69,7 @@ class SettingsActivity : AppCompatActivity() {
             is SettingsFragment,
             is SignInFragment,
             is SignUpFragment,
-            is FindPwFragment,
+            is ForgotPasswordFragment,
             is DeleteAccountFragment -> true
             is PasswordFragment -> false
             else -> false
@@ -85,7 +85,7 @@ class SettingsActivity : AppCompatActivity() {
         is PasswordFragment -> getPasswordFragmentTitle(currentFragment)
         is SignInFragment -> getString(R.string.sign_in)
         is SignUpFragment -> getString(R.string.sign_up)
-        is FindPwFragment -> getString(R.string.change_lock_password)
+        is ForgotPasswordFragment -> getString(R.string.forgot_password)
         is DeleteAccountFragment -> getString(R.string.delete_account)
         else -> ""
     }

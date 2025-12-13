@@ -118,12 +118,12 @@
                 android:background="?android:attr/listDivider" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnForgotPw"
+                android:id="@+id/btnForgotPassword"
                 style="@style/SubButton2"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/find_password"
+                android:text="@string/forgot_password"
                 android:textAllCaps="false" />
 
         </LinearLayout>

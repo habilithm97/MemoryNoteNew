@@ -59,8 +59,8 @@ class SignInFragment : Fragment() {
                 handleResend()
             }
             // 비밀번호 찾기 버튼
-            btnForgotPw.setOnClickListener {
-                replaceFragment(FindPwFragment())
+            btnForgotPassword.setOnClickListener {
+                replaceFragment(ForgotPasswordFragment())
             }
         }
     }
