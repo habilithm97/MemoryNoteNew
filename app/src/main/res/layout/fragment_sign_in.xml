@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/mainLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -27,23 +27,46 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/textView"
+        <LinearLayout
+            android:id="@+id/subLinearLayout"
             style="@style/FieldMargin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:fontFamily="@font/bookkmyungjo_light"
-            android:text="@string/email_verification_required"
-            android:textColor="@color/red"
-            android:visibility="gone" />
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/bookkmyungjo_light"
+                android:text="@string/email_verification_required"
+                android:textColor="@color/red" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btnResend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/transparent"
+                android:gravity="end"
+                android:minHeight="0dp"
+                android:padding="0dp"
+                android:text="@string/resend"
+                android:textColor="@color/main" />
+
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/passwordLayout"
             style="@style/FieldMargin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText

@@ -88,4 +88,5 @@
 
     <string name="lock_password_sub_title">If the lock password is forgotten, it cannot be recovered. Please remember it.</string>
     <string name="sign_in_failed">Invalid email or password.</string>
+    <string name="resend">Resend</string>
 </resources>

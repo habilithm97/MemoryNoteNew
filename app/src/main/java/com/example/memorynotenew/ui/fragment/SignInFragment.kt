@@ -39,7 +39,7 @@ class SignInFragment : Fragment() {
 
         with(binding) {
             // 소프트 키보드 높이 만큼 linearLayout 하단 패딩 적용
-            ViewCompat.setOnApplyWindowInsetsListener(linearLayout) { linearLayout, insets ->
+            ViewCompat.setOnApplyWindowInsetsListener(mainLinearLayout) { linearLayout, insets ->
                 val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
                 linearLayout.updatePadding(bottom = imeInsets.bottom)
                 insets
@@ -54,6 +54,10 @@ class SignInFragment : Fragment() {
             }
             this@SignInFragment.progressBar = progressBar
 
+            // 인증 메일 재발송 버튼
+            btnResend.setOnClickListener {
+                handleResend()
+            }
             // 비밀번호 찾기 버튼
             btnForgotPw.setOnClickListener {
                 replaceFragment(FindPwFragment())
@@ -95,8 +99,8 @@ class SignInFragment : Fragment() {
 
                         if (user != null && user.isEmailVerified) {
                             requireActivity().supportFragmentManager.popBackStack()
-                        } else { // "이메일 인증이 필요합니다."
-                            textView.visibility = View.VISIBLE
+                        } else {
+                            subLinearLayout.visibility = View.VISIBLE
                         }
                     } else {
                         Log.e("SignInFragment", "Sign in failed.", it.exception)
@@ -111,6 +115,22 @@ class SignInFragment : Fragment() {
                     }
                 }
         }
+    }
+
+    private fun handleResend() {
+        val user = auth.currentUser
+
+        user?.sendEmailVerification()
+            ?.addOnCompleteListener {
+                if (it.isSuccessful) {
+                    // "인증 메일을 보냈습니다. 이메일을 확인해주세요."
+                    requireContext().showToast(getString(R.string.verification_email_sent))
+                } else {
+                    Log.e("SignInFragment", "Failed to resend verification email", it.exception)
+                    // "인증 메일 발송에 실패했습니다."
+                    requireContext().showToast(getString(R.string.verification_email_failed))
+                }
+            }
     }
 
     private fun showProgress(show: Boolean) {
