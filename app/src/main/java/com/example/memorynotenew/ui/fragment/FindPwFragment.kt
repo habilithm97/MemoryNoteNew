@@ -68,7 +68,7 @@ class FindPwFragment : Fragment() {
                     } else { // 실패
                         val message = when (task.exception) {
                             // 등록된 이메일이 없습니다.
-                            is FirebaseAuthInvalidUserException -> getString(R.string.email_not_found)
+                            //is FirebaseAuthInvalidUserException -> getString(R.string.email_not_found)
                             // 네트워크 오류가 발생했습니다.
                             is FirebaseNetworkException -> getString(R.string.network_error)
                             // 비밀번호 재설정에 실패했습니다.

@@ -60,9 +60,7 @@
     <string name="verification_email_sent">인증 메일을 보냈습니다. 이메일을 확인해주세요.</string>
     <string name="verification_email_failed">인증 메일 발송에 실패했습니다.</string>
     <string name="email_verification_required">이메일 인증이 필요합니다.</string>
-    <string name="email_not_found">등록된 이메일이 없습니다.</string>
     <string name="network_error">네트워크 오류가 발생했습니다.</string>
-    <string name="sign_in_failed">로그인에 실패했습니다.</string>
     <string name="dialog_sign_out">로그아웃할까요?</string>
     <string name="find_email">이메일 찾기</string>
     <string name="find_by_email">이메일 주소로 찾기</string>
@@ -88,4 +86,7 @@
     <string name="confirm_mismatch">확인 문구가 일치하지 않습니다.</string>
     <string name="delete_account_success">회원탈퇴에 성공했습니다.</string>
     <string name="delete_account_failed">회원탈퇴에 실패했습니다.</string>
+
+    <string name="lock_password_sub_title">잠금 비밀번호를 잊어버리면 다시 찾을 수 없습니다. 꼭 기억해주세요.</string>
+    <string name="sign_in_failed">등록된 이메일이 없거나 비밀번호가 틀렸습니다.</string>
 </resources>

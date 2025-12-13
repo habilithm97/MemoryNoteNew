@@ -33,7 +33,6 @@
     <string name="password_hint">Password (8–16, A–Z + 0–9)</string>
     <string name="lock_password_saved">Lock password saved.</string>
     <string name="lock_password_changed">Lock password changed.</string>
-    <string name="email_not_found">Email not found.</string>
     <string name="trash_emptied">Trash emptied.</string>
     <string name="trash_is_empty">Trash is empty.</string>
     <string name="sign_up_button">Sign Up</string>
@@ -61,7 +60,6 @@
     <string name="find_email">Forgot Email?</string>
     <string name="find_by_email">Find by Email</string>
     <string name="invalid_email_format">Invalid email address.</string>
-    <string name="sign_in_failed">Sign in failed.</string>
     <string name="network_error">Network error occurred.</string>
     <string name="verification_email_sent">Verification email sent. Check your inbox.</string>
     <string name="verification_email_failed">Failed to send verification email.</string>
@@ -87,4 +85,7 @@
     <string name="confirm_mismatch">Confirmation text does not match.</string>
     <string name="delete_account_success">Account deleted successfully.</string>
     <string name="delete_account_failed">Failed to delete account.</string>
+
+    <string name="lock_password_sub_title">If the lock password is forgotten, it cannot be recovered. Please remember it.</string>
+    <string name="sign_in_failed">Invalid email or password.</string>
 </resources>
