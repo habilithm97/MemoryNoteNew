@@ -21,7 +21,7 @@ import com.example.memorynotenew.common.Constants.LOAD_PREF
 import com.example.memorynotenew.common.Constants.LOCK_PW_PREF
 import com.example.memorynotenew.common.Constants.SIGN_IN_PREF
 import com.example.memorynotenew.common.Constants.SIGN_OUT_PREF
-import com.example.memorynotenew.common.PasswordPurpose
+import com.example.memorynotenew.common.LockPasswordPurpose
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.viewmodel.MemoViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -81,8 +81,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
         // 잠금 비밀번호 설정 Preference
         findPreference<Preference>(LOCK_PW_PREF)?.setOnPreferenceClickListener {
-            val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.SETTING)
-            replaceFragment(passwordFragment)
+            val lockPasswordFragment = LockPasswordFragment.newInstance(LockPasswordPurpose.SETTING)
+            replaceFragment(lockPasswordFragment)
             true
         }
         // 백업 Preference
@@ -97,7 +97,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         loadPref = findPreference<Preference?>(LOAD_PREF)?.apply {
             setOnPreferenceClickListener {
                 it.isEnabled = false
-                handleLoadRequest()
+                loadRequest()
                 true
             }
         }
@@ -176,15 +176,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.backup))
             .setMessage(getString(R.string.backup_dialog))
-            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
-                dialog.dismiss()
-
+            .setNegativeButton(getString(R.string.cancel)) { _, _ ->
                 backupPref?.isEnabled = true
             }
-            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
-                dialog.dismiss()
-
-                handleBackupRequest()
+            .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                backupRequest()
                 backupPref?.isEnabled = true
             }
             .setOnCancelListener {
@@ -193,21 +189,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
             .show()
     }
 
-    private fun handleBackupRequest() {
+    private fun backupRequest() {
         // 현재 메모 리스트에서 하나라도 잠겼으면 true 반환
         val hasLockedMemo = memoViewModel.memos.any { it.isLocked }
 
         if (hasLockedMemo) {
-            val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.BACKUP)
+            val lockPasswordFragment = LockPasswordFragment.newInstance(LockPasswordPurpose.BACKUP)
             parentFragmentManager.beginTransaction()
-                .replace(R.id.container, passwordFragment)
+                .replace(R.id.container, lockPasswordFragment)
                 .commit()
         } else {
             memoViewModel.backupMemos()
         }
     }
 
-    private fun handleLoadRequest() {
+    private fun loadRequest() {
         // 프래그먼트에서 안전하게 코루틴 실행
         viewLifecycleOwner.lifecycleScope.launch {
             try {
@@ -229,14 +225,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.load))
             .setMessage(getString(R.string.load_dialog))
-            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
-                dialog.dismiss()
-
+            .setNegativeButton(getString(R.string.cancel)) { _, _ ->
                 loadPref?.isEnabled = true
             }
-            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
-                dialog.dismiss()
-
+            .setPositiveButton(getString(R.string.ok)) { _, _ ->
                 memoViewModel.loadMemos()
                 loadPref?.isEnabled = true
             }
@@ -251,9 +243,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             .setTitle(getString(R.string.sign_out))
             .setMessage(getString(R.string.dialog_sign_out))
             .setNegativeButton(getString(R.string.cancel), null)
-            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
-                dialog.dismiss()
-
+            .setPositiveButton(getString(R.string.ok)) { _, _ ->
                 auth.signOut()
                 updateUI()
             }

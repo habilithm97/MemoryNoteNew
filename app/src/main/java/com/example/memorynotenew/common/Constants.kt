@@ -17,8 +17,8 @@ object Constants {
     const val IS_LOCKED = "isLocked"
     const val IV = "iv"
 
-    const val PURPOSE = "password_purpose" // 비밀번호 사용 목적
-    const val COUNT = "delete_count" // 삭제한 메모 개수
+    const val LOCK_PW_PURPOSE = "lock_password_purpose" // 잠금 비밀번호 사용 목적
+    const val DELETE_COUNT = "delete_count" // 삭제한 메모 개수
 
     // 30일 * 24시간 * 60분 * 60초 * 1000밀리초
     const val THIRTY_DAYS_MS = 30L * 24 * 60 * 60 * 1000

@@ -8,16 +8,16 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.memorynotenew.R
-import com.example.memorynotenew.common.Constants.PURPOSE
-import com.example.memorynotenew.common.PasswordPurpose
+import com.example.memorynotenew.common.Constants.LOCK_PW_PURPOSE
+import com.example.memorynotenew.common.LockPasswordPurpose
 import com.example.memorynotenew.databinding.ActivitySettingsBinding
 import com.example.memorynotenew.ui.fragment.DeleteAccountFragment
 import com.example.memorynotenew.ui.fragment.ForgotPasswordFragment
 import com.example.memorynotenew.ui.fragment.SignInFragment
-import com.example.memorynotenew.ui.fragment.PasswordFragment
+import com.example.memorynotenew.ui.fragment.LockPasswordFragment
 import com.example.memorynotenew.ui.fragment.SettingsFragment
 import com.example.memorynotenew.ui.fragment.SignUpFragment
-import com.example.memorynotenew.utils.PasswordManager
+import com.example.memorynotenew.utils.LockPasswordManager
 
 class SettingsActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySettingsBinding.inflate(layoutInflater) }
@@ -71,7 +71,7 @@ class SettingsActivity : AppCompatActivity() {
             is SignUpFragment,
             is ForgotPasswordFragment,
             is DeleteAccountFragment -> true
-            is PasswordFragment -> false
+            is LockPasswordFragment -> false
             else -> false
         }
         supportActionBar?.apply {
@@ -82,7 +82,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun getFragmentTitle(currentFragment: Fragment?): String = when(currentFragment) {
         is SettingsFragment -> getString(R.string.settings)
-        is PasswordFragment -> getPasswordFragmentTitle(currentFragment)
+        is LockPasswordFragment -> getPasswordFragmentTitle(currentFragment)
         is SignInFragment -> getString(R.string.sign_in)
         is SignUpFragment -> getString(R.string.sign_up)
         is ForgotPasswordFragment -> getString(R.string.forgot_password)
@@ -90,14 +90,14 @@ class SettingsActivity : AppCompatActivity() {
         else -> ""
     }
 
-    private fun getPasswordFragmentTitle(currentFragment: PasswordFragment): String {
-        val purposeString = currentFragment.arguments?.getString(PURPOSE)
-        val purpose = purposeString?.let { PasswordPurpose.valueOf(it) }
+    private fun getPasswordFragmentTitle(currentFragment: LockPasswordFragment): String {
+        val purposeString = currentFragment.arguments?.getString(LOCK_PW_PURPOSE)
+        val purpose = purposeString?.let { LockPasswordPurpose.valueOf(it) }
 
         return when (purpose) {
-            PasswordPurpose.BACKUP -> getString(R.string.backup_memo) // 메모 백업
+            LockPasswordPurpose.BACKUP -> getString(R.string.backup_memo) // 메모 백업
             else -> {
-                val storedPassword = PasswordManager.getPassword(this)
+                val storedPassword = LockPasswordManager.getLockPassword(this)
                 if (storedPassword.isNullOrEmpty()) {
                     getString(R.string.create_lock_password) // 잠금 비밀번호 생성
                 } else {

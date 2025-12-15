@@ -17,12 +17,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.memorynotenew.R
 import com.example.memorynotenew.adapter.MemoAdapter
 import com.example.memorynotenew.common.Constants.MEMO
-import com.example.memorynotenew.common.PasswordPurpose
+import com.example.memorynotenew.common.LockPasswordPurpose
 import com.example.memorynotenew.common.PopupAction
 import com.example.memorynotenew.databinding.FragmentListBinding
 import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.ui.activity.MainActivity
-import com.example.memorynotenew.utils.PasswordManager
+import com.example.memorynotenew.utils.LockPasswordManager
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.viewmodel.MemoViewModel
 import com.google.android.gms.ads.AdRequest
@@ -30,6 +30,7 @@ import com.google.android.gms.ads.AdRequest
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null // nullable
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
+
     private lateinit var memoAdapter: MemoAdapter
     private val memoViewModel: MemoViewModel by viewModels()
 
@@ -50,7 +51,7 @@ class ListFragment : Fragment() {
             recyclerView.updatePadding(bottom = imeInsets.bottom)
             insets
         }
-        setupAdapter()
+        setupAdapter() // RecyclerView 어댑터 설정
         setupRecyclerView()
         setupObserver()
         setupSearchView()
@@ -68,11 +69,11 @@ class ListFragment : Fragment() {
     private fun setupAdapter() {
         memoAdapter = MemoAdapter(
             onItemClick = { memo ->
-                clearSearchQuery()
+                clearSearchQuery() // 검색어 초기화
 
-                val targetFragment = if (memo.isLocked) { // 메모가 잠겨 있으면
-                    PasswordFragment.newInstance(PasswordPurpose.OPEN, memo)
-                } else { // 메모가 잠겨 있지 않으면
+                val targetFragment = if (memo.isLocked) { // 잠금 o
+                    LockPasswordFragment.newInstance(LockPasswordPurpose.OPEN, memo)
+                } else { // 잠금 x
                     MemoFragment().apply {
                         arguments = Bundle().apply {
                             putParcelable(MEMO, memo)
@@ -88,13 +89,13 @@ class ListFragment : Fragment() {
                     PopupAction.DELETE ->
                         showDeleteDialog(listOf(memo), false)
                     PopupAction.LOCK -> {
-                        val storedPassword = PasswordManager.getPassword(requireContext())
+                        val storedPassword = LockPasswordManager.getLockPassword(requireContext())
 
                         if (storedPassword.isNullOrEmpty()) { // 저장된 비밀번호가 없으면
                             requireContext().showToast(getString(R.string.set_lock_password_first))
                         } else { // 저장된 비밀번호가 있으면
-                            val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.LOCK, memo)
-                            replaceFragment(passwordFragment)
+                            val lockPasswordFragment = LockPasswordFragment.newInstance(LockPasswordPurpose.LOCK, memo)
+                            replaceFragment(lockPasswordFragment)
                         }
                     }
                 }
@@ -102,12 +103,23 @@ class ListFragment : Fragment() {
         )
     }
 
+    private fun clearSearchQuery() {
+        binding.searchView.setQuery("", false)
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
     private fun showDeleteDialog(selectedMemos: List<Memo>, isMultiDelete: Boolean) {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.delete))
             .setMessage(getString(R.string.dialog_delete))
             .setNegativeButton(getString(R.string.cancel), null)
-            .setPositiveButton(getString(R.string.delete)) { dialog, _ ->
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
                 if (isMultiDelete) { // 다중 삭제
                     multiDeleteMemo(selectedMemos)
                 } else { // 단일 삭제
@@ -116,15 +128,14 @@ class ListFragment : Fragment() {
                         singleDeleteMemo(it)
                     }
                 }
-                dialog.dismiss()
             }
             .show()
     }
 
     private fun singleDeleteMemo(memo: Memo) {
         if (memo.isLocked) { // 메모가 잠겨 있으면
-            val passwordFragment = PasswordFragment.newInstance(PasswordPurpose.DELETE, memo)
-            replaceFragment(passwordFragment)
+            val lockPasswordFragment = LockPasswordFragment.newInstance(LockPasswordPurpose.DELETE, memo)
+            replaceFragment(lockPasswordFragment)
         } else { // 메모가 잠겨 있지 않으면
             memoViewModel.moveMemoToTrash(memo)
             requireContext().showToast(getString(R.string.delete_memo_result, 1))
@@ -140,13 +151,13 @@ class ListFragment : Fragment() {
 
         // 잠긴 메모가 하나라도 있으면
         if (lockedMemos.isNotEmpty()) {
-            val passwordFragment = PasswordFragment.newInstance(
-                PasswordPurpose.DELETE,
+            val lockPasswordFragment = LockPasswordFragment.newInstance(
+                LockPasswordPurpose.DELETE,
                 deleteCount = selectedMemos.size,
                 // 선택된 메모 리스트를 Bundle에 담기 위해 ArrayList로 변환
                 memos = ArrayList(selectedMemos)
             )
-            replaceFragment(passwordFragment)
+            replaceFragment(lockPasswordFragment)
         } else { // 잠긴 메모가 없으면
             requireContext().showToast(getString(R.string.delete_memo_result, selectedMemos.size))
         }
@@ -247,18 +258,6 @@ class ListFragment : Fragment() {
                 }
             }
         }
-    }
-
-    // 검색어 초기화
-    private fun clearSearchQuery() {
-        binding.searchView.setQuery("", false)
-    }
-
-    private fun replaceFragment(fragment: Fragment) {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.container, fragment)
-            .addToBackStack(null)
-            .commit()
     }
 
     // 다중 선택 토글

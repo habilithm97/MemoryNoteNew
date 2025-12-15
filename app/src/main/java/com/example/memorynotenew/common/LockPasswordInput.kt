@@ -1,6 +1,6 @@
 package com.example.memorynotenew.common
 
-enum class PasswordInput {
+enum class LockPasswordInput {
     NEW, // 새 비밀번호 입력
     ENTER // 기존 비밀번호 입력
 }

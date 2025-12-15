@@ -41,13 +41,13 @@ class ForgotPasswordFragment : Fragment() {
                 insets
             }
             // 비밀번호 재설정 요청 버튼
-            btnVertify.setOnClickListener {
-                handleResetRequest()
+            btnResetRequest.setOnClickListener {
+                resetRequest()
             }
         }
     }
 
-    private fun handleResetRequest() {
+    private fun resetRequest() {
         with(binding) {
             val email = edtEmail.text.toString()
 

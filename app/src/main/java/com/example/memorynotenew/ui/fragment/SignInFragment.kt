@@ -48,13 +48,13 @@ class SignInFragment : Fragment() {
             }
             // 로그인 버튼
             btnSignIn.setOnClickListener {
-                handleSignIn()
+                signIn()
             }
             this@SignInFragment.progressBar = progressBar
 
             // 인증 메일 재발송 버튼
-            btnResend.setOnClickListener {
-                handleResend()
+            btnResendEmail.setOnClickListener {
+                resendEmail()
             }
             // 비밀번호 찾기 버튼
             btnForgotPassword.setOnClickListener {
@@ -70,7 +70,7 @@ class SignInFragment : Fragment() {
             .commit()
     }
 
-    private fun handleSignIn() {
+    private fun signIn() {
         with(binding) {
             val email = edtEmail.text.toString()
             val password = edtPassword.text.toString()
@@ -115,7 +115,7 @@ class SignInFragment : Fragment() {
         }
     }
 
-    private fun handleResend() {
+    private fun resendEmail() {
         val user = auth.currentUser
 
         user?.sendEmailVerification()

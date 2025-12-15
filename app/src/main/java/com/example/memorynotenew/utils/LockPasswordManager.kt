@@ -5,9 +5,9 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
-object PasswordManager {
+object LockPasswordManager {
     private const val FILE_NAME = "secret_shared_prefs"
-    private const val PASSWORD_KEY = "password_key"
+    private const val LOCK_PASSWORD_KEY = "password_key"
 
     // 암호화된 SharedPreferences 가져오기
     private fun prefs(context: Context): SharedPreferences {
@@ -28,10 +28,10 @@ object PasswordManager {
         )
     }
 
-    fun savePassword(context: Context, password: String) {
-        prefs(context).edit().putString(PASSWORD_KEY, password).apply() // apply()로 비동기 저장
+    fun saveLockPassword(context: Context, password: String) {
+        prefs(context).edit().putString(LOCK_PASSWORD_KEY, password).apply() // apply()로 비동기 저장
     }
 
-    fun getPassword(context: Context): String? =
-        prefs(context).getString(PASSWORD_KEY, null)
+    fun getLockPassword(context: Context): String? =
+        prefs(context).getString(LOCK_PASSWORD_KEY, null)
 }

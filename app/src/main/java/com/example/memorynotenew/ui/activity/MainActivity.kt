@@ -11,14 +11,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.memorynotenew.R
+import com.example.memorynotenew.common.Constants.LOCK_PW_PURPOSE
 import com.example.memorynotenew.common.Constants.MEMO
-import com.example.memorynotenew.common.Constants.PURPOSE
-import com.example.memorynotenew.common.PasswordPurpose
+import com.example.memorynotenew.common.LockPasswordPurpose
 import com.example.memorynotenew.databinding.ActivityMainBinding
 import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.ui.fragment.ListFragment
 import com.example.memorynotenew.ui.fragment.MemoFragment
-import com.example.memorynotenew.ui.fragment.PasswordFragment
+import com.example.memorynotenew.ui.fragment.LockPasswordFragment
 import com.example.memorynotenew.ui.fragment.TrashFragment
 import com.example.memorynotenew.utils.ToastUtil.showToast
 
@@ -66,17 +66,17 @@ class MainActivity : AppCompatActivity() {
     private fun getFragmentTitle(currentFragment: Fragment?): String = when (currentFragment) {
         is ListFragment -> getString(R.string.app_name)
         is MemoFragment -> getString(R.string.memo)
-        is PasswordFragment -> getPasswordFragmentTitle(currentFragment)
+        is LockPasswordFragment -> getPasswordFragmentTitle(currentFragment)
         is TrashFragment -> getString(R.string.trash)
         else -> ""
     }
 
-    private fun getPasswordFragmentTitle(currentFragment: PasswordFragment): String {
-        val purposeString = currentFragment.arguments?.getString(PURPOSE)
-        val purpose = purposeString?.let { PasswordPurpose.valueOf(it) }
+    private fun getPasswordFragmentTitle(currentFragment: LockPasswordFragment): String {
+        val purposeString = currentFragment.arguments?.getString(LOCK_PW_PURPOSE)
+        val purpose = purposeString?.let { LockPasswordPurpose.valueOf(it) }
 
         return when (purpose) {
-            PasswordPurpose.LOCK -> {
+            LockPasswordPurpose.LOCK -> {
                 val memo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     currentFragment.arguments?.getParcelable(MEMO, Memo::class.java)
                 } else {
@@ -90,8 +90,8 @@ class MainActivity : AppCompatActivity() {
                     getString(R.string.lock_memo)
                 }
             }
-            PasswordPurpose.OPEN -> ""
-            PasswordPurpose.DELETE -> getString(R.string.delete_memo)
+            LockPasswordPurpose.OPEN -> ""
+            LockPasswordPurpose.DELETE -> getString(R.string.delete_memo)
             else -> ""
         }
     }

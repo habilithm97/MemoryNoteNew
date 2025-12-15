@@ -9,24 +9,24 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.memorynotenew.R
-import com.example.memorynotenew.common.Constants.COUNT
+import com.example.memorynotenew.common.Constants.DELETE_COUNT
+import com.example.memorynotenew.common.Constants.LOCK_PW_PURPOSE
 import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.Constants.MEMOS
-import com.example.memorynotenew.common.Constants.PURPOSE
-import com.example.memorynotenew.common.PasswordInput
-import com.example.memorynotenew.common.PasswordPurpose
-import com.example.memorynotenew.common.PasswordString
+import com.example.memorynotenew.common.LockPasswordInput
+import com.example.memorynotenew.common.LockPasswordPurpose
+import com.example.memorynotenew.common.LockPasswordString
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
 import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.ui.activity.SettingsActivity
-import com.example.memorynotenew.utils.PasswordManager
+import com.example.memorynotenew.utils.LockPasswordManager
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.utils.VibrateUtil
 import com.example.memorynotenew.viewmodel.MemoViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PasswordFragment : Fragment() {
+class LockPasswordFragment : Fragment() {
     private var _binding: FragmentPasswordBinding? = null // nullable
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
 
@@ -36,8 +36,8 @@ class PasswordFragment : Fragment() {
     private var storedPassword: String? = null
     private var deleteCount: Int = 1
 
-    private lateinit var passwordPurpose: PasswordPurpose
-    private lateinit var passwordInput: PasswordInput
+    private lateinit var lockPasswordPurpose: LockPasswordPurpose
+    private lateinit var lockPasswordInput: LockPasswordInput
     private val memoViewModel: MemoViewModel by viewModels()
     
     private val dots: List<View> by lazy {
@@ -64,22 +64,22 @@ class PasswordFragment : Fragment() {
 
     companion object {
         // 프래그먼트 재생성 시에도 안전하게 인자를 전달 및 복원
-        fun newInstance(purpose: PasswordPurpose,
+        fun newInstance(purpose: LockPasswordPurpose,
                         memo: Memo? = null,
                         deleteCount: Int = 1, // 기본값 1
                         memos: ArrayList<Memo>? = null
-        ) : PasswordFragment {
-            return PasswordFragment().apply {
+        ) : LockPasswordFragment {
+            return LockPasswordFragment().apply {
                 // enum 값을 문자열로 변환하여 arguments에 저장
                 arguments = Bundle().apply {
-                    putString(PURPOSE, purpose.name)
+                    putString(LOCK_PW_PURPOSE, purpose.name)
 
                     memo?.let { putParcelable(MEMO, it) }
                     memos?.let { putParcelableArrayList(MEMOS, it) }
 
                     // DELETE일 때만 deleteCount 전달
-                    if (purpose == PasswordPurpose.DELETE) {
-                        putInt(COUNT, deleteCount)
+                    if (purpose == LockPasswordPurpose.DELETE) {
+                        putInt(DELETE_COUNT, deleteCount)
                     }
                 }
             }
@@ -89,14 +89,14 @@ class PasswordFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val purpose = arguments?.getString(PURPOSE)
+        val purpose = arguments?.getString(LOCK_PW_PURPOSE)
             ?: throw IllegalArgumentException("PasswordFragment is required")
-        passwordPurpose = PasswordPurpose.valueOf(purpose) // 문자열을 enum 값으로 변환
+        lockPasswordPurpose = LockPasswordPurpose.valueOf(purpose) // 문자열을 enum 값으로 변환
 
         // DELETE일 때만 deleteCount 가져오기
-        deleteCount = if (passwordPurpose == PasswordPurpose.DELETE) {
+        deleteCount = if (lockPasswordPurpose == LockPasswordPurpose.DELETE) {
             // 기본값 1, arguments가 null이면 1로 안전하게 처리
-            arguments?.getInt(COUNT) ?: 1
+            arguments?.getInt(DELETE_COUNT) ?: 1
         } else { // DELETE가 아니면 1
             1
         }
@@ -113,12 +113,12 @@ class PasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storedPassword = PasswordManager.getPassword(binding.root.context)
+        storedPassword = LockPasswordManager.getLockPassword(binding.root.context)
 
-        passwordInput = if (storedPassword.isNullOrEmpty()) {
-            PasswordInput.NEW // 새 비밀번호 입력 모드
+        lockPasswordInput = if (storedPassword.isNullOrEmpty()) {
+            LockPasswordInput.NEW // 새 비밀번호 입력 모드
         } else {
-            PasswordInput.ENTER // 기존 비밀번호 입력 모드
+            LockPasswordInput.ENTER // 기존 비밀번호 입력 모드
         }
         setupSubTitle()
         setupKeypad()
@@ -135,9 +135,9 @@ class PasswordFragment : Fragment() {
     }
 
     private fun setupSubTitle() {
-        val subTitle = when (passwordInput) {
-            PasswordInput.NEW -> getString(PasswordString.NEW.resId) // 새 비밀번호 입력
-            PasswordInput.ENTER -> getString(PasswordString.ENTER.resId) // 기존 비밀번호 입력
+        val subTitle = when (lockPasswordInput) {
+            LockPasswordInput.NEW -> getString(LockPasswordString.NEW.resId) // 새 비밀번호 입력
+            LockPasswordInput.ENTER -> getString(LockPasswordString.ENTER.resId) // 기존 비밀번호 입력
         }
         binding.textView.text = subTitle
     }
@@ -167,17 +167,17 @@ class PasswordFragment : Fragment() {
             // 화면 소멸 시 코루틴 자동 취소 (메모리 누수 방지)
             lifecycleScope.launch {
                 delay(500)
-                when (passwordPurpose) {
-                    PasswordPurpose.SETTING -> { // 설정
-                        when (passwordInput) {
-                            PasswordInput.NEW -> newPassword() // 새 비밀번호 저장
-                            PasswordInput.ENTER -> updatePassword() // 비밀번호 변경
+                when (lockPasswordPurpose) {
+                    LockPasswordPurpose.SETTING -> { // 설정
+                        when (lockPasswordInput) {
+                            LockPasswordInput.NEW -> newPassword() // 새 비밀번호 저장
+                            LockPasswordInput.ENTER -> updatePassword() // 비밀번호 변경
                         }
                     }
-                    PasswordPurpose.LOCK -> toggleMemoLock() // 메모 잠금 및 잠금 해제
-                    PasswordPurpose.OPEN -> openMemo() // 메모 열기
-                    PasswordPurpose.DELETE -> deleteMemo() // 메모 삭제
-                    PasswordPurpose.BACKUP -> backupMemo() // 메모 백업
+                    LockPasswordPurpose.LOCK -> toggleMemoLock() // 메모 잠금 및 잠금 해제
+                    LockPasswordPurpose.OPEN -> openMemo() // 메모 열기
+                    LockPasswordPurpose.DELETE -> deleteMemo() // 메모 삭제
+                    LockPasswordPurpose.BACKUP -> backupMemo() // 메모 백업
                 }
             }
         }
@@ -196,10 +196,10 @@ class PasswordFragment : Fragment() {
             if (confirmingPassword == null) {
                 confirmingPassword = StringBuilder(password)
                 password.clear()
-                textView.text = getString(PasswordString.CONFIRM.resId) // 비밀번호 확인
+                textView.text = getString(LockPasswordString.CONFIRM.resId) // 비밀번호 확인
             } else { // 두 번째 입력~
                 if (password.toString() == confirmingPassword.toString()) { // 첫 번째 입력과 일치
-                    PasswordManager.savePassword(root.context, password.toString()) // 비밀번호 저장
+                    LockPasswordManager.saveLockPassword(root.context, password.toString()) // 비밀번호 저장
 
                     val message = if (storedPassword.isNullOrEmpty()) {
                         R.string.lock_password_saved // 비밀번호 저장 완료!
@@ -220,8 +220,8 @@ class PasswordFragment : Fragment() {
 
     private fun updatePassword() {
         if (password.toString() == storedPassword) { // 저장된 비밀번호와 일치
-            passwordInput = PasswordInput.NEW
-            binding.textView.text = getString(PasswordString.NEW.resId) // 새 비밀번호 입력
+            lockPasswordInput = LockPasswordInput.NEW
+            binding.textView.text = getString(LockPasswordString.NEW.resId) // 새 비밀번호 입력
         } else { // 저장된 비밀번호와 불일치
             reEnterPassword()
         }
@@ -285,7 +285,7 @@ class PasswordFragment : Fragment() {
 
     // 비밀번호 재입력
     private fun reEnterPassword() {
-        binding.textView.text = getString(PasswordString.RE_ENTER.resId)
+        binding.textView.text = getString(LockPasswordString.RE_ENTER.resId)
         VibrateUtil.vibrate(requireContext())
     }
 
