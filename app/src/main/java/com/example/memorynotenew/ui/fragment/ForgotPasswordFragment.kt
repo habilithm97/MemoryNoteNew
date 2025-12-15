@@ -20,7 +20,7 @@ class ForgotPasswordFragment : Fragment() {
     private var _binding: FragmentForgotPasswordBinding? = null // nullable
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
 
-    private lateinit var auth: FirebaseAuth
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,8 +33,6 @@ class ForgotPasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        auth = FirebaseAuth.getInstance()
-
         with(binding) {
             // 소프트 키보드 높이 만큼 linearLayout 하단 패딩 적용
             ViewCompat.setOnApplyWindowInsetsListener(linearLayout) { linearLayout, insets ->
@@ -42,14 +40,14 @@ class ForgotPasswordFragment : Fragment() {
                 linearLayout.updatePadding(bottom = imeInsets.bottom)
                 insets
             }
-            // 인증하기 버튼
+            // 비밀번호 재설정 요청 버튼
             btnVertify.setOnClickListener {
-                handleResetPassword()
+                handleResetRequest()
             }
         }
     }
 
-    private fun handleResetPassword() {
+    private fun handleResetRequest() {
         with(binding) {
             val email = edtEmail.text.toString()
 

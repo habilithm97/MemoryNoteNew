@@ -21,7 +21,7 @@ class SignInFragment : Fragment() {
     private var _binding: FragmentSignInBinding? = null // nullable
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
 
-    private lateinit var auth: FirebaseAuth
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
@@ -35,10 +35,8 @@ class SignInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        auth = FirebaseAuth.getInstance()
-
         with(binding) {
-            // 소프트 키보드 높이 만큼 linearLayout 하단 패딩 적용
+            // 소프트 키보드 높이 만큼 mainLinearLayout 하단 패딩 적용
             ViewCompat.setOnApplyWindowInsetsListener(mainLinearLayout) { linearLayout, insets ->
                 val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
                 linearLayout.updatePadding(bottom = imeInsets.bottom)

@@ -53,7 +53,7 @@ class DeleteAccountFragment : Fragment() {
         with(binding) {
             val password = edtPw.text.toString()
             val confirmText = edtConfirm.text.toString()
-            val requiredText = getString(R.string.delete_account) // "회원탈퇴"
+            val requiredText = getString(R.string.delete_account)
 
             // "모든 항목을 입력해주세요."
             if (password.isBlank() || confirmText.isBlank()) {
@@ -68,15 +68,16 @@ class DeleteAccountFragment : Fragment() {
             val user = auth.currentUser ?: return
             val uid = user.uid
             val email = user.email
+            // 재인증 자격증명
             val credential = email?.let { EmailAuthProvider.getCredential(it, password) }
 
             credential?.let {
-                // 현재 사용자 재인증
-                user.reauthenticate(it)
+                user.reauthenticate(it) // 현재 사용자 재인증
                     .addOnSuccessListener {
                         // Firestore 사용자 데이터 전체 삭제
                         deleteUserData(uid) { success ->
                             if (!success) return@deleteUserData
+
                             user.delete() // Auth 사용자 계정 삭제
                                 .addOnSuccessListener {
                                     // "회원탈퇴에 성공했습니다."
@@ -101,16 +102,16 @@ class DeleteAccountFragment : Fragment() {
         val userDoc = db.collection(USERS).document(uid) // 사용자 문서
         val memoCollection = userDoc.collection(MEMO) // 메모 컬렉션
 
-        memoCollection.get() // 메모 컬렉션 하위 문서 가져오기
+        memoCollection.get()
             .addOnSuccessListener {
                 val batch = db.batch() // 여러 문서를 한 번에 삭제하기 위한 batch
 
-                for (doc in it.documents) { // 조회된 모든 메모 문서들 반복
+                for (doc in it.documents) {
                     batch.delete(doc.reference) // batch에 각 메모 문서 삭제 작업 추가
                 }
                 batch.commit() // batch 삭제 실행
                     .addOnSuccessListener {
-                        userDoc.delete() // user/{uid} 사용자 문서 삭제
+                        userDoc.delete() // 사용자 문서 삭제
                             .addOnSuccessListener {
                                 onComplete(true)
                             }

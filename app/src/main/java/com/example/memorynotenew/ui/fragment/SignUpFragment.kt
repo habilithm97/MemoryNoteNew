@@ -21,7 +21,7 @@ class SignUpFragment : Fragment() {
     private var _binding: FragmentSignUpBinding? = null // nullable
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
 
-    private lateinit var auth: FirebaseAuth
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,8 +40,6 @@ class SignUpFragment : Fragment() {
             rootLayout.updatePadding(bottom = imeInsets.bottom)
             insets
         }
-        auth = FirebaseAuth.getInstance()
-
         handleSignUp()
     }
 
