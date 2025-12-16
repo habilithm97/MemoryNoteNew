@@ -52,12 +52,12 @@ class ListFragment : Fragment() {
             insets
         }
         setupAdapter() // RecyclerView 어댑터 설정
-        setupRecyclerView()
-        setupObserver()
-        setupSearchView()
-        setupFabAdd()
-        setupFabScroll()
-        setupAdView()
+        setupRecyclerView() // RecyclerView 설정
+        observeViewModel() // ViewModel의 LiveData 관찰 -> UI 자동 갱신
+        setupSearchView() // SearchView 설정
+        setupFabAdd() // 새 메모 추가 FloatingActionButton 설정
+        setupFabScroll() // 스크롤 FloatingActionButton 설정
+        setupAdView() // 하단 광고바 설정
 
         with(requireActivity()) {
             onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -81,7 +81,6 @@ class ListFragment : Fragment() {
                     }
                 }
                 replaceFragment(targetFragment)
-
             }, onItemLongClick = { memo, popupAction ->
                 clearSearchQuery()
 
@@ -89,11 +88,12 @@ class ListFragment : Fragment() {
                     PopupAction.DELETE ->
                         showDeleteDialog(listOf(memo), false)
                     PopupAction.LOCK -> {
-                        val storedPassword = LockPasswordManager.getLockPassword(requireContext())
+                        val storedLockPassword = LockPasswordManager.getLockPassword(requireContext())
 
-                        if (storedPassword.isNullOrEmpty()) { // 저장된 비밀번호가 없으면
+                        if (storedLockPassword.isNullOrEmpty()) { // 저장된 잠금 비밀번호 x
+                            // "먼저 잠금 비밀번호를 설정해주세요."
                             requireContext().showToast(getString(R.string.set_lock_password_first))
-                        } else { // 저장된 비밀번호가 있으면
+                        } else { // 저장된 비밀번호 o
                             val lockPasswordFragment = LockPasswordFragment.newInstance(LockPasswordPurpose.LOCK, memo)
                             replaceFragment(lockPasswordFragment)
                         }
@@ -133,32 +133,32 @@ class ListFragment : Fragment() {
     }
 
     private fun singleDeleteMemo(memo: Memo) {
-        if (memo.isLocked) { // 메모가 잠겨 있으면
+        if (memo.isLocked) { // 잠금 o
             val lockPasswordFragment = LockPasswordFragment.newInstance(LockPasswordPurpose.DELETE, memo)
             replaceFragment(lockPasswordFragment)
-        } else { // 메모가 잠겨 있지 않으면
+        } else { // 잠금 x
             memoViewModel.moveMemoToTrash(memo)
+            // "1개의 메모가 삭제되었습니다."
             requireContext().showToast(getString(R.string.delete_memo_result, 1))
         }
     }
 
     private fun multiDeleteMemo(selectedMemos: List<Memo>) {
-        val lockedMemos = selectedMemos.filter { it.isLocked }
-        val unlockedMemos = selectedMemos.filterNot { it.isLocked }
+        val lockedMemos = selectedMemos.filter { it.isLocked } // 잠긴 메모 리스트
+        val unlockedMemos = selectedMemos.filterNot { it.isLocked } // 잠기지 않은 메모 리스트
 
         // 잠기지 않은 메모는 바로 삭제
         unlockedMemos.forEach { memoViewModel.moveMemoToTrash(it) }
 
-        // 잠긴 메모가 하나라도 있으면
-        if (lockedMemos.isNotEmpty()) {
+        if (lockedMemos.isNotEmpty()) { // 잠긴 메모가 하나라도 있으면
             val lockPasswordFragment = LockPasswordFragment.newInstance(
                 LockPasswordPurpose.DELETE,
                 deleteCount = selectedMemos.size,
-                // 선택된 메모 리스트를 Bundle에 담기 위해 ArrayList로 변환
-                memos = ArrayList(selectedMemos)
+                memos = ArrayList(lockedMemos) // Bundle에 담기 위해 ArrayList로 변환
             )
             replaceFragment(lockPasswordFragment)
         } else { // 잠긴 메모가 없으면
+            // "n개의 메모가 삭제되었습니다."
             requireContext().showToast(getString(R.string.delete_memo_result, selectedMemos.size))
         }
         memoAdapter.isMultiSelect = false
@@ -175,6 +175,7 @@ class ListFragment : Fragment() {
                 }
                 setHasFixedSize(true) // 아이템 크기 고정 -> 성능 최적화
 
+                // RecyclerView 스크롤 시 호출
                 addOnScrollListener(object : RecyclerView.OnScrollListener() {
                     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                         // 위로 더 이상 스크롤 할 수 없으면 최상단
@@ -186,16 +187,16 @@ class ListFragment : Fragment() {
         }
     }
 
-    private fun setupObserver() {
+    private fun observeViewModel() {
         memoViewModel.getAllMemos.observe(viewLifecycleOwner) {
             with(binding) {
-                if (it.isEmpty()) { // 메모가 없으면
+                if (it.isEmpty()) { // 메모 x
                     recyclerView.visibility = View.GONE
                     tvEmpty.apply {
                         visibility = View.VISIBLE
-                        text = getString(R.string.no_memos)
+                        text = getString(R.string.no_memos) // "메모가 없습니다."
                     }
-                } else { // 메모가 있으면
+                } else { // 메모 o
                     recyclerView.visibility = View.VISIBLE
                     tvEmpty.visibility = View.GONE
 
@@ -240,11 +241,9 @@ class ListFragment : Fragment() {
     }
 
     private fun setupFabAdd() {
-        with(binding) {
-            fabAdd.setOnClickListener {
-                clearSearchQuery()
-                replaceFragment(MemoFragment())
-            }
+        binding.fabAdd.setOnClickListener {
+            clearSearchQuery()
+            replaceFragment(MemoFragment())
         }
     }
 
@@ -260,27 +259,29 @@ class ListFragment : Fragment() {
         }
     }
 
-    // 다중 선택 토글
+    // 다중 선택 토글 (MainActivity에서 사용)
     fun toggleMultiSelect(isMultiSelect: Boolean) {
         memoAdapter.isMultiSelect = isMultiSelect
     }
 
-    // 전체 선택 토글
+    // 전체 선택 토글 (MainActivity에서 사용)
     fun toggleSelectAll() {
         memoAdapter.toggleSelectAll()
     }
 
-    // selectedMemos 삭제
+    // selectedMemos 삭제 (MainActivity에서 사용)
     fun deleteSelectedMemos() {
-        val selectedMemos = memoAdapter.getSelectedMemos() // selectedMemos 가져오기
+        val selectedMemos = memoAdapter.getSelectedMemos()
 
-        if (selectedMemos.isEmpty()) { // 없으면
+        if (selectedMemos.isEmpty()) {
+            // "삭제할 메모를 선택해주세요."
             requireContext().showToast(getString(R.string.select_memo_to_delete))
-        } else { // 있으면
+        } else {
             showDeleteDialog(selectedMemos, true)
         }
     }
 
+    // 메모 존재 여부 확인
     fun hasMemos(): Boolean {
         return memoAdapter.itemCount > 0
     }
@@ -307,8 +308,8 @@ class ListFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        binding.adView.destroy()
+        binding.adView.destroy() // 뷰가 살아있을 때 정리
         _binding = null // 메모리 누수 방지
-        super.onDestroyView()
+        super.onDestroyView() // 프래그먼트 기본 뷰 정리
     }
 }
