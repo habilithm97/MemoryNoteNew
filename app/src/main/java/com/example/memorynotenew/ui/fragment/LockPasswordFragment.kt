@@ -13,13 +13,13 @@ import com.example.memorynotenew.common.Constants.DELETE_COUNT
 import com.example.memorynotenew.common.Constants.LOCK_PW_PURPOSE
 import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.Constants.MEMOS
-import com.example.memorynotenew.common.LockPasswordInput
+import com.example.memorynotenew.common.LockPasswordState
 import com.example.memorynotenew.common.LockPasswordPurpose
 import com.example.memorynotenew.common.LockPasswordString
 import com.example.memorynotenew.databinding.FragmentPasswordBinding
 import com.example.memorynotenew.room.entity.Memo
+import com.example.memorynotenew.security.LockPasswordManager
 import com.example.memorynotenew.ui.activity.SettingsActivity
-import com.example.memorynotenew.utils.LockPasswordManager
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.utils.VibrateUtil
 import com.example.memorynotenew.viewmodel.MemoViewModel
@@ -30,55 +30,57 @@ class LockPasswordFragment : Fragment() {
     private var _binding: FragmentPasswordBinding? = null // nullable
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
 
-    private var password = StringBuilder()
-    private var isInputLocked = false
-    private var confirmingPassword: StringBuilder? = null
-    private var storedPassword: String? = null
+    // 프래그먼트 생명주기에 맞춰 생성/관리되는 ViewModel
+    private val memoViewModel: MemoViewModel by viewModels()
+
+    private var lockPassword = StringBuilder() // 잠금 비밀번호
+    private var storedLockPassword: String? = null // 저장된 잠금 비밀번호
+    private lateinit var lockPasswordState: LockPasswordState
+    private var isInputLocked = false // 입력 잠금 여부
+    private lateinit var lockPasswordPurpose: LockPasswordPurpose
+    private var confirmLockPassword: StringBuilder? = null
     private var deleteCount: Int = 1
 
-    private lateinit var lockPasswordPurpose: LockPasswordPurpose
-    private lateinit var lockPasswordInput: LockPasswordInput
-    private val memoViewModel: MemoViewModel by viewModels()
-    
     private val dots: List<View> by lazy {
         with(binding) { listOf(dot1, dot2, dot3, dot4) }
     }
-
-    private val memo: Memo? by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    private val memo: Memo?
+        // 접근할 때마다 실행되어 항상 최신 arguments 값을 읽음
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requireArguments().getParcelable(MEMO, Memo::class.java)
         } else {
             @Suppress("DEPRECATION")
             requireArguments().getParcelable(MEMO)
         }
-    }
 
-    private val memos: List<Memo>? by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    private val memos: List<Memo>?
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requireArguments().getParcelableArrayList(MEMOS, Memo::class.java)
         } else {
             @Suppress("DEPRECATION")
             requireArguments().getParcelableArrayList(MEMOS)
         }
-    }
 
+    /* 정적 멤버 (static) 처럼 사용
+      클래스 인스턴스를 생성하지 않고도 접근 가능
+     -> 프래그먼트를 만들 때 사용하는 정적 팩토리 함수 정의 */
     companion object {
-        // 프래그먼트 재생성 시에도 안전하게 인자를 전달 및 복원
-        fun newInstance(purpose: LockPasswordPurpose,
-                        memo: Memo? = null,
-                        deleteCount: Int = 1, // 기본값 1
-                        memos: ArrayList<Memo>? = null
+        // 프래그먼트를 만들면서 필요한 데이터를 안전하게 arguments에 담아 전달
+        fun newInstance(lockPasswordPurpose: LockPasswordPurpose,
+                        memo: Memo? = null, // 단일 메모
+                        deleteCount: Int = 1,
+                        memos: ArrayList<Memo>? = null // 다중 메모
         ) : LockPasswordFragment {
             return LockPasswordFragment().apply {
                 // enum 값을 문자열로 변환하여 arguments에 저장
                 arguments = Bundle().apply {
-                    putString(LOCK_PW_PURPOSE, purpose.name)
+                    putString(LOCK_PW_PURPOSE, lockPasswordPurpose.name)
 
                     memo?.let { putParcelable(MEMO, it) }
                     memos?.let { putParcelableArrayList(MEMOS, it) }
 
                     // DELETE일 때만 deleteCount 전달
-                    if (purpose == LockPasswordPurpose.DELETE) {
+                    if (lockPasswordPurpose == LockPasswordPurpose.DELETE) {
                         putInt(DELETE_COUNT, deleteCount)
                     }
                 }
@@ -89,17 +91,8 @@ class LockPasswordFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val purpose = arguments?.getString(LOCK_PW_PURPOSE)
-            ?: throw IllegalArgumentException("PasswordFragment is required")
-        lockPasswordPurpose = LockPasswordPurpose.valueOf(purpose) // 문자열을 enum 값으로 변환
-
-        // DELETE일 때만 deleteCount 가져오기
-        deleteCount = if (lockPasswordPurpose == LockPasswordPurpose.DELETE) {
-            // 기본값 1, arguments가 null이면 1로 안전하게 처리
-            arguments?.getInt(DELETE_COUNT) ?: 1
-        } else { // DELETE가 아니면 1
-            1
-        }
+        initLockPasswordPurpose()
+        initDeleteCount()
     }
 
     override fun onCreateView(
@@ -113,31 +106,48 @@ class LockPasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storedPassword = LockPasswordManager.getLockPassword(binding.root.context)
-
-        lockPasswordInput = if (storedPassword.isNullOrEmpty()) {
-            LockPasswordInput.NEW // 새 비밀번호 입력 모드
-        } else {
-            LockPasswordInput.ENTER // 기존 비밀번호 입력 모드
-        }
+        initLockPasswordState()
         setupSubTitle()
         setupKeypad()
         setupBtnCancel()
+        observeViewModel()
+    }
 
-        memoViewModel.backupResult.observe(viewLifecycleOwner) {
-            if (it.isSuccess) {
-                requireContext().showToast(getString(R.string.backup_success))
-            } else {
-                requireContext().showToast(getString(R.string.backup_failed))
+    private fun initLockPasswordPurpose() {
+        lockPasswordPurpose = arguments?.getString(LOCK_PW_PURPOSE)?.let {
+            try {
+                // 가져온 문자열을 enum 값으로 변환
+                LockPasswordPurpose.valueOf(it)
+            } catch (e: IllegalArgumentException) {
+                // 변환 실패 시 (잘못된 문자열) 기본값 (설정)
+                LockPasswordPurpose.SETTING
             }
-            requireActivity().finish()
+        } ?: LockPasswordPurpose.SETTING
+    }
+
+    private fun initDeleteCount() {
+        deleteCount = if (lockPasswordPurpose == LockPasswordPurpose.DELETE) {
+            // DELETE -> DELETE_COUNT, 값이 없으면 기본값 1
+            arguments?.getInt(DELETE_COUNT) ?: 1
+        } else { // DELETE x -> 기본값 1
+            1
+        }
+    }
+
+    private fun initLockPasswordState() {
+        storedLockPassword = LockPasswordManager.getLockPassword(requireContext())
+
+        lockPasswordState = if (storedLockPassword.isNullOrEmpty()) { // 저장된 잠금 비밀번호 x
+            LockPasswordState.NEW
+        } else {
+            LockPasswordState.EXISTING
         }
     }
 
     private fun setupSubTitle() {
-        val subTitle = when (lockPasswordInput) {
-            LockPasswordInput.NEW -> getString(LockPasswordString.NEW.resId) // 새 비밀번호 입력
-            LockPasswordInput.ENTER -> getString(LockPasswordString.ENTER.resId) // 기존 비밀번호 입력
+        val subTitle = when (lockPasswordState) {
+            LockPasswordState.NEW -> getString(LockPasswordString.NEW.resId) // 새 비밀번호 입력
+            LockPasswordState.EXISTING -> getString(LockPasswordString.ENTER.resId) // 기존 비밀번호 입력
         }
         binding.textView.text = subTitle
     }
@@ -147,101 +157,139 @@ class LockPasswordFragment : Fragment() {
             listOf(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btn0)
                 .forEach { btn ->
                     btn.setOnClickListener {
-                        onPwKeyPressed(btn.text.toString())
+                        onNumberEntered(btn.text.toString())
                     }
                 }
         }
     }
 
-    private fun onPwKeyPressed(number: String) {
+    private fun onNumberEntered(number: String) {
         // 4자리 이상이거나 입력 처리 중이면 추가 입력 제한
-        if (password.length >= 4 || isInputLocked) return
+        if (lockPassword.length >= 4 || isInputLocked) return
 
-        password.append(number)
+        lockPassword.append(number)
         updateDots()
 
         // 4자리 입력 완료
-        if (password.length == 4) {
-            isInputLocked = true // 입력 잠금
-
-            // 화면 소멸 시 코루틴 자동 취소 (메모리 누수 방지)
-            lifecycleScope.launch {
-                delay(500)
-                when (lockPasswordPurpose) {
-                    LockPasswordPurpose.SETTING -> { // 설정
-                        when (lockPasswordInput) {
-                            LockPasswordInput.NEW -> newPassword() // 새 비밀번호 저장
-                            LockPasswordInput.ENTER -> updatePassword() // 비밀번호 변경
-                        }
-                    }
-                    LockPasswordPurpose.LOCK -> toggleMemoLock() // 메모 잠금 및 잠금 해제
-                    LockPasswordPurpose.OPEN -> openMemo() // 메모 열기
-                    LockPasswordPurpose.DELETE -> deleteMemo() // 메모 삭제
-                    LockPasswordPurpose.BACKUP -> backupMemo() // 메모 백업
-                }
-            }
+        if (lockPassword.length == 4) {
+            completeInput()
         }
     }
 
     private fun updateDots() {
-        // 현재 인덱스가 입력된 비밀번호 길이보다 작으면 선택 상태로 표시
+        // 현재 index가 입력된 비밀번호 길이보다 작으면 선택 상태로 표시
         dots.forEachIndexed { index, dot ->
-            dot.isSelected = index < password.length
+            dot.isSelected = index < lockPassword.length
         }
     }
 
-    private fun newPassword() {
-        with(binding) {
-            // 첫 번째 입력
-            if (confirmingPassword == null) {
-                confirmingPassword = StringBuilder(password)
-                password.clear()
-                textView.text = getString(LockPasswordString.CONFIRM.resId) // 비밀번호 확인
-            } else { // 두 번째 입력~
-                if (password.toString() == confirmingPassword.toString()) { // 첫 번째 입력과 일치
-                    LockPasswordManager.saveLockPassword(root.context, password.toString()) // 비밀번호 저장
+    private fun completeInput() {
+        isInputLocked = true // 입력 잠금
 
-                    val message = if (storedPassword.isNullOrEmpty()) {
-                        R.string.lock_password_saved // 비밀번호 저장 완료!
+        // 지연 후 안전한 화면 처리, 프래그먼트 소멸 시 자동 취소 (메모리 누수 방지)
+        lifecycleScope.launch {
+            delay(500)
+
+            when (lockPasswordPurpose) {
+                LockPasswordPurpose.SETTING -> { // 설정
+                    when (lockPasswordState) {
+                        LockPasswordState.NEW -> newLockPassword()
+                        LockPasswordState.EXISTING -> updateLockPassword()
+                    }
+                }
+                LockPasswordPurpose.LOCK -> toggleLock() // 메모 잠금 및 잠금 해제
+                LockPasswordPurpose.OPEN -> openMemo() // 메모 열기
+                LockPasswordPurpose.DELETE -> deleteMemo() // 메모 삭제
+                LockPasswordPurpose.BACKUP -> backupMemo() // 메모 백업
+            }
+        }
+    }
+
+    private fun setupBtnCancel() {
+        binding.btnCancel.setOnClickListener {
+            if (lockPassword.isEmpty()) {
+                requireActivity().supportFragmentManager.popBackStack()
+            } else {
+                lockPassword.deleteAt(lockPassword.length - 1)
+                updateDots()
+            }
+        }
+    }
+
+    private fun observeViewModel() {
+        memoViewModel.backupResult.observe(viewLifecycleOwner) {
+            if (it.isSuccess) {
+                // "메모 백업에 성공했습니다."
+                requireContext().showToast(getString(R.string.backup_success))
+            } else {
+                // "메모 백업에 실패했습니다."
+                requireContext().showToast(getString(R.string.backup_failed))
+            }
+            requireActivity().finish()
+        }
+    }
+
+    private fun newLockPassword() {
+        with(binding) {
+            if (confirmLockPassword == null) { // 첫 번째 입력
+                confirmLockPassword = StringBuilder(lockPassword)
+                lockPassword.clear()
+                textView.text = getString(LockPasswordString.CONFIRM.resId)
+            } else { // 두 번째 입력~
+                if (lockPassword.toString() == confirmLockPassword.toString()) { // 첫 번째 입력과 일치
+                    LockPasswordManager.saveLockPassword(root.context, lockPassword.toString())
+
+                    val message = if (storedLockPassword.isNullOrEmpty()) {
+                        R.string.lock_password_saved // "잠금 비밀번호가 저장되었습니다."
                     } else {
-                        R.string.lock_password_changed // 비밀번호 변경 완료!
+                        R.string.lock_password_changed // "잠금 비밀번호가 변경되었습니다."
                     }
                     requireContext().showToast(getString(message))
-                    confirmingPassword = null
+                    confirmLockPassword = null
                     requireActivity().supportFragmentManager.popBackStack()
                     return
                 } else { // 첫 번째 입력과 불일치
-                    reEnterPassword()
+                    reEnterLockPassword()
                 }
             }
-            clearPassword()
+            clearLockPassword()
         }
     }
 
-    private fun updatePassword() {
-        if (password.toString() == storedPassword) { // 저장된 비밀번호와 일치
-            lockPasswordInput = LockPasswordInput.NEW
-            binding.textView.text = getString(LockPasswordString.NEW.resId) // 새 비밀번호 입력
+    private fun reEnterLockPassword() {
+        binding.textView.text = getString(LockPasswordString.RE_ENTER.resId)
+        VibrateUtil.vibrate(requireContext())
+    }
+
+    private fun clearLockPassword() {
+        lockPassword.clear()
+        updateDots()
+        isInputLocked = false
+    }
+
+    private fun updateLockPassword() {
+        if (lockPassword.toString() == storedLockPassword) { // 저장된 비밀번호와 일치
+            lockPasswordState = LockPasswordState.NEW
+            binding.textView.text = getString(LockPasswordString.NEW.resId)
         } else { // 저장된 비밀번호와 불일치
-            reEnterPassword()
+            reEnterLockPassword()
         }
-        clearPassword()
+        clearLockPassword()
     }
 
-    private fun toggleMemoLock() {
-        if (password.toString() == storedPassword) { // 저장된 비밀번호와 일치
+    private fun toggleLock() {
+        if (lockPassword.toString() == storedLockPassword) { // 저장된 비밀번호와 일치
             // 메모 잠금 상태 변경
             memo?.let { memoViewModel.updateMemo(it.copy(isLocked = !it.isLocked)) }
             requireActivity().supportFragmentManager.popBackStack()
-        } else {
-            reEnterPassword()
+        } else { // 저장된 비밀번호와 불일치
+            reEnterLockPassword()
         }
-        clearPassword()
+        clearLockPassword()
     }
 
     private fun openMemo() {
-        if (password.toString() == storedPassword) { // 저장된 비밀번호와 일치
-            // PasswordFragment 제거
+        if (lockPassword.toString() == storedLockPassword) { // 저장된 비밀번호와 일치
             requireActivity().supportFragmentManager.popBackStack()
 
             val memoFragment = MemoFragment().apply {
@@ -253,62 +301,40 @@ class LockPasswordFragment : Fragment() {
                 .replace(R.id.container, memoFragment)
                 .addToBackStack(null)
                 .commit()
-        } else {
-            reEnterPassword()
+        } else { // 저장된 비밀번호와 불일치
+            reEnterLockPassword()
         }
-        clearPassword()
+        clearLockPassword()
     }
 
     private fun deleteMemo() {
-        if (password.toString() == storedPassword) { // 저장된 비밀번호와 일치
-            memos?.let {  // 다중 삭제
-                it.forEach { memo -> memoViewModel.moveMemoToTrash(memo) }
-            } ?: memo?.let { // 단일 삭제
+        if (lockPassword.toString() == storedLockPassword) { // 저장된 비밀번호와 일치
+            memo?.let { // 단일 삭제
+                memoViewModel.moveMemoToTrash(it)
+            } ?: memos?.forEach { // 다중 삭제
                 memoViewModel.moveMemoToTrash(it)
             }
+            // "n개의 메모가 삭제되었습니다."
             requireContext().showToast(getString(R.string.delete_memo_result, deleteCount))
             requireActivity().supportFragmentManager.popBackStack()
-        } else {
-            reEnterPassword()
+        } else { // 저장된 비밀번호와 불일치
+            reEnterLockPassword()
         }
-        clearPassword()
+        clearLockPassword()
     }
 
     private fun backupMemo() {
-        if (password.toString() == storedPassword) { // 저장된 비밀번호와 일치
+        if (lockPassword.toString() == storedLockPassword) { // 저장된 비밀번호와 일치
             memoViewModel.backupMemos()
         } else {
-            reEnterPassword()
+            reEnterLockPassword()
         }
-        clearPassword()
-    }
-
-    // 비밀번호 재입력
-    private fun reEnterPassword() {
-        binding.textView.text = getString(LockPasswordString.RE_ENTER.resId)
-        VibrateUtil.vibrate(requireContext())
-    }
-
-    // 비밀번호 초기화
-    private fun clearPassword() {
-        password.clear()
-        updateDots()
-        isInputLocked = false
-    }
-
-    private fun setupBtnCancel() {
-        binding.btnCancel.setOnClickListener {
-            if (password.isEmpty()) {
-                requireActivity().supportFragmentManager.popBackStack()
-            } else {
-                password.deleteAt(password.length - 1)
-                updateDots()
-            }
-        }
+        clearLockPassword()
     }
 
     override fun onResume() {
         super.onResume()
+
         (activity as? SettingsActivity)?.setupActionBar()
     }
 

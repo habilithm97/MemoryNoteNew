@@ -11,13 +11,13 @@ import com.example.memorynotenew.R
 import com.example.memorynotenew.common.Constants.LOCK_PW_PURPOSE
 import com.example.memorynotenew.common.LockPasswordPurpose
 import com.example.memorynotenew.databinding.ActivitySettingsBinding
+import com.example.memorynotenew.security.LockPasswordManager
 import com.example.memorynotenew.ui.fragment.DeleteAccountFragment
 import com.example.memorynotenew.ui.fragment.ForgotPasswordFragment
 import com.example.memorynotenew.ui.fragment.SignInFragment
 import com.example.memorynotenew.ui.fragment.LockPasswordFragment
 import com.example.memorynotenew.ui.fragment.SettingsFragment
 import com.example.memorynotenew.ui.fragment.SignUpFragment
-import com.example.memorynotenew.utils.LockPasswordManager
 
 class SettingsActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySettingsBinding.inflate(layoutInflater) }

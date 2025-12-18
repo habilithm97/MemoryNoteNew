@@ -21,8 +21,8 @@ import com.example.memorynotenew.common.LockPasswordPurpose
 import com.example.memorynotenew.common.PopupAction
 import com.example.memorynotenew.databinding.FragmentListBinding
 import com.example.memorynotenew.room.entity.Memo
+import com.example.memorynotenew.security.LockPasswordManager
 import com.example.memorynotenew.ui.activity.MainActivity
-import com.example.memorynotenew.utils.LockPasswordManager
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.viewmodel.MemoViewModel
 import com.google.android.gms.ads.AdRequest

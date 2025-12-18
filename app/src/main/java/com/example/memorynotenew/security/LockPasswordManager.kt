@@ -1,4 +1,4 @@
-package com.example.memorynotenew.utils
+package com.example.memorynotenew.security
 
 import android.content.Context
 import android.content.SharedPreferences
