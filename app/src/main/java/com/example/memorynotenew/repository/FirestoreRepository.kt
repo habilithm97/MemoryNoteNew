@@ -12,44 +12,54 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
-class FirebaseRepository {
+class FirestoreRepository {
     val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
 
     suspend fun backup(memos: List<Memo>) {
         if (memos.isEmpty()) {
-            Log.d("FirebaseRepository", "[SKIP] No memos to back up.")
+            Log.d("FirestoreRepository", "[SKIP] No memos to back up.")
+            return
+        }
+        val uid = auth.currentUser?.uid ?: run {
+            Log.d("FirestoreRepository", "[SKIP] Backup skipped - User not signed in.")
             return
         }
         try {
-            val uid = auth.currentUser?.uid ?: return
-
             val memoCollection = db.collection(USERS)
                 .document(uid)
                 .collection(MEMO)
 
             val batch = db.batch() // 여러 작업을 한 번에 처리하는 batch
+
             memos.forEach {
                 batch.set(memoCollection.document(it.id.toString()), it)
             }
             batch.commit().await()
-            Log.d("FirebaseRepository", "[SUCCESS] Backup completed successfully.")
+
+            Log.d("FirestoreRepository", "[SUCCESS] Backup completed successfully.")
         } catch (e: Exception) {
-            Log.e("FirebaseRepository", "[FAIL] Backup failed: ${e.message}", e)
+            Log.e("FirestoreRepository", "[FAIL] Backup failed: ${e.message}", e)
         }
     }
 
     suspend fun load(): List<Memo> {
+        val uid = auth.currentUser?.uid ?: run {
+            Log.d("FirestoreRepository", "[SKIP] Load skipped - User not signed in.")
+            return emptyList()
+        }
         try {
-            val uid = auth.currentUser?.uid ?: return emptyList()
-
             val memoCollection = db.collection(USERS)
                 .document(uid)
                 .collection(MEMO)
 
+            /* snapshot
+             -Firestore에서 데이터를 가져올 때 반환되는 실제 데이터 및 메타 정보는 담은 객체
+             -단순 데이터 리스트가 아니라 문서 컬렉션에 대한 상태를 포함 */
             val snapshot = memoCollection.get().await()
+
             if (snapshot.isEmpty) {
-                Log.d("FirebaseRepository", "[SKIP] No memos found on server.")
+                Log.d("FirestoreRepository", "[SKIP] No memos found on server.")
                 return emptyList()
             }
             val memos = snapshot.documents.mapNotNull {
@@ -58,8 +68,7 @@ class FirebaseRepository {
                 val isLocked = it.getBoolean(IS_LOCKED) ?: false
                 val iv = it.getString(IV) ?: return@mapNotNull null
 
-                Memo(
-                    id = 0,
+                Memo(id = 0,
                     content = content,
                     date = date,
                     isLocked = isLocked,
@@ -67,26 +76,36 @@ class FirebaseRepository {
                 )
             }
             return memos
-            Log.d("FirebaseRepository", "[SUCCESS] Load completed successfully.")
+
+            Log.d("FirestoreRepository", "[SUCCESS] Load completed successfully.")
         } catch (e: Exception) {
-            Log.e("FirebaseRepository", "[FAIL] Load failed: ${e.message}", e)
+            Log.e("FirestoreRepository", "[FAIL] Load failed: ${e.message}", e)
             return emptyList()
         }
     }
 
     suspend fun delete(itemId: String, baseCollection: String) {
-        try {
-            val uid = auth.currentUser?.uid ?: return
-            // Firebase 경로 : users/{uid}/{baseCollection}/{itemId}
+        val uid = auth.currentUser?.uid ?: run {
+            Log.d("FirestoreRepository", "[SKIP] Delete skipped - User not signed in.")
+            return
+        }
+        try { // Firestore 경로 : users/{uid}/baseCollection/{itemId}
             db.collection(USERS)
                 .document(uid)
                 .collection(baseCollection)
                 .document(itemId)
                 .delete()
-                .await() // 코루틴에서 작업이 끝날 때까지 대기 (비동기 처리)
-            Log.d("FirebaseRepository", "[SUCCESS] Deleted $baseCollection item (id = $itemId) from server")
+                .await()
+
+            Log.d("FirestoreRepository", "[SUCCESS] Deleted $baseCollection item (id = $itemId) from server")
         } catch (e: Exception) {
-            Log.e("FirebaseRepository", "[FAIL] Delete failed: ${e.message}", e)
+            Log.e("FirestoreRepository", "[FAIL] Delete failed: ${e.message}", e)
         }
     }
 }
+
+/**
+ * await()
+  -작업이 완료될 때까지 코루틴 일시 중단
+   -> 결과를 안전하게 받고, UI 스레드를 막지 않기 위해
+ */

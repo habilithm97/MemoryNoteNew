@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.memorynotenew.common.Constants.MEMO
 import com.example.memorynotenew.common.Constants.THIRTY_DAYS_MS
 import com.example.memorynotenew.common.Constants.USERS
-import com.example.memorynotenew.repository.FirebaseRepository
+import com.example.memorynotenew.repository.FirestoreRepository
 import com.example.memorynotenew.repository.MemoRepository
 import com.example.memorynotenew.room.database.MemoDatabase
 import com.example.memorynotenew.room.entity.Memo
@@ -31,7 +31,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
         MemoDatabase.getInstance(application).memoDao(),
         MemoDatabase.getInstance(application).trashDao()
     )
-    val firebaseRepository = FirebaseRepository()
+    val firestoreRepository = FirestoreRepository()
 
     val getAllMemos: LiveData<List<Memo>> = memoRepository.getAllMemos().asLiveData()
     val getAllTrash: LiveData<List<Trash>> = memoRepository.getAllTrash().asLiveData()
@@ -90,7 +90,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
 
     fun backupMemos() = launchIO {
         try {
-            val uid = firebaseRepository.auth.currentUser?.uid ?: return@launchIO
+            val uid = firestoreRepository.auth.currentUser?.uid ?: return@launchIO
 
             // 로컬에서 메모 리스트를 한 번만 가져옴
             val memos = memoRepository.getAllMemos().first()
@@ -104,7 +104,7 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
                     iv = Base64.encodeToString(ivBytes, Base64.DEFAULT)
                 )
             }
-            firebaseRepository.backup(encryptedMemos) // 로컬 (암호문) -> 서버
+            firestoreRepository.backup(encryptedMemos) // 로컬 (암호문) -> 서버
 
             /** 잔여 서버 문서 삭제 */
             val db = FirebaseFirestore.getInstance()
@@ -135,10 +135,10 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadMemos() = launchIO {
         try {
-            firebaseRepository.auth.currentUser?.uid ?: return@launchIO
+            firestoreRepository.auth.currentUser?.uid ?: return@launchIO
 
             // 서버에 백업된 메모 가져오기
-            val serverMemos = firebaseRepository.load()
+            val serverMemos = firestoreRepository.load()
 
             // 로컬 메모 전체 삭제 (휴지통은 그대로)
             memoRepository.deleteAllMemos()

@@ -207,7 +207,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // 프래그먼트에서 안전하게 코루틴 실행
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val serverMemos = memoViewModel.firebaseRepository.load()
+                val serverMemos = memoViewModel.firestoreRepository.load()
 
                 if (serverMemos.isEmpty()) {
                     // "백업된 메모가 없습니다."
