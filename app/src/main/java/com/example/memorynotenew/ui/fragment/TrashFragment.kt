@@ -15,13 +15,13 @@ import com.example.memorynotenew.databinding.FragmentTrashBinding
 import com.example.memorynotenew.room.entity.Trash
 import com.example.memorynotenew.ui.activity.MainActivity
 import com.example.memorynotenew.utils.ToastUtil.showToast
-import com.example.memorynotenew.viewmodel.MemoViewModel
+import com.example.memorynotenew.viewmodel.MainViewModel
 
 class TrashFragment : Fragment() {
     private var _binding: FragmentTrashBinding? = null // nullable
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
     private lateinit var trashAdapter: TrashAdapter
-    private val memoViewModel: MemoViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +37,7 @@ class TrashFragment : Fragment() {
         setupAdapter()
         setupRecyclerView()
         setupObserver()
-        memoViewModel.deleteOldTrash()
+        mainViewModel.deleteOldTrash()
     }
 
     private fun setupAdapter() {
@@ -70,7 +70,7 @@ class TrashFragment : Fragment() {
     }
 
     private fun setupObserver() {
-        memoViewModel.getAllTrash.observe(viewLifecycleOwner) {
+        mainViewModel.getAllTrash.observe(viewLifecycleOwner) {
             with(binding) {
                 if (it.isEmpty()) { // 휴지통이 비어 있으면
                     recyclerView.visibility = View.GONE
@@ -128,7 +128,7 @@ class TrashFragment : Fragment() {
 
     // 휴지통에서 완전히 삭제
     private fun deleteTrash(selectedTrash: List<Trash>) {
-        selectedTrash.forEach { memoViewModel.deleteTrash(it) }
+        selectedTrash.forEach { mainViewModel.deleteTrash(it) }
         trashAdapter.isMultiSelect = false
         (activity as? MainActivity)?.toggleMenuVisibility(this, false)
         requireContext().showToast(getString(R.string.delete_memo_result, selectedTrash.size))
@@ -159,7 +159,7 @@ class TrashFragment : Fragment() {
 
     // 메모 복원
     private fun restoreMemo(selectedTrash: List<Trash>) {
-        selectedTrash.forEach { memoViewModel.restoreMemo(it) }
+        selectedTrash.forEach { mainViewModel.restoreMemo(it) }
         trashAdapter.isMultiSelect = false
         (activity as? MainActivity)?.toggleMenuVisibility(this, false)
     }
@@ -170,7 +170,7 @@ class TrashFragment : Fragment() {
             .setMessage(getString(R.string.dialog_empty))
             .setNegativeButton(getString(R.string.cancel), null)
             .setPositiveButton(getString(R.string.empty)) { dialog, _ ->
-                memoViewModel.emptyTrash()
+                mainViewModel.emptyTrash()
                 requireContext().showToast(getString(R.string.trash_emptied))
                 dialog.dismiss()
             }

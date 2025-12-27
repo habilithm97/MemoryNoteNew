@@ -24,7 +24,7 @@ import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.security.LockPasswordManager
 import com.example.memorynotenew.ui.activity.MainActivity
 import com.example.memorynotenew.utils.ToastUtil.showToast
-import com.example.memorynotenew.viewmodel.MemoViewModel
+import com.example.memorynotenew.viewmodel.MainViewModel
 import com.google.android.gms.ads.AdRequest
 
 class ListFragment : Fragment() {
@@ -32,7 +32,7 @@ class ListFragment : Fragment() {
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
 
     private lateinit var memoAdapter: MemoAdapter
-    private val memoViewModel: MemoViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -137,7 +137,7 @@ class ListFragment : Fragment() {
             val lockPasswordFragment = LockPasswordFragment.newInstance(LockPasswordPurpose.DELETE, memo)
             replaceFragment(lockPasswordFragment)
         } else { // 잠금 x
-            memoViewModel.moveMemoToTrash(memo)
+            mainViewModel.moveMemoToTrash(memo)
             // "1개의 메모가 삭제되었습니다."
             requireContext().showToast(getString(R.string.delete_memo_result, 1))
         }
@@ -148,7 +148,7 @@ class ListFragment : Fragment() {
         val unlockedMemos = selectedMemos.filterNot { it.isLocked } // 잠기지 않은 메모 리스트
 
         // 잠기지 않은 메모는 바로 삭제
-        unlockedMemos.forEach { memoViewModel.moveMemoToTrash(it) }
+        unlockedMemos.forEach { mainViewModel.moveMemoToTrash(it) }
 
         if (lockedMemos.isNotEmpty()) { // 잠긴 메모가 하나라도 있으면
             val lockPasswordFragment = LockPasswordFragment.newInstance(
@@ -188,7 +188,7 @@ class ListFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        memoViewModel.getAllMemos.observe(viewLifecycleOwner) {
+        mainViewModel.getAllMemos.observe(viewLifecycleOwner) {
             with(binding) {
                 if (it.isEmpty()) { // 메모 x
                     recyclerView.visibility = View.GONE

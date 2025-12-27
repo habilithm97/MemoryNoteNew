@@ -23,7 +23,7 @@ import com.example.memorynotenew.common.Constants.SIGN_IN_PREF
 import com.example.memorynotenew.common.Constants.SIGN_OUT_PREF
 import com.example.memorynotenew.common.LockPasswordPurpose
 import com.example.memorynotenew.utils.ToastUtil.showToast
-import com.example.memorynotenew.viewmodel.MemoViewModel
+import com.example.memorynotenew.viewmodel.MainViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
@@ -37,7 +37,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val auth by lazy { FirebaseAuth.getInstance() }
 
     // 프래그먼트 생명주기에 맞춰 생성/관리되는 ViewModel
-    private val memoViewModel: MemoViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
@@ -127,7 +127,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
     private fun observeViewModel() {
-        with(memoViewModel) {
+        with(mainViewModel) {
             backupResult.observe(viewLifecycleOwner) { // "메모 백업에 성공/실패했습니다."
                 handleResult(it.isSuccess, R.string.backup_success, R.string.backup_failed)
             }
@@ -191,7 +191,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun backupRequest() {
         // 현재 메모 리스트에서 하나라도 잠겼으면 true 반환
-        val hasLockedMemo = memoViewModel.memos.any { it.isLocked }
+        val hasLockedMemo = mainViewModel.memos.any { it.isLocked }
 
         if (hasLockedMemo) {
             val lockPasswordFragment = LockPasswordFragment.newInstance(LockPasswordPurpose.BACKUP)
@@ -199,7 +199,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 .replace(R.id.container, lockPasswordFragment)
                 .commit()
         } else {
-            memoViewModel.backupMemos()
+            mainViewModel.backupMemos()
         }
     }
 
@@ -207,7 +207,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         // 프래그먼트에서 안전하게 코루틴 실행
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val serverMemos = memoViewModel.firestoreRepository.load()
+                val serverMemos = mainViewModel.firestoreRepository.load()
 
                 if (serverMemos.isEmpty()) {
                     // "백업된 메모가 없습니다."
@@ -229,7 +229,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 loadPref?.isEnabled = true
             }
             .setPositiveButton(getString(R.string.ok)) { _, _ ->
-                memoViewModel.loadMemos()
+                mainViewModel.loadMemos()
                 loadPref?.isEnabled = true
             }
             .setOnCancelListener {

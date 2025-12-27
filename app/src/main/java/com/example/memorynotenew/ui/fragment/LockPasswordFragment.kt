@@ -22,7 +22,7 @@ import com.example.memorynotenew.security.LockPasswordManager
 import com.example.memorynotenew.ui.activity.SettingsActivity
 import com.example.memorynotenew.utils.ToastUtil.showToast
 import com.example.memorynotenew.utils.VibrateUtil
-import com.example.memorynotenew.viewmodel.MemoViewModel
+import com.example.memorynotenew.viewmodel.MainViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -31,7 +31,7 @@ class LockPasswordFragment : Fragment() {
     private val binding get() = _binding!! // non-null (생명주기 내 안전)
 
     // 프래그먼트 생명주기에 맞춰 생성/관리되는 ViewModel
-    private val memoViewModel: MemoViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
 
     private var lockPassword = StringBuilder() // 잠금 비밀번호
     private var storedLockPassword: String? = null // 저장된 잠금 비밀번호
@@ -217,7 +217,7 @@ class LockPasswordFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        memoViewModel.backupResult.observe(viewLifecycleOwner) {
+        mainViewModel.backupResult.observe(viewLifecycleOwner) {
             if (it.isSuccess) {
                 // "메모 백업에 성공했습니다."
                 requireContext().showToast(getString(R.string.backup_success))
@@ -280,7 +280,7 @@ class LockPasswordFragment : Fragment() {
     private fun toggleLock() {
         if (lockPassword.toString() == storedLockPassword) { // 저장된 비밀번호와 일치
             // 메모 잠금 상태 변경
-            memo?.let { memoViewModel.updateMemo(it.copy(isLocked = !it.isLocked)) }
+            memo?.let { mainViewModel.updateMemo(it.copy(isLocked = !it.isLocked)) }
             requireActivity().supportFragmentManager.popBackStack()
         } else { // 저장된 비밀번호와 불일치
             reEnterLockPassword()
@@ -310,9 +310,9 @@ class LockPasswordFragment : Fragment() {
     private fun deleteMemo() {
         if (lockPassword.toString() == storedLockPassword) { // 저장된 비밀번호와 일치
             memo?.let { // 단일 삭제
-                memoViewModel.moveMemoToTrash(it)
+                mainViewModel.moveMemoToTrash(it)
             } ?: memos?.forEach { // 다중 삭제
-                memoViewModel.moveMemoToTrash(it)
+                mainViewModel.moveMemoToTrash(it)
             }
             // "n개의 메모가 삭제되었습니다."
             requireContext().showToast(getString(R.string.delete_memo_result, deleteCount))
@@ -325,7 +325,7 @@ class LockPasswordFragment : Fragment() {
 
     private fun backupMemo() {
         if (lockPassword.toString() == storedLockPassword) { // 저장된 비밀번호와 일치
-            memoViewModel.backupMemos()
+            mainViewModel.backupMemos()
         } else {
             reEnterLockPassword()
         }

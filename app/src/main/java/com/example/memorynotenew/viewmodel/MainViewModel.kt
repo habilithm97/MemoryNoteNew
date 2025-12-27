@@ -23,9 +23,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-/* Context는 UI 컴포넌트 종료 시 사라지지만,
- ApplicationContext는 앱 전체 생명주기 동안 유지 */
-class MemoViewModel(application: Application) : AndroidViewModel(application) {
+// AndroidViewModel -> DB 초기화에 필요한 Application Context 사용
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val memoRepository = MemoRepository(
         MemoDatabase.getInstance(application).memoDao(),
@@ -33,13 +32,10 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     )
     val firestoreRepository = FirestoreRepository()
 
+    // Flow로 받은 데이터를 UI에서 관찰할 수 있도록 LiveData로 변환
     val getAllMemos: LiveData<List<Memo>> = memoRepository.getAllMemos().asLiveData()
     val getAllTrash: LiveData<List<Trash>> = memoRepository.getAllTrash().asLiveData()
 
-    // IO 스레드에서 비동기 코루틴으로 동작
-    private fun <T> launchIO(block: suspend () -> T) {
-        viewModelScope.launch(Dispatchers.IO) { block() }
-    }
     data class BackupResult(val isSuccess: Boolean)
     data class LoadResult(val isSuccess: Boolean)
 
@@ -52,6 +48,11 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     val memos: List<Memo>
         get() = getAllMemos.value ?: emptyList()
 
+    // ViewModelScope에서 IO 스레드로 suspend 작업 실행
+    private fun <T> launchIO(block: suspend () -> T) {
+        // 지금 실행하지 않고 나중에 IO 코루틴 안에서 실행할 코드 덩어리
+        viewModelScope.launch(Dispatchers.IO) { block() }
+    }
     fun insertMemo(memo: Memo) = launchIO { memoRepository.insertMemo(memo) }
     fun updateMemo(memo: Memo) = launchIO { memoRepository.updateMemo(memo) }
     fun deleteMemo(memo: Memo) = launchIO { memoRepository.deleteMemo(memo) }
@@ -59,13 +60,13 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     fun emptyTrash() = launchIO { memoRepository.deleteAllTrash() }
 
     fun deleteOldTrash() = launchIO {
-        val cutoff = System.currentTimeMillis() - THIRTY_DAYS_MS // 30일 전 시각
-        memoRepository.deleteOldTrash(cutoff)
+        val cutoffTime = System.currentTimeMillis() - THIRTY_DAYS_MS
+        memoRepository.deleteOldTrash(cutoffTime)
     }
 
     fun moveMemoToTrash(memo: Memo) = launchIO {
         val trash = Trash(
-            memoId = memo.id,
+            memoId = 0,
             content = memo.content,
             deletedAt = System.currentTimeMillis()
         )
@@ -89,37 +90,39 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun backupMemos() = launchIO {
+        val uid = firestoreRepository.auth.currentUser?.uid ?: run {
+            Log.d("MemoViewModel", "[SKIP] Backup skipped - User not signed in.")
+            return@launchIO // 람다 종료
+        }
         try {
-            val uid = firestoreRepository.auth.currentUser?.uid ?: return@launchIO
-
-            // 로컬에서 메모 리스트를 한 번만 가져옴
-            val memos = memoRepository.getAllMemos().first()
+            val memos = memoRepository.getAllMemos().first() // 로컬에서 메모 리스트 가져오기 (단발성)
 
             // 암호화된 메모 리스트 생성
             val encryptedMemos = memos.map {
-                // content 암호화 -> Pair 구조 분해로 각각 꺼냄
+                // content 암호화 -> Pair 구조 분해로 각각 꺼냄 (암호화된 데이터, 암호화에 사용된 IV)
                 val (cipherBytes, ivBytes) = EncryptionManager.encrypt(it.content)
+                
                 it.copy( // 기존 Memo 객체를 그대로 유지하면서 content와 iv만 암호화된 값으로 교체
+                    // Base64 문자열로 변환해야 Firestore에 저장 가능
                     content = Base64.encodeToString(cipherBytes, Base64.DEFAULT),
                     iv = Base64.encodeToString(ivBytes, Base64.DEFAULT)
                 )
             }
             firestoreRepository.backup(encryptedMemos) // 로컬 (암호문) -> 서버
 
-            /** 잔여 서버 문서 삭제 */
             val db = FirebaseFirestore.getInstance()
+
             val memoCollection = db.collection(USERS)
                 .document(uid)
                 .collection(MEMO)
 
-            // memoCollection 문서 가져오기
             val snapshots = memoCollection.get().await()
 
             // 서버의 문서를 하나씩 순회
             snapshots.documents.forEach { doc ->
                 // 로컬에 doc.id와 동일한 id가 없는 경우 -> 서버에만 존재하는 문서
-                if (memos.none {
-                        it.id.toString() == doc.id
+                if (memos.none { memo ->
+                    memo.id.toString() == doc.id
                 }) {
                     doc.reference.delete() // 서버에만 해당 문서 삭제
                     Log.d("MemoViewModel", "[DELETE] Removed server-only memo id = ${doc.id}")
@@ -134,19 +137,19 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadMemos() = launchIO {
+        firestoreRepository.auth.currentUser?.uid ?: run {
+            Log.d("MemoViewModel", "[SKIP] Load skipped - User not signed in.")
+            return@launchIO
+        }
         try {
-            firestoreRepository.auth.currentUser?.uid ?: return@launchIO
+            val serverMemos = firestoreRepository.load() // 서버에 백업된 메모 가져오기
 
-            // 서버에 백업된 메모 가져오기
-            val serverMemos = firestoreRepository.load()
-
-            // 로컬 메모 전체 삭제 (휴지통은 그대로)
-            memoRepository.deleteAllMemos()
+            val decryptedMemos = mutableListOf<Memo>() // 복호화 완료 메모 임시 저장
 
             serverMemos.forEach {
                 // 서버 저장용 Base64 문자열
-                val cipherTextBase64 = it.content.trim()
-                val ivBase64 = it.iv?.trim()
+                val cipherTextBase64 = it.content
+                val ivBase64 = it.iv
 
                 // Base64 -> ByteArray (AES 복호화는 ByteArray로만 가능)
                 val cipherText = Base64.decode(cipherTextBase64, Base64.DEFAULT)
@@ -155,8 +158,12 @@ class MemoViewModel(application: Application) : AndroidViewModel(application) {
                 // 복호화 (암호문 -> 평문)
                 val plainText = EncryptionManager.decrypt(cipherText, iv)
 
-                val decryptedMemo = it.copy(id = 0, content = plainText)
-                memoRepository.insertMemo(decryptedMemo)
+                decryptedMemos.add(it.copy(id = 0, content = plainText))
+            }
+            memoRepository.deleteAllMemos()
+
+            decryptedMemos.forEach {
+                memoRepository.insertMemo(it)
             }
             _loadResult.postValue(LoadResult(true))
             Log.d("MemoViewModel", "[SUCCESS] Load completed successfully.")

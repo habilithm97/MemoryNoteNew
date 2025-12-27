@@ -36,7 +36,6 @@ class FirestoreRepository {
                 batch.set(memoCollection.document(it.id.toString()), it)
             }
             batch.commit().await()
-
             Log.d("FirestoreRepository", "[SUCCESS] Backup completed successfully.")
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "[FAIL] Backup failed: ${e.message}", e)
@@ -75,9 +74,8 @@ class FirestoreRepository {
                     iv = iv
                 )
             }
-            return memos
-
             Log.d("FirestoreRepository", "[SUCCESS] Load completed successfully.")
+            return memos
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "[FAIL] Load failed: ${e.message}", e)
             return emptyList()
@@ -96,7 +94,6 @@ class FirestoreRepository {
                 .document(itemId)
                 .delete()
                 .await()
-
             Log.d("FirestoreRepository", "[SUCCESS] Deleted $baseCollection item (id = $itemId) from server")
         } catch (e: Exception) {
             Log.e("FirestoreRepository", "[FAIL] Delete failed: ${e.message}", e)

@@ -18,7 +18,7 @@ import com.example.memorynotenew.common.Constants.TRASH
 import com.example.memorynotenew.databinding.FragmentMemoBinding
 import com.example.memorynotenew.room.entity.Memo
 import com.example.memorynotenew.room.entity.Trash
-import com.example.memorynotenew.viewmodel.MemoViewModel
+import com.example.memorynotenew.viewmodel.MainViewModel
 
 class MemoFragment : Fragment() {
     private var _binding: FragmentMemoBinding? = null // nullable
@@ -33,7 +33,7 @@ class MemoFragment : Fragment() {
             arguments?.getParcelable(TRASH)
         }
     }
-    private val memoViewModel: MemoViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -81,7 +81,7 @@ class MemoFragment : Fragment() {
         memo?.let { // 기존 메모가 있으면
             when {
                 // 메모가 비어 있으면 -> 삭제
-                currentMemo.isBlank() -> memoViewModel.deleteMemo(it)
+                currentMemo.isBlank() -> mainViewModel.deleteMemo(it)
                 // 기존 메모와 같지 않으면 -> 수정
                 currentMemo != it.content -> updateMemo(currentMemo, date)
             }
@@ -95,14 +95,14 @@ class MemoFragment : Fragment() {
 
     private fun saveMemo(currentMemo: String, date: Long) {
         val memo = Memo(content = currentMemo, date  = date)
-        memoViewModel.insertMemo(memo)
+        mainViewModel.insertMemo(memo)
     }
 
     private fun updateMemo(currentMemo: String, date: Long) {
         // 기존 Memo 객체의 content만 수정하여 새로운 객체 생성
         val updatedMemo = memo?.copy(content = currentMemo, date =  date)
 
-        updatedMemo?.let { memoViewModel.updateMemo(it) }
+        updatedMemo?.let { mainViewModel.updateMemo(it) }
     }
 
     override fun onResume() {
