@@ -66,7 +66,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun moveMemoToTrash(memo: Memo) = launchIO {
         val trash = Trash(
-            memoId = 0,
             content = memo.content,
             deletedAt = System.currentTimeMillis()
         )
