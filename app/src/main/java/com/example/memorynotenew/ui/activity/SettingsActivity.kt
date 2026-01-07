@@ -20,10 +20,11 @@ import com.example.memorynotenew.ui.fragment.SettingsFragment
 import com.example.memorynotenew.ui.fragment.SignUpFragment
 
 class SettingsActivity : AppCompatActivity() {
-    private val binding by lazy { ActivitySettingsBinding.inflate(layoutInflater) }
+    private lateinit var binding: ActivitySettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
         enableEdgeToEdge()
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
