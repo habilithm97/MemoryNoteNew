@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.memorynotenew"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.habilithm.memorynote"
