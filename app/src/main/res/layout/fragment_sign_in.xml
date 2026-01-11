@@ -33,31 +33,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:orientation="vertical"
             android:visibility="gone">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/tv1"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:fontFamily="@font/bookkmyungjo_light"
                 android:text="@string/email_verification_required"
                 android:textColor="@color/red" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+            <TextView
+                android:id="@+id/tv2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/bookkmyungjo_light"
+                android:text="@string/email_spam"
+                android:textColor="@color/red" />
 
             <Button
                 android:id="@+id/btnResendEmail"
-                android:layout_width="wrap_content"
+                style="@style/SubButton1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/transparent"
-                android:gravity="end"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
                 android:minHeight="0dp"
                 android:padding="0dp"
-                android:text="@string/resend"
-                android:textColor="@color/main" />
+                android:text="@string/resend" />
 
         </LinearLayout>
 

@@ -58,7 +58,6 @@
     <string name="sign_up_failed">회원가입에 실패했습니다.</string>
     <string name="verification_email_sent">인증 메일을 보냈습니다. 이메일을 확인해주세요.</string>
     <string name="verification_email_failed">인증 메일 발송에 실패했습니다.</string>
-    <string name="email_verification_required">이메일 인증이 필요합니다.</string>
     <string name="network_error">네트워크 오류가 발생했습니다.</string>
     <string name="dialog_sign_out">로그아웃할까요?</string>
     <string name="find_email">이메일 찾기</string>
@@ -91,4 +90,7 @@
     <string name="forgot_password">비밀번호 찾기</string>
     <string name="reset_password">비밀번호 재설정</string>
     <string name="reset_request">재설정 요청</string>
+
+    <string name="email_verification_required">이메일 인증이 필요합니다.</string>
+    <string name="email_spam">(메일이 보이지 않다면, 스팸함을 확인해주세요.)</string>
 </resources>

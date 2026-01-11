@@ -61,7 +61,6 @@
     <string name="network_error">Network error occurred.</string>
     <string name="verification_email_sent">Verification email sent. Check your inbox.</string>
     <string name="verification_email_failed">Failed to send verification email.</string>
-    <string name="email_verification_required">Email verification required.</string>
 
     <string name="backup">Backup</string>
     <string name="backup_memo">Backup Memo</string>
@@ -90,4 +89,7 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="reset_password">Reset Password</string>
     <string name="reset_request">Reset Request</string>
+
+    <string name="email_verification_required">Email verification required.</string>
+    <string name="email_spam">(If not received, check spam folder.)</string>
 </resources>
