@@ -51,7 +51,6 @@
     <string name="weak_password">Weak password.</string>
     <string name="incorrect_password">Incorrect password.</string>
     <string name="password_reset_failed">Password reset failed.</string>
-    <string name="password_reset_email_sent">Password reset email sent. Check your inbox.</string>
     <string name="select_memo_to_restore">Select memo(s) to restore.</string>
     <string name="dialog_restore">Restore selected memo(s)?</string>
     <string name="dialog_empty">Empty trash?</string>
@@ -92,4 +91,5 @@
 
     <string name="email_verification_required">Email verification required.</string>
     <string name="email_spam">(If not received, check spam folder.)</string>
+    <string name="password_reset_email_sent">Password reset email sent. Check email.</string>
 </resources>
