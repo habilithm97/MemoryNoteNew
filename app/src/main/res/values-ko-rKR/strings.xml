@@ -93,4 +93,6 @@
     <string name="email_verification_required">이메일 인증이 필요합니다.</string>
     <string name="email_spam">(메일이 보이지 않다면, 스팸함을 확인해주세요.)</string>
     <string name="password_reset_email_sent">비밀번호 재설정 메일을 보냈습니다. 이메일을 확인해주세요.</string>
+    <string name="email_recovery_google_only">일반 로그인 계정은 이메일 찾기를 지원하지 않습니다.</string>
+    <string name="google_sign_in_failed">Google 로그인에 실패했습니다.</string>
 </resources>

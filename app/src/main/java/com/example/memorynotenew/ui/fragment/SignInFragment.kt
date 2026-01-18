@@ -1,5 +1,6 @@
 package com.example.memorynotenew.ui.fragment
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -8,12 +9,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import com.example.memorynotenew.R
 import com.example.memorynotenew.databinding.FragmentSignInBinding
 import com.example.memorynotenew.utils.ToastUtil.showToast
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
 
@@ -23,6 +27,26 @@ class SignInFragment : Fragment() {
 
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private lateinit var progressBar: ProgressBar
+
+    // 구글 로그인 결과 처리 ActivityResultLauncher
+    private val googleSignInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) { result ->
+        // 구글 로그인 액티비티 정상 종료 여부 확인
+        if (result.resultCode == Activity.RESULT_OK) {
+            // result에서 GoogleSignInAccount를 가져오는 task 생성
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                // Task에서 GoogleSignInAccount 객체를 가져옴 (실패 시 ApiException 발생)
+                val account = task.getResult(ApiException::class.java)
+                // 구글 계정의 id 토큰을 사용해 Firebase 인증 수행
+                //firebaseAuthWithGoogle(account.idToken!!)
+            } catch (e: ApiException) {
+                Log.e("SignInFragment", "Google sign in failed", e)
+                // "Google 로그인에 실패했습니다."
+                requireContext().showToast(getString(R.string.google_sign_in_failed))
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,6 +83,10 @@ class SignInFragment : Fragment() {
             // 비밀번호 찾기 버튼
             btnForgotPassword.setOnClickListener {
                 replaceFragment(ForgotPasswordFragment())
+            }
+            // 구글 로그인 버튼
+            btnGoogleSignIn.setOnClickListener {
+                //signInWithGoogle()
             }
         }
     }

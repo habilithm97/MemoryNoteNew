@@ -93,6 +93,17 @@
             android:text="@string/sign_in"
             android:textAllCaps="false" />
 
+        <TextView
+            android:id="@+id/tvLoginHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/bookkmyungjo_light"
+            android:gravity="center"
+            android:text="@string/email_recovery_google_only"
+            android:textColor="@color/gray"
+            android:textSize="10sp" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSignUp"
             style="@style/SubButton1"
