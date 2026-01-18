@@ -102,37 +102,21 @@
             android:text="@string/sign_up"
             android:textAllCaps="false" />
 
-        <LinearLayout
-            style="@style/FieldMargin"
-            android:layout_width="match_parent"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnForgotPassword"
+            style="@style/SubButton2"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center">
+            android:text="@string/forgot_password"
+            android:textAllCaps="false" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnForgotEmail"
-                style="@style/SubButton2"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/find_email"
-                android:textAllCaps="false" />
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/btnGoogleSignIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp" />
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="?android:attr/listDivider" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnForgotPassword"
-                style="@style/SubButton2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="@string/forgot_password"
-                android:textAllCaps="false" />
-
-        </LinearLayout>
     </LinearLayout>
 
     <ProgressBar
