@@ -79,5 +79,6 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
 
+    // Google Auth
     implementation(libs.google.auth)
 }
