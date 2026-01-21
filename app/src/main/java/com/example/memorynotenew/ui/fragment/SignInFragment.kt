@@ -40,8 +40,16 @@ class SignInFragment : Fragment() {
             try {
                 // 구글 로그인 계정 가져오기 (실패 시 ApiException 발생)
                 val account = task.getResult(ApiException::class.java)
-                // 구글 계정 id 토큰으로 Firebase 인증 수행
-                firebaseAuthWithGoogle(account.idToken!!)
+
+                val idToken = account.idToken
+                if (idToken != null) {
+                    // 구글 계정 id 토큰으로 Firebase 인증 수행
+                    firebaseAuthWithGoogle(idToken)
+                } else {
+                    Log.w("SignInFragment", "ID token is null after Google sign-in")
+                    // "Google 로그인에 실패했습니다."
+                    requireContext().showToast(getString(R.string.google_sign_in_failed))
+                }
             } catch (e: ApiException) {
                 Log.e("SignInFragment", "Google sign in failed", e)
                 // "Google 로그인에 실패했습니다."
