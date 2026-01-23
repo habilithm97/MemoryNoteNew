@@ -2,6 +2,7 @@ package com.example.memorynotenew.ui.fragment
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -31,11 +32,10 @@ class DeleteAccountFragment : Fragment() {
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
-    // 구글 로그인 (재인증) 결과를 받기 위한 ActivityResultLauncher
+    // 구글 로그인 재인증 결과를 받기 위한 ActivityResultLauncher
     private val resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
-        // 결과가 정상적으로 반환되었는지 확인
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == Activity.RESULT_OK) { // 결과가 정상적으로 반환되었는지 확인
             // Intent에서 구글 로그인 계정을 가져오는 작업 생성
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
 
@@ -43,15 +43,25 @@ class DeleteAccountFragment : Fragment() {
                 // 구글 로그인 계정 가져오기 (실패 시 ApiException 발생)
                 val account = task.getResult(ApiException::class.java)
 
-                // 구글 계정의 id 토큰으로 Firebase 인증용 Credential 생성
+                // 구글 로그인 계정의 id 토큰으로 Firebase 인증용 Credential 생성
                 val credential = GoogleAuthProvider.getCredential(account.idToken, null)
                 val user = auth.currentUser ?: return@registerForActivityResult
                 val uid = user.uid
 
-                // 구글 Credential로 Firebase 사용자 재인증
+                // Credential로 Firebase 사용자 재인증
                 user.reauthenticate(credential)
-                    .addOnSuccessListener { proceedDelete(user, uid) }
+                    .addOnSuccessListener {
+                        Log.d("DeleteAccountFragment", "구글 로그인 계정 재인증 성공")
+                        proceedDeleteAccount(user, uid) // 회원탈퇴 진행
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("DeleteAccountFragment", "구글 로그인 계정 재인증 실패", e)
+                        // "Google 계정 재인증에 실패했습니다."
+                        requireContext().showToast(getString(R.string.google_reauth_failed))
+                    }
             } catch (e: ApiException) {
+                Log.e("DeleteAccountFragment", "구글 로그인 실패", e)
+                // "Google 로그인에 실패했습니다."
                 requireContext().showToast(getString(R.string.google_sign_in_failed))
             }
         }
@@ -127,14 +137,16 @@ class DeleteAccountFragment : Fragment() {
             requireContext().showToast(getString(R.string.confirm_mismatch))
             return
         }
-        // 구글 로그인 (재인증)에 사용할 GoogleSignInClient 생성
-        val googleSignInClient = GoogleSignIn.getClient(
-            requireContext(),
-            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build()
-        )
+        // 구글 로그인 옵션 설정
+        val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            // Firebase 인증용 id 토큰 요청
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail() // 사용자 이메일 요청
+            .build()
+
+        // 설정한 옵션으로 구글 로그인 클라이언트 생성
+        val googleSignInClient = GoogleSignIn.getClient(requireContext(), googleSignInOptions)
+        // 구글 로그인 화면 실행, 결과는 resultLauncher에서 처리
         resultLauncher.launch(googleSignInClient.signInIntent)
     }
 
@@ -155,31 +167,45 @@ class DeleteAccountFragment : Fragment() {
                 return
             }
             val email = user.email ?: return
-            // 재인증 자격증명
+            // 이메일과 비밀번호로 Firebase 인증용 Credential 생성
             val credential = EmailAuthProvider.getCredential(email, password)
+            val uid = user.uid
 
-            user.reauthenticate(credential) // 현재 사용자 재인증
+            // Credential로 Firebase 사용자 재인증
+            user.reauthenticate(credential)
                 .addOnSuccessListener {
-                    proceedDelete(user, uid)
+                    Log.d("DeleteAccountFragment", "이메일 재인증 성공")
+                    proceedDeleteAccount(user, uid) // 회원탈퇴 진행
                 }
-                .addOnFailureListener {
-                    // "비밀번호가 틀렸습니다."
-                    requireContext().showToast(getString(R.string.incorrect_password))
+                .addOnFailureListener { e ->
+                    Log.e("DeleteAccountFragment", "이메일 재인증 실패", e)
+                    // "이메일 재인증에 실패했습니다."
+                    requireContext().showToast(getString(R.string.email_reauth_failed))
                 }
         }
     }
 
-    private fun proceedDelete(user: FirebaseUser, uid: String) {
-        // Firestore 사용자 데이터 전체 삭제
+    private fun proceedDeleteAccount(user: FirebaseUser, uid: String) {
+        // Firestore 사용자 데이터 삭제
         deleteUserData(uid) { success ->
-            if (!success) { return@deleteUserData }
-            user.delete() // Auth 사용자 계정 삭제
+            if (!success) {
+                Log.d("DeleteAccountFragment", "Firebase 사용자 데이터 삭제 실패")
+                // "회원탈퇴 처리 중 오류가 발생했습니다. 다시 시도해주세요."
+                requireContext().showToast(getString(R.string.delete_account_failed_try_again))
+                return@deleteUserData
+            }
+            Log.d("DeleteAccountFragment", "Firebase 사용자 데이터 삭제 성공")
+
+            // Firebase Auth 계정 삭제
+            user.delete()
                 .addOnSuccessListener {
+                    Log.d("DeleteAccount", "Firebase Auth 계정 삭제 성공")
                     // "회원탈퇴에 성공했습니다."
                     requireContext().showToast(getString(R.string.delete_account_success))
                     requireActivity().supportFragmentManager.popBackStack()
                 }
-                .addOnFailureListener {
+                .addOnFailureListener { e ->
+                    Log.e("DeleteAccountFragment", "Firebase Auth 계정 삭제 실패", e)
                     // "회원탈퇴에 실패했습니다."
                     requireContext().showToast(getString(R.string.delete_account_failed))
                 }
@@ -192,22 +218,34 @@ class DeleteAccountFragment : Fragment() {
 
         memoCollection.get()
             .addOnSuccessListener { snapshot ->
+                if (snapshot.isEmpty) {
+                    Log.d("DeleteAccountFragment", "삭제할 메모 없음")
+                } else {
+                    Log.d("DeleteAccountFragment", "삭제할 메모 개수: ${snapshot.size()}")
+                }
                 val batch = db.batch() // 여러 문서를 한 번에 삭제하기 위한 batch
 
                 snapshot.documents.forEach { doc ->
+                    Log.d("DeleteAccountFragment", "삭제할 메모: ${doc.id}")
                     batch.delete(doc.reference) // batch에 각 메모 문서 삭제 작업 추가
                 }
+                batch.delete(userDoc) // 사용자 문서도 batch에 포함 → atomic 삭제
+
                 batch.commit() // batch 삭제 실행
                     .addOnSuccessListener {
-                        userDoc.delete() // 사용자 문서 삭제
-                            .addOnSuccessListener { onComplete(true) }
-                            .addOnFailureListener { onComplete(false) }
+                        Log.d("DeleteAccountFragment", "Firestore 사용자 데이터 삭제 성공")
+                        onComplete(true)
                     }
-                    .addOnFailureListener { onComplete(false) }
+                    .addOnFailureListener { e ->
+                        Log.e("DeleteAccountFragment", "Firestore 사용자 데이터 삭제 실패", e)
+                        onComplete(false)
+                    }
             }
-            .addOnFailureListener { onComplete(false) }
+            .addOnFailureListener { e ->
+                Log.e("DeleteAccountFragment", "메모 컬렉션 조회 실패", e)
+                onComplete(false)
+            }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

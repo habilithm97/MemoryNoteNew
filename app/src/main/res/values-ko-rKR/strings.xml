@@ -97,4 +97,8 @@
     <string name="google_delete_guide">구글 계정 재인증 후 회원탈퇴가 진행됩니다.</string>
     <string name="confirm_blank">확인 문구를 입력해주세요.</string>
     <string name="confirm_mismatch">확인 문구가 일치하지 않습니다.</string>
+    <string name="google_reauth_success">Google 계정 재인증에 성공했습니다.</string>
+    <string name="google_reauth_failed">Google 계정 재인증에 실패했습니다.</string>
+    <string name="email_reauth_failed">이메일 재인증에 실패했습니다.</string>
+    <string name="delete_account_failed_try_again">회원탈퇴 처리 중 오류가 발생했습니다. 다시 시도해주세요.</string>
 </resources>

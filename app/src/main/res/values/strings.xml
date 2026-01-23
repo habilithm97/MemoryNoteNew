@@ -79,7 +79,7 @@
     <string name="delete_account_confirm">To continue, type [delete account].</string>
     <string name="delete_account_action">Delete Account</string>
     <string name="delete_account_success">Account deleted successfully.</string>
-    <string name="delete_account_failed">Failed to delete account.</string>
+    <string name="delete_account_failed">Account deleted failed.</string>
 
     <string name="lock_password_sub_title">If the lock password is forgotten, it cannot be recovered. Please remember it.</string>
     <string name="sign_in_failed">Invalid email or password.</string>
@@ -96,4 +96,8 @@
     <string name="google_delete_guide"> Google re-authentication is required to delete the account.</string>
     <string name="confirm_blank">Enter the confirmation text.</string>
     <string name="confirm_mismatch">Confirmation text does not match.</string>
+    <string name="google_reauth_success">Google account re-auth successful.</string>
+    <string name="google_reauth_failed">Google account re-auth failed.</string>
+    <string name="email_reauth_failed">Email re-auth failed.</string>
+    <string name="delete_account_failed_try_again">Error during account delete. Try again.</string>
 </resources>
