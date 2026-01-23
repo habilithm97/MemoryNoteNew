@@ -115,7 +115,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             text = getString(R.string.delete_account)
             setTextColor(Color.RED)
             setBackgroundResource(android.R.color.transparent)
-            setOnClickListener { replaceFragment(DeleteAccountFragment()) }
+            setOnClickListener {
+                replaceFragment(DeleteAccountFragment())
+            }
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT

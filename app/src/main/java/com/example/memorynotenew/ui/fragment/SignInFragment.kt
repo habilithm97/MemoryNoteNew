@@ -30,13 +30,14 @@ class SignInFragment : Fragment() {
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private lateinit var progressBar: ProgressBar
 
-    // 구글 로그인 결과 처리 ActivityResultLauncher
+    // 구글 로그인 결과를 받기 위한 ActivityResultLauncher
     private val resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
         // 결과가 정상적으로 반환되었는지 확인
         if (result.resultCode == Activity.RESULT_OK) {
             // Intent에서 구글 로그인 계정을 가져오는 작업 생성
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+
             try {
                 // 구글 로그인 계정 가져오기 (실패 시 ApiException 발생)
                 val account = task.getResult(ApiException::class.java)

@@ -79,7 +79,6 @@
     <string name="delete_account">회원탈퇴</string>
     <string name="delete_account_confirm">계속하려면 [회원탈퇴]를 입력해주세요.</string>
     <string name="delete_account_action">탈퇴하기</string>
-    <string name="confirm_mismatch">확인 문구가 일치하지 않습니다.</string>
     <string name="delete_account_success">회원탈퇴에 성공했습니다.</string>
     <string name="delete_account_failed">회원탈퇴에 실패했습니다.</string>
 
@@ -95,4 +94,7 @@
     <string name="password_reset_email_sent">비밀번호 재설정 메일을 보냈습니다. 이메일을 확인해주세요.</string>
     <string name="email_recovery_google_only">일반 로그인 계정은 이메일 찾기를 지원하지 않습니다.</string>
     <string name="google_sign_in_failed">Google 로그인에 실패했습니다.</string>
+    <string name="google_delete_guide">구글 계정 재인증 후 회원탈퇴가 진행됩니다.</string>
+    <string name="confirm_blank">확인 문구를 입력해주세요.</string>
+    <string name="confirm_mismatch">확인 문구가 일치하지 않습니다.</string>
 </resources>
