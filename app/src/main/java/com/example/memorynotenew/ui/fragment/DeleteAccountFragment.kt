@@ -35,35 +35,36 @@ class DeleteAccountFragment : Fragment() {
     // 구글 로그인 재인증 결과를 받기 위한 ActivityResultLauncher
     private val resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) { // 결과가 정상적으로 반환되었는지 확인
-            // Intent에서 구글 로그인 계정을 가져오는 작업 생성
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        // 결과가 비정상 시 처리 중단
+        if (result.resultCode != Activity.RESULT_OK) return@registerForActivityResult
 
-            try {
-                // 구글 로그인 계정 가져오기 (실패 시 ApiException 발생)
-                val account = task.getResult(ApiException::class.java)
+        // Intent에서 구글 로그인 계정을 가져오는 작업 생성
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
 
-                // 구글 로그인 계정의 id 토큰으로 Firebase 인증용 Credential 생성
-                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                val user = auth.currentUser ?: return@registerForActivityResult
-                val uid = user.uid
+        try {
+            // 구글 로그인 계정 가져오기 (실패 시 ApiException 발생)
+            val account = task.getResult(ApiException::class.java)
 
-                // Credential로 Firebase 사용자 재인증
-                user.reauthenticate(credential)
-                    .addOnSuccessListener {
-                        Log.d("DeleteAccountFragment", "구글 로그인 계정 재인증 성공")
-                        proceedDeleteAccount(user, uid) // 회원탈퇴 진행
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("DeleteAccountFragment", "구글 로그인 계정 재인증 실패", e)
-                        // "Google 계정 재인증에 실패했습니다."
-                        requireContext().showToast(getString(R.string.google_reauth_failed))
-                    }
-            } catch (e: ApiException) {
-                Log.e("DeleteAccountFragment", "구글 로그인 실패", e)
-                // "Google 로그인에 실패했습니다."
-                requireContext().showToast(getString(R.string.google_sign_in_failed))
-            }
+            // 구글 로그인 계정의 id 토큰으로 Firebase 인증용 Credential 생성
+            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+            val user = auth.currentUser ?: return@registerForActivityResult
+            val uid = user.uid
+
+            // Credential로 Firebase 사용자 재인증
+            user.reauthenticate(credential)
+                .addOnSuccessListener {
+                    Log.d("DeleteAccountFragment", "구글 로그인 계정 재인증 성공")
+                    proceedDeleteAccount(user, uid) // 회원탈퇴 진행
+                }
+                .addOnFailureListener { e ->
+                    Log.e("DeleteAccountFragment", "구글 로그인 계정 재인증 실패", e)
+                    // "Google 계정 재인증에 실패했습니다."
+                    requireContext().showToast(getString(R.string.google_reauth_failed))
+                }
+        } catch (e: ApiException) {
+            Log.e("DeleteAccountFragment", "구글 로그인 실패", e)
+            // "Google 로그인에 실패했습니다."
+            requireContext().showToast(getString(R.string.google_sign_in_failed))
         }
     }
 

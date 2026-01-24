@@ -33,29 +33,29 @@ class SignInFragment : Fragment() {
     // 구글 로그인 결과를 받기 위한 ActivityResultLauncher
     private val resultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) { result ->
-        // 결과가 정상적으로 반환되었는지 확인
-        if (result.resultCode == Activity.RESULT_OK) {
-            // Intent에서 구글 로그인 계정을 가져오는 작업 생성
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        // 결과가 비정상 시 처리 중단
+        if (result.resultCode != Activity.RESULT_OK) return@registerForActivityResult
 
-            try {
-                // 구글 로그인 계정 가져오기 (실패 시 ApiException 발생)
-                val account = task.getResult(ApiException::class.java)
+        // Intent에서 구글 로그인 계정을 가져오는 작업 생성
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
 
-                val idToken = account.idToken
-                if (idToken != null) {
-                    // 구글 계정 id 토큰으로 Firebase 인증 수행
-                    firebaseAuthWithGoogle(idToken)
-                } else {
-                    Log.w("SignInFragment", "ID token is null after Google sign-in")
-                    // "Google 로그인에 실패했습니다."
-                    requireContext().showToast(getString(R.string.google_sign_in_failed))
-                }
-            } catch (e: ApiException) {
-                Log.e("SignInFragment", "Google sign in failed", e)
+        try {
+            // 구글 로그인 계정 가져오기 (실패 시 ApiException 발생)
+            val account = task.getResult(ApiException::class.java)
+
+            val idToken = account.idToken
+            if (idToken != null) {
+                // 구글 계정 id 토큰으로 Firebase 인증 수행
+                firebaseAuthWithGoogle(idToken)
+            } else {
+                Log.w("SignInFragment", "ID token is null after Google sign-in")
                 // "Google 로그인에 실패했습니다."
                 requireContext().showToast(getString(R.string.google_sign_in_failed))
             }
+        } catch (e: ApiException) {
+            Log.e("SignInFragment", "Google sign in failed", e)
+            // "Google 로그인에 실패했습니다."
+            requireContext().showToast(getString(R.string.google_sign_in_failed))
         }
     }
 
