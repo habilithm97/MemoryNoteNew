@@ -6,6 +6,7 @@
 
     <LinearLayout
         android:id="@+id/mainLinearLayout"
+        style="@style/FieldMargin"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -13,7 +14,6 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/emailLayout"
-            style="@style/FieldMargin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:endIconMode="clear_text">
@@ -27,49 +27,8 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <LinearLayout
-            android:id="@+id/subLinearLayout"
-            style="@style/FieldMargin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/tv1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/bookkmyungjo_light"
-                android:text="@string/email_verification_required"
-                android:textColor="@color/red" />
-
-            <TextView
-                android:id="@+id/tv2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="@font/bookkmyungjo_light"
-                android:text="@string/email_spam"
-                android:textColor="@color/red" />
-
-            <Button
-                android:id="@+id/btnResendEmail"
-                style="@style/SubButton1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="8dp"
-                android:gravity="center"
-                android:minHeight="0dp"
-                android:padding="0dp"
-                android:text="@string/resend" />
-
-        </LinearLayout>
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/passwordLayout"
-            style="@style/FieldMargin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -84,49 +43,20 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSignIn"
-            style="@style/MainButton"
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/btnGoogleSignIn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="@string/sign_in"
-            android:textAllCaps="false" />
+            android:layout_gravity="center"
+            android:layout_marginTop="32dp" />
 
         <TextView
-            android:id="@+id/tv"
+            style="@style/FieldMargin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="@font/bookkmyungjo_light"
-            android:gravity="center"
-            android:text="@string/email_recovery_google_only"
-            android:textColor="@color/gray"
-            android:textSize="10sp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSignUp"
-            style="@style/SubButton1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/sign_up"
-            android:textAllCaps="false" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnForgotPassword"
-            style="@style/SubButton2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/forgot_password"
-            android:textAllCaps="false" />
-
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/btnGoogleSignIn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp" />
+            android:text="@string/google_sign_in_guide" />
 
     </LinearLayout>
 
