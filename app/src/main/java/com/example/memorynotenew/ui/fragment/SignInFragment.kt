@@ -97,11 +97,13 @@ class SignInFragment : Fragment() {
 
         // 설정한 옵션으로 구글 로그인 클라이언트 생성
         val googleSignInClient = GoogleSignIn.getClient(requireContext(), googleSignInOptions)
-
-        // 구글 로그인 화면을 띄우기 위한 Intent 생성
-        val signInIntent = googleSignInClient.signInIntent
-        // 구글 로그인 액티비티 실행
-        resultLauncher.launch(signInIntent)
+        // 기존에 로그인된 계정을 제거
+        googleSignInClient.signOut().addOnCompleteListener {
+            // 구글 로그인 화면을 띄우기 위한 Intent 생성
+            val signInIntent = googleSignInClient.signInIntent
+            // 구글 로그인 액티비티 실행
+            resultLauncher.launch(signInIntent)
+        }
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
