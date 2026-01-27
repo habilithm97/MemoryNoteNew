@@ -53,7 +53,6 @@
     <string name="ok">확인</string>
     <string name="invalid_email_format">올바른 이메일 형식이 아닙니다.</string>
     <string name="sign_up_button">가입하기</string>
-    <string name="email_already_exists">이메일이 이미 존재합니다.</string>
     <string name="sign_up_failed">회원가입에 실패했습니다.</string>
     <string name="verification_email_sent">인증 메일을 보냈습니다. 이메일을 확인해주세요.</string>
     <string name="verification_email_failed">인증 메일 발송에 실패했습니다.</string>
@@ -101,4 +100,7 @@
     <string name="google_reauth_failed">Google 계정 재인증에 실패했습니다.</string>
     <string name="email_reauth_failed">이메일 재인증에 실패했습니다.</string>
     <string name="delete_account_failed_try_again">회원탈퇴 처리 중 오류가 발생했습니다. 다시 시도해주세요.</string>
+    <string name="email_already_exists">이메일이 이미 존재합니다.</string>
+
+    <string name="google_sign_in_guide">서버에 데이터를 백업하려면 로그인하세요.</string>
 </resources>

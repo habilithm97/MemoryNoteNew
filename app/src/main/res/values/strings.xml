@@ -37,7 +37,6 @@
     <string name="trash_is_empty">Trash is empty.</string>
     <string name="sign_up_button">Sign Up</string>
     <string name="fill_all_fields">Fill in all fields.</string>
-    <string name="email_already_exists">Email already exists.</string>
     <string name="sign_up_failed">Sign up failed.</string>
     <string name="dialog_delete">Delete selected memo(s)?</string>
     <string name="select_memo_to_delete">Select memo(s) to delete.</string>
@@ -100,4 +99,7 @@
     <string name="google_reauth_failed">Google account re-auth failed.</string>
     <string name="email_reauth_failed">Email re-auth failed.</string>
     <string name="delete_account_failed_try_again">Error during account delete. Try again.</string>
+    <string name="email_already_exists">Email already exists.</string>
+
+    <string name="google_sign_in_guide">Sign in to back up data to the server.</string>
 </resources>
