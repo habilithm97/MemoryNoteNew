@@ -69,7 +69,7 @@ class SignInFragment : Fragment() {
 
         with(binding) {
             // 소프트 키보드 높이 만큼 mainLinearLayout 하단 패딩 적용
-            ViewCompat.setOnApplyWindowInsetsListener(mainLinearLayout) { linearLayout, insets ->
+            ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { linearLayout, insets ->
                 val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
                 linearLayout.updatePadding(bottom = imeInsets.bottom)
                 insets
