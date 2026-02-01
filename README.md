@@ -5,4 +5,48 @@
 <img src="https://github.com/user-attachments/assets/372c4c21-3e6d-410e-a87d-68ab524a04b0" alt="MemoryNote 스크린샷 2" width="150"/>
 <img src="https://github.com/user-attachments/assets/599bd553-5a6d-408f-9a38-cc6791c5ba77" alt="MemoryNote 스크린샷 3" width="150"/>
 
+## 📂 프로젝트 구조 (com.example.memorynotenew)
+- **adapter**
+  - MemoAdapter
+  - TrashAdapter
+- **common**
+  - Constants
+  - LockPasswordPurpose
+  - LockPasswordState
+  - LockPasswordString
+  - PopupAction
+- **repository**
+  - FirestoreRepository
+  - MemoRepository
+- **room**
+  - **dao**
+    - MemoDao
+    - TrashDao
+  - **database**
+    - MemoDatabase
+  - **entity**
+    - Memo
+    - Trash
+- **security**
+  - EncryptionManager
+  - LockPasswordManager
+- **ui**
+  - **activity**
+    - MainActivity
+    - SettingsActivity
+  - **fragment**
+    - DeleteAccountFragment
+    - ForgotPasswordFragment
+    - ListFragment
+    - LockPasswordFragment
+    - MemoFragment
+    - SettingsFragment
+    - SignInFragment
+    - TrashFragment
+- **utils**
+  - ToastUtil
+  - VibrateUtil
+- **viewmodel**
+  - MainViewModel
+
 폰트 출처 : https://noonnu.cc/font_page/1084
