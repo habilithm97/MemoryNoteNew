@@ -214,6 +214,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 if (serverMemos.isEmpty()) {
                     // "백업된 메모가 없습니다."
                     requireContext().showToast(getString(R.string.backup_empty))
+                    loadPref?.isEnabled = true
                 } else {
                     showLoadDialog()
                 }
