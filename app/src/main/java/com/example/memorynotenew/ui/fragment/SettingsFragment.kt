@@ -97,7 +97,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         loadPref = findPreference<Preference?>(LOAD_PREF)?.apply {
             setOnPreferenceClickListener {
                 it.isEnabled = false
-                loadRequest()
+                showLoadDialog()
                 true
             }
         }
@@ -192,34 +192,28 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun backupRequest() {
-        // 현재 메모 리스트에서 하나라도 잠겼으면 true 반환
-        val hasLockedMemo = mainViewModel.memos.any { it.isLocked }
-
-        if (hasLockedMemo) {
-            val lockPasswordFragment = LockPasswordFragment.newInstance(LockPasswordPurpose.BACKUP)
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container, lockPasswordFragment)
-                .commit()
-        } else {
-            mainViewModel.backupMemos()
-        }
-    }
-
-    private fun loadRequest() {
-        // 프래그먼트에서 안전하게 코루틴 실행
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val serverMemos = mainViewModel.firestoreRepository.load()
+                val memos = mainViewModel.memos
 
-                if (serverMemos.isEmpty()) {
-                    // "백업된 메모가 없습니다."
-                    requireContext().showToast(getString(R.string.backup_empty))
-                    loadPref?.isEnabled = true
+                if (memos.isEmpty()) {
+                    // "백업할 메모가 없습니다."
+                    requireContext().showToast(getString(R.string.backup_empty_local))
+                    return@launch
+                }
+                // 현재 메모 리스트에서 하나라도 잠겼으면 true 반환
+                val hasLockedMemo = mainViewModel.memos.any { it.isLocked }
+
+                if (hasLockedMemo) {
+                    val lockPasswordFragment = LockPasswordFragment.newInstance(LockPasswordPurpose.BACKUP)
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.container, lockPasswordFragment)
+                        .commit()
                 } else {
-                    showLoadDialog()
+                    mainViewModel.backupMemos()
                 }
             } catch (e: Exception) {
-                Log.e("SettingsFragment", "An error occurred while checking memos.", e)
+                Log.e("SettingsFragment", "백업 중 오류 발생", e)
             }
         }
     }
@@ -232,13 +226,31 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 loadPref?.isEnabled = true
             }
             .setPositiveButton(getString(R.string.ok)) { _, _ ->
-                mainViewModel.loadMemos()
+                loadRequest()
                 loadPref?.isEnabled = true
             }
             .setOnCancelListener {
                 loadPref?.isEnabled = true
             }
             .show()
+    }
+
+    private fun loadRequest() {
+        // 프래그먼트에서 안전하게 코루틴 실행
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val serverMemos = mainViewModel.firestoreRepository.load()
+
+                if (serverMemos.isEmpty()) {
+                    // "백업된 메모가 없습니다."
+                    requireContext().showToast(getString(R.string.backup_empty_server))
+                } else {
+                    mainViewModel.loadMemos()
+                }
+            } catch (e: Exception) {
+                Log.e("SettingsFragment", "불러오기 중 오류 발생", e)
+            }
+        }
     }
 
     private fun showSignOutDialog() {
