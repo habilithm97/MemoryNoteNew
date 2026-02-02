@@ -8,6 +8,31 @@
 
 ## ✅ 주요 기능
 ### 📝 메모 작성 및 관리
+```kotlin
+// DB 초기화를 위한 Application Context 사용
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val memoRepository = MemoRepository(MemoDatabase.getInstance(application).memoDao())
+
+    // Flow → LiveData (UI 관찰)
+    val getAllMemos: LiveData<List<Memo>> = memoRepository.getAllMemos().asLiveData()
+
+    // viewModelScope에서 IO 스레드로 suspend 작업 실행
+    private fun <T> launchIO(block: suspend () -> T) {
+        // 지금 실행하지 않고 나중에 IO 코루틴 안에서 실행할 코드 블록
+        viewModelScope.launch(Dispatchers.IO) { block() }
+    }
+    fun insertMemo(memo: Memo) = launchIO {
+        memoRepository.insertMemo(memo)
+    }
+    fun updateMemo(memo: Memo) = launchIO {
+        memoRepository.updateMemo(memo)
+    }
+    fun deleteMemo(memo: Memo) = launchIO {
+        memoRepository.deleteMemo(memo)
+    }
+}
+```
 - 메모 작성, 수정, 삭제 기능 제공
 - Room Database를 통한 로컬 메모 저장
 - ViewModel로 UI와 데이터 로직 분리
@@ -15,7 +40,44 @@
 - 잠긴 메모는 잠금 비밀번호 입력 후 접근 가능
 - 잠금 비밀번호 상태를 enum으로 관리하여 흐름 명확화
 ### 🔍 메모 검색
+```kotlin
+// Fragment -> Adapter로 검색어 전달
+private fun setupSearchView() {
+    binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        // 검색어 입력 시 호출
+        override fun onQueryTextChange(newText: String?): Boolean {
+            memoAdapter.filterList(newText.orEmpty()) // null이면 "" 처리
+            return true
+        }
+        override fun onQueryTextSubmit(query: String?): Boolean = false
+    })
+}
+```
 - SearchView 기반 메모 검색 기능
+- UI에서는 검색어 전달만 담당 (필터 로직 분리)
+```kotlin
+// Adapter 필터링 로직
+
+private var memos: List<Memo> = emptyList() // 원본 리스트 유지
+
+fun submitMemos(memos: List<Memo>) {
+    this.memos = memos // 원본 리스트 보관
+    submitList(memos)
+}
+
+fun filterList(query: String, onFilterComplete: () -> Unit) {
+        val filteredList = if (query.isEmpty()) {
+            memos
+        } else { // 공백도 검색 가능
+            memos.filter {
+                it.content.contains(query, true) // 대소문자 구분 없이 검색
+            }
+        }
+        submitList(filteredList) {
+            onFilterComplete() // 필터링 후속 작업 (자동 스크롤)
+        }
+    }
+```
 - Adapter 필터링으로 빠른 목록 갱신
 ### 🗑️ 휴지통
 - 삭제된 메모를 휴지통으로 이동
