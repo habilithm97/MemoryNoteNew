@@ -1,13 +1,19 @@
 # [기억노트 - 심플한 메모장]
 ## 딱 필요한 기능만 담은 가볍고 직관적인 메모장 앱
 #### 👉 Google Play : https://play.google.com/store/apps/details?id=com.habilithm.memorynote&pcampaignid=web_share
+
+(휴지통, 로그인, 백업 및 불러오기 등 추후에 업데이트 예정)
+
 <img src="https://github.com/user-attachments/assets/7ffad1e4-3c2e-413a-9fbb-292b78241c21" alt="MemoryNote 스크린샷 1" width="150"/>
 <img src="https://github.com/user-attachments/assets/67bee1fd-1158-43e5-9118-e9ca20d4c681" alt="MemoryNote 스크린샷 4" width="150"/>
 <img src="https://github.com/user-attachments/assets/372c4c21-3e6d-410e-a87d-68ab524a04b0" alt="MemoryNote 스크린샷 2" width="150"/>
 <img src="https://github.com/user-attachments/assets/599bd553-5a6d-408f-9a38-cc6791c5ba77" alt="MemoryNote 스크린샷 3" width="150"/>
 
-## ✅ 주요 기능
+## ✅ 주요 기능 (Snippet)
 ### 📝 메모 작성 및 관리
+- 메모 작성, 수정, 삭제 기능 제공
+- Room Database를 통한 로컬 메모 저장
+- ViewModel로 UI와 데이터 로직 분리
 ```kotlin
 // DB 초기화를 위한 Application Context 사용
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -33,13 +39,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 }
 ```
-- 메모 작성, 수정, 삭제 기능 제공
-- Room Database를 통한 로컬 메모 저장
-- ViewModel로 UI와 데이터 로직 분리
+<br>
+
 ### 🔒 메모 잠금
 - 잠긴 메모는 잠금 비밀번호 입력 후 접근 가능
-- 잠금 비밀번호 상태를 enum으로 관리하여 흐름 명확화
+- 잠금 상태를 enum으로 관리하여 흐름 명확화
+<br>
+
 ### 🔍 메모 검색
+- SearchView 기반 메모 검색 기능
+- UI에서는 검색어 전달만 담당 (필터 로직 분리)
 ```kotlin
 // Fragment -> Adapter로 검색어 전달
 private fun setupSearchView() {
@@ -53,8 +62,9 @@ private fun setupSearchView() {
     })
 }
 ```
-- SearchView 기반 메모 검색 기능
-- UI에서는 검색어 전달만 담당 (필터 로직 분리)
+<br>
+
+- Adapter 필터링으로 빠른 목록 갱신
 ```kotlin
 // Adapter 필터링 로직
 
@@ -78,14 +88,151 @@ fun filterList(query: String, onFilterComplete: () -> Unit) {
         }
     }
 ```
-- Adapter 필터링으로 빠른 목록 갱신
+<br>
+
 ### 🗑️ 휴지통
+- 별도의 Room Entity로 데이터 안정성 확보
+```kotlin
+// DB 테이블에 매핑되는 데이터 클래스
+@Parcelize // Parcelable 자동 구현
+@Entity
+data class Trash(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val content: String,
+    val deletedAt: Long // 삭제된 시간
+) : Parcelable // 컴포넌트 간 데이터 전달을 위한 직렬화 (객체 -> 바이트 형태)
+```
+<br>
+
 - 삭제된 메모를 휴지통으로 이동
-- 복원 및 완전 삭제 기능 제공
-- Room의 별도 Entity로 데이터 안정성 확보
-### 🔐 로그인 / 백업 및 불러오기
+```kotlin
+fun moveMemoToTrash(memo: Memo) = launchIO {
+        val trash = Trash(
+            content = memo.content,
+            deletedAt = System.currentTimeMillis()
+        )
+        with(memoRepository) {
+            insertTrash(trash) // 휴지통에 추가
+            deleteMemo(memo) // 메모 삭제
+        }
+    }
+```
+<br>
+
+- 휴지통에서 메모 복원
+```kotlin
+fun restoreMemo(trash: Trash) = launchIO {
+        val memo = Memo(
+            id = 0,
+            content = trash.content,
+            date = System.currentTimeMillis(),
+            isLocked = false
+        )
+        with(memoRepository) {
+            insertMemo(memo) // 메모 추가
+            deleteTrash(trash) // 휴지통에서 삭제
+        }
+    }
+```
+- 추가적으로 휴지통에서 메모 삭제, 휴지통 비우기, 30일 이후 자동 삭제 기능 지원
+<br>
+
+### 🔐 로그인 / 인증
 - Firebase Authentication 기반 Google 로그인 기능
-- 인증된 사용자만 메모를 서버에 안전하게 보관 가능
+- 사용자는 구글 계정으로 로그인
+```kotlin
+private fun firebaseAuthWithGoogle(idToken: String) {
+        showProgress(true)
+
+        // id 토큰을 사용하여 Firebase 인증용 Credential 객체 생성
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+
+        // Firebase 인증 시도 (구글 계정과 연결)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                showProgress(false)
+
+                if (task.isSuccessful) { // 로그인 성공
+                    requireActivity().supportFragmentManager.popBackStack()
+                } else { // 로그인 실패
+                    Log.e("SignInFragment", "Firebase 인증 실패", task.exception)
+                    // "Google 로그인에 실패했습니다."
+                    requireContext().showToast(getString(R.string.google_sign_in_failed))
+                }
+            }
+    }
+```
+<br>
+
+### ↕️ 메모 백업 및 불러오기
+- 로그인한 사용자 UID별로 Firestore에 메모 저장
+- Batch를 사용하여 여러 메모를 한 번에 저장
+```kotlin
+suspend fun backup(memos: List<Memo>) {
+        val uid = auth.currentUser?.uid ?: return
+
+        val memoCollection = db.collection(USERS)
+            .document(uid)
+            .collection(MEMO)
+
+        val batch = db.batch()
+
+        memos.forEach {
+            batch.set(memoCollection.document(it.id.toString()), it)
+        }
+        batch.commit().await()
+}
+```
+<br>
+
+- 서버에서 백업된 데이터를 가져와 로컬 DB에 저장 가능
+```kotlin
+suspend fun load(): List<Memo> {
+        val uid = auth.currentUser?.uid ?: return emptyList()
+
+        val snapshot = db.collection(USERS)
+            .document(uid)
+            .collection(MEMO)
+            .get().await()
+
+        return snapshot.documents.mapNotNull {
+            val content = it.getString(CONTENT) ?: return@mapNotNull null
+            val date = it.getLong(DATE) ?: return@mapNotNull null
+            val isLocked = it.getBoolean(IS_LOCKED) ?: false
+            val iv = it.getString(IV) ?: return@mapNotNull null
+
+            Memo(
+                id = 0,
+                content = content,
+                date = date,
+                isLocked = isLocked,
+                iv = iv
+            )
+        }
+}
+```
+<br>
+
+### AES/GCM 암호화
+- Android Keystore 안에서 AES 키를 생성 및 관리
+- 각 메모마다 랜덤 IV 생성 -> 안전한 암호화 보장
+```kotlin
+// 암호화
+fun encrypt(plainText: String): Pair<ByteArray, ByteArray> {
+    val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+    val secretKey = getOrCreateKey()
+    cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+    return Pair(cipher.doFinal(plainText.toByteArray()), cipher.iv)
+}
+
+// 복호화
+fun decrypt(cipherText: ByteArray, iv: ByteArray): String {
+    val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+    val secretKey = getOrCreateKey()
+    cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, iv))
+    return String(cipher.doFinal(cipherText))
+}
+```
 
 ## 📂 프로젝트 구조 (com.example.memorynotenew)
 - **adapter**
