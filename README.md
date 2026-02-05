@@ -11,9 +11,9 @@
 
 ## ✅ 주요 기능 (Snippet)
 ### 📝 메모 작성 및 관리
-- 메모 작성, 수정, 삭제 기능 제공
+- 메모 작성, 수정, 삭제 기능 제공 (CRUD)
 - Room Database를 통한 로컬 메모 저장
-- ViewModel로 UI와 데이터 로직 분리
+- MVVM 패턴을 적용하여 ViewModel에서 데이터를 관리하고, UI는 변경 사항만 관찰하도록 구성
 ```kotlin
 // DB 초기화를 위한 Application Context 사용
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -23,9 +23,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // Flow → LiveData (UI 관찰)
     val getAllMemos: LiveData<List<Memo>> = memoRepository.getAllMemos().asLiveData()
 
-    // viewModelScope에서 IO 스레드로 suspend 작업 실행
+    // IO 스레드에서 DB 작업을 실행하기 위한 공통 메서드
     private fun <T> launchIO(block: suspend () -> T) {
-        // 지금 실행하지 않고 나중에 IO 코루틴 안에서 실행할 코드 블록
         viewModelScope.launch(Dispatchers.IO) { block() }
     }
     fun insertMemo(memo: Memo) = launchIO {
@@ -42,8 +41,48 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 <br>
 
 ### 🔒 메모 잠금
-- 잠긴 메모는 잠금 비밀번호 입력 후 접근 가능
-- 잠금 상태를 enum으로 관리하여 흐름 명확화
+- 메모 잠금 및 잠금 해제 기능 제공
+- 잠긴 메모는 비밀번호 인증 후 열기 및 삭제 가능
+- 잠금 상태에 따른 화면 이동 로직 분기 처리
+```kotlin
+memoAdapter = MemoAdapter(
+    // 메모 클릭
+    onItemClick = { memo ->
+        val targetFragment = if (memo.isLocked) { // 잠긴 메모 → 비밀번호 인증 후 열기
+            PasswordFragment.newInstance(PasswordPurpose.OPEN, memo)
+        } else { // 잠기지 않은 메모 → 바로 열기
+            MemoFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(MEMO, memo)
+                }
+            }
+        }
+        replaceFragment(targetFragment)
+    },
+    // 메모 롱클릭 시 팝업 메뉴 동작 처리 (삭제 및 잠금)
+    onItemLongClick = { memo, popupAction ->
+        when (popupAction) {
+            PopupAction.DELETE -> { // 삭제 동작
+                if (memo.isLocked) { // 잠긴 메모 -> 비밀번호 인증 후 삭제
+                    replaceFragment(PasswordFragment.newInstance(PasswordPurpose.DELETE, memo))
+                } else { // 잠기지 않은 메모 -> 바로 삭제
+                    mainViewModel.moveMemoToTrash(memo)
+                }
+            }
+            PopupAction.LOCK -> { // 잠금 및 잠금 해제 동작
+                val storedPassword = PasswordManager.getPassword(requireContext())
+
+                if (storedPassword.isNullOrEmpty()) { // 비밀번호 존재X -> 안내 메시지 표시
+                    requireContext().showToast(getString(R.string.set_password_first))
+                } else { // 비밀번호 존재 -> 비밀번호 인증 후 처리
+                    replaceFragment(PasswordFragment.newInstance(PasswordPurpose.LOCK, memo)
+                    )
+                }
+            }
+        }
+    }
+)
+```
 <br>
 
 ### 🔍 메모 검색
