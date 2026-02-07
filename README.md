@@ -40,7 +40,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 ```
 <br>
 
-### 🔒 메모 잠금
+### 🔐 메모 잠금 및 잠금 해제
 - 메모 잠금 및 잠금 해제 기능 제공
 - 잠긴 메모는 비밀번호 인증 후 열기 및 삭제 가능
 - 잠금 상태에 따른 화면 이동 로직 분기 처리
@@ -129,26 +129,32 @@ fun filterList(query: String, onFilterComplete: () -> Unit) {
         submitList(filteredList) {
             onFilterComplete() // 필터링 후속 작업 (자동 스크롤)
         }
-    }
+}
 ```
 <br>
 
 ### 🗑️ 휴지통
-- 별도의 Room Entity로 데이터 안정성 확보
+- 별도의 Room Entity로 데이터 안정성 확보 가능
+
+  -> 원본 데이터와 분리, 삭제/복원 과정에서 데이터 안정성 확보
+- Fragment 간 데이터 전달을 위해 Parcelable 사용
 ```kotlin
-// DB 테이블에 매핑되는 데이터 클래스
-@Parcelize // Parcelable 자동 구현
+// DB 테이블에 매핑되는 Entity
+@Parcelize // Parcelable 보일러플레이트 제거
 @Entity
 data class Trash(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val content: String,
-    val deletedAt: Long // 삭제된 시간
-) : Parcelable // 컴포넌트 간 데이터 전달을 위한 직렬화 (객체 -> 바이트 형태)
+    val deletedAt: Long // 삭제 시점
+) : Parcelable
 ```
 <br>
 
 - 삭제된 메모를 휴지통으로 이동
+- 삭제 시 원본 메모와 분리된 Trash Entity로 이동
 ```kotlin
+MainViewModel.kt
+
 fun moveMemoToTrash(memo: Memo) = launchIO {
         val trash = Trash(
             content = memo.content,
@@ -158,12 +164,14 @@ fun moveMemoToTrash(memo: Memo) = launchIO {
             insertTrash(trash) // 휴지통에 추가
             deleteMemo(memo) // 메모 삭제
         }
-    }
+}
 ```
 <br>
 
 - 휴지통에서 메모 복원
 ```kotlin
+MainViewModel.kt
+
 fun restoreMemo(trash: Trash) = launchIO {
         val memo = Memo(
             id = 0,
@@ -175,42 +183,42 @@ fun restoreMemo(trash: Trash) = launchIO {
             insertMemo(memo) // 메모 추가
             deleteTrash(trash) // 휴지통에서 삭제
         }
-    }
+}
 ```
-- 추가적으로 휴지통에서 메모 삭제, 휴지통 비우기, 30일 이후 자동 삭제 기능 지원
+- 휴지통에서는 개별 메모 삭제, 전체 비우기, 30일 이후 자동 삭제 기능을 제공하여 저장 공간을 효율적으로 관리
 <br>
 
 ### 🔐 로그인 / 인증
-- Firebase Authentication 기반 Google 로그인 기능
+- Firebase Authentication 기반 Google 로그인 기능 제공
 - 사용자는 구글 계정으로 로그인
 ```kotlin
-private fun firebaseAuthWithGoogle(idToken: String) {
-        showProgress(true)
+SignInFragment.kt
 
-        // id 토큰을 사용하여 Firebase 인증용 Credential 객체 생성
+private fun firebaseAuthWithGoogle(idToken: String) {
+        // Google ID Token으로 Firebase 인증 Credential 생성
         val credential = GoogleAuthProvider.getCredential(idToken, null)
 
-        // Firebase 인증 시도 (구글 계정과 연결)
+        // Firebase 인증 시도
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
-                showProgress(false)
-
                 if (task.isSuccessful) { // 로그인 성공
+                    // 인증 완료 후 이전 화면으로 복귀
                     requireActivity().supportFragmentManager.popBackStack()
                 } else { // 로그인 실패
                     Log.e("SignInFragment", "Firebase 인증 실패", task.exception)
-                    // "Google 로그인에 실패했습니다."
-                    requireContext().showToast(getString(R.string.google_sign_in_failed))
                 }
             }
-    }
+}
 ```
 <br>
 
 ### ↕️ 메모 백업 및 불러오기
-- 로그인한 사용자 UID별로 Firestore에 메모 저장
-- Batch를 사용하여 여러 메모를 한 번에 저장
+- 로그인한 사용자 UID별로 Firestore에 메모 백업 기능 제공
+- Batch를 사용하여 여러 메모를 한 번에 처리
+- Firestore 구조 : /users/{uid}/memo/{memoId}
 ```kotlin
+FirestoreRepository.kt
+
 suspend fun backup(memos: List<Memo>) {
         val uid = auth.currentUser?.uid ?: return
 
@@ -228,8 +236,11 @@ suspend fun backup(memos: List<Memo>) {
 ```
 <br>
 
-- 서버에서 백업된 데이터를 가져와 로컬 DB에 저장 가능
+- 서버 데이터를 로컬 DB로 복원 기능 제공
+- 복원 시 로컬 DB에서 autoGenerate 되도록 id를 0으로 초기화
 ```kotlin
+FirestoreRepository.kt
+
 suspend fun load(): List<Memo> {
         val uid = auth.currentUser?.uid ?: return emptyList()
 
@@ -256,24 +267,30 @@ suspend fun load(): List<Memo> {
 ```
 <br>
 
-### AES/GCM 암호화
+### 🔐 AES/GCM 문자열 암호화 및 복호화
 - Android Keystore 안에서 AES 키를 생성 및 관리
-- 각 메모마다 랜덤 IV 생성 -> 안전한 암호화 보장
+- 메모별 랜덤 IV로 동일한 내용도 매번 다른 암호문 생성
+- GCM 모드 사용 -> 데이터 무결성 (변조 검출) 보
 ```kotlin
+EncryptionManager.kt
+
 // 암호화
 fun encrypt(plainText: String): Pair<ByteArray, ByteArray> {
-    val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-    val secretKey = getOrCreateKey()
-    cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-    return Pair(cipher.doFinal(plainText.toByteArray()), cipher.iv)
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        val secretKey = getOrCreateKey()
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+        val iv = cipher.iv // 랜덤 IV (복호화 시 필요)
+        val cipherText = cipher.doFinal(plainText.toByteArray(Charsets.UTF_8))
+        return Pair(cipherText, iv)
 }
-
 // 복호화
 fun decrypt(cipherText: ByteArray, iv: ByteArray): String {
-    val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-    val secretKey = getOrCreateKey()
-    cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, iv))
-    return String(cipher.doFinal(cipherText))
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        val secretKey = getOrCreateKey()
+        val spec = GCMParameterSpec(128, iv)
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, spec)
+        val plainBytes = cipher.doFinal(cipherText)
+        return String(plainBytes, Charsets.UTF_8)
 }
 ```
 
