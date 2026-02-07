@@ -45,51 +45,55 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 - 잠긴 메모는 비밀번호 인증 후 열기 및 삭제 가능
 - 잠금 상태에 따른 화면 이동 로직 분기 처리
 ```kotlin
-memoAdapter = MemoAdapter(
-    // 메모 클릭
-    onItemClick = { memo ->
-        val targetFragment = if (memo.isLocked) { // 잠긴 메모 → 비밀번호 인증 후 열기
-            PasswordFragment.newInstance(PasswordPurpose.OPEN, memo)
-        } else { // 잠기지 않은 메모 → 바로 열기
-            MemoFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(MEMO, memo)
-                }
-            }
-        }
-        replaceFragment(targetFragment)
-    },
-    // 메모 롱클릭 시 팝업 메뉴 동작 처리 (삭제 및 잠금)
-    onItemLongClick = { memo, popupAction ->
-        when (popupAction) {
-            PopupAction.DELETE -> { // 삭제 동작
-                if (memo.isLocked) { // 잠긴 메모 -> 비밀번호 인증 후 삭제
-                    replaceFragment(PasswordFragment.newInstance(PasswordPurpose.DELETE, memo))
-                } else { // 잠기지 않은 메모 -> 바로 삭제
-                    mainViewModel.moveMemoToTrash(memo)
-                }
-            }
-            PopupAction.LOCK -> { // 잠금 및 잠금 해제 동작
-                val storedPassword = PasswordManager.getPassword(requireContext())
+ListFragment.kt
 
-                if (storedPassword.isNullOrEmpty()) { // 비밀번호 존재X -> 안내 메시지 표시
-                    requireContext().showToast(getString(R.string.set_password_first))
-                } else { // 비밀번호 존재 -> 비밀번호 인증 후 처리
-                    replaceFragment(PasswordFragment.newInstance(PasswordPurpose.LOCK, memo)
-                    )
+private fun setupAdapter() {
+    memoAdapter = MemoAdapter(
+        // 메모 클릭
+        onItemClick = { memo ->
+            val targetFragment = if (memo.isLocked) { // 잠긴 메모 → 비밀번호 인증 후 열기
+                PasswordFragment.newInstance(PasswordPurpose.OPEN, memo)
+            } else { // 잠기지 않은 메모 → 바로 열기
+                MemoFragment().apply {
+                    arguments = Bundle().apply {
+                        putParcelable(MEMO, memo)
+                    }
+                }
+            }
+            replaceFragment(targetFragment)
+        },
+        // 메모 롱클릭 시 팝업 메뉴 동작 처리 (삭제 및 잠금)
+        onItemLongClick = { memo, popupAction ->
+            when (popupAction) {
+                PopupAction.DELETE -> { // 삭제 동작
+                    if (memo.isLocked) { // 잠긴 메모 -> 비밀번호 인증 후 삭제
+                        replaceFragment(PasswordFragment.newInstance(PasswordPurpose.DELETE, memo))
+                    } else { // 잠기지 않은 메모 -> 바로 삭제
+                        mainViewModel.moveMemoToTrash(memo)
+                    }
+                }
+                PopupAction.LOCK -> { // 잠금 및 잠금 해제 동작
+                    val storedPassword = PasswordManager.getPassword(requireContext())
+
+                    if (storedPassword.isNullOrEmpty()) { // 비밀번호 존재X -> 안내 메시지 표시
+                        requireContext().showToast(getString(R.string.set_password_first))
+                    } else { // 비밀번호 존재 -> 비밀번호 인증 후 처리
+                        replaceFragment(PasswordFragment.newInstance(PasswordPurpose.LOCK, memo))
+                    }
                 }
             }
         }
-    }
-)
+    )
+}
 ```
 <br>
 
 ### 🔍 메모 검색
-- SearchView 기반 메모 검색 기능
+- SearchView 기반 메모 검색 기능 제공
 - UI에서는 검색어 전달만 담당 (필터 로직 분리)
 ```kotlin
-// Fragment -> Adapter로 검색어 전달
+ListFragment.kt
+
 private fun setupSearchView() {
     binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
         // 검색어 입력 시 호출
@@ -105,7 +109,7 @@ private fun setupSearchView() {
 
 - Adapter 필터링으로 빠른 목록 갱신
 ```kotlin
-// Adapter 필터링 로직
+MemoAdapter.kt
 
 private var memos: List<Memo> = emptyList() // 원본 리스트 유지
 
