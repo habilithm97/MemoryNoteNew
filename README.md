@@ -9,6 +9,16 @@
 <img src="https://github.com/user-attachments/assets/372c4c21-3e6d-410e-a87d-68ab524a04b0" alt="MemoryNote 스크린샷 2" width="150"/>
 <img src="https://github.com/user-attachments/assets/599bd553-5a6d-408f-9a38-cc6791c5ba77" alt="MemoryNote 스크린샷 3" width="150"/>
 
+## 🛠️ 기술 스택
+- Language: Kotlin, XML
+- Architecture: MVVM, Repository
+- Jetpack : Lifecycle, LiveData, Room, ViewModel, Fragment, Activity,
+
+  View binding, Preference, CardView, RecyclerView
+- Asynchronous : Coroutine
+- Backend / BaaS : Firebase (Authentication, Firestore)
+- Security: Keystore, AES/GCM, Encryption
+
 ## ✅ 주요 기능 (Snippet)
 ### 📝 메모 작성 및 관리
 - 메모 작성, 수정, 삭제 기능 제공 (CRUD)
@@ -338,5 +348,5 @@ fun decrypt(cipherText: ByteArray, iv: ByteArray): String {
 - **viewmodel**
   - MainViewModel
 
-## Credits
-Font : https://noonnu.cc/font_page/1084
+## 출처
+폰트 : https://noonnu.cc/font_page/1084
