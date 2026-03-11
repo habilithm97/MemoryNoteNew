@@ -10,14 +10,35 @@
 <img src="https://github.com/user-attachments/assets/599bd553-5a6d-408f-9a38-cc6791c5ba77" alt="MemoryNote 스크린샷 3" width="150"/>
 
 ## 🛠️ 기술 스택
-- Language: Kotlin, XML
-- Architecture: MVVM, Repository
-- Jetpack : Lifecycle, LiveData, Room, ViewModel, Fragment, Activity,
+**Language**
+- Kotlin
+- XML (Extensible Markup Language)
 
-  View binding, Preference, CardView, RecyclerView
-- Asynchronous : Coroutine
-- Backend / BaaS : Firebase (Authentication, Firestore)
-- Security: Keystore, AES/GCM, Encryption
+**Architecture**
+- MVVM (Model–View–ViewModel)
+- Repository Pattern
+  
+**Android Jetpack**
+- ViewModel
+- LiveData
+- Lifecycle
+- Room Database
+- Fragment
+- RecyclerView
+- View Binding
+- Preference
+
+**Asynchronous Programming**
+- Kotlin Coroutines
+
+**Backend / BaaS**
+- Firebase Authentication
+- Cloud Firestore
+
+**Security**
+- Android Keystore System
+- AES (Advanced Encryption Standard) / GCM (Galois/Counter Mode)
+- Data Encryption
 
 ## ✅ 주요 기능 (Snippet)
 ### 📝 메모 작성 및 관리
