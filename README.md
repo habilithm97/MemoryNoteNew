@@ -40,7 +40,37 @@
 - AES (Advanced Encryption Standard) / GCM (Galois/Counter Mode)
 - Data Encryption
 
-## ✅ 주요 기능 (Snippet)
+## ✅ 주요 기능 및 코드(Snipet)
+- 메모 작성 / 수정 / 삭제 (CRUD)
+- 메모 잠금 및 비밀번호 인증
+- SearchView 기반 메모 검색
+- 휴지통 기능 (복원 및 자동 삭제)
+- Google 로그인 (Firebase Auth)
+- Firestore 메모 백업 및 복원
+- AES/GCM 기반 메모 암호화
+
+### MVVM Architecture
+Room + Repository + ViewModel 구조로 UI와 데이터를 분리
+```kotlin
+// ViewModel - UI와 데이터를 연결
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+    private val memoRepository = MemoRepository(
+        MemoDatabase.getInstance(application).memoDao(),
+        MemoDatabase.getInstance(application).trashDao()
+    )
+    // Room Flow → LiveData 변환 (UI에서 관찰)
+    val getAllMemos: LiveData<List<Memo>> = memoRepository.getAllMemos().asLiveData()
+
+    // Coroutine(viewModelScope)으로 비동기 DB 작업 처리
+    fun insertMemo(memo: Memo) = viewModelScope.launch(Dispatchers.IO) {
+        memoRepository.insertMemo(memo)
+    }
+}
+```
+
+
+
+
 ### 📝 메모 작성 및 관리
 - 메모 작성, 수정, 삭제 기능 제공 (CRUD)
 - Room Database를 통한 로컬 메모 저장
