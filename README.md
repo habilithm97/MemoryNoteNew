@@ -124,48 +124,50 @@ fun encrypt(plainText: String): Pair<ByteArray, ByteArray> {
 }
 ```
 ## 📂 프로젝트 구조
-- **adapter**
-  - MemoAdapter
-  - TrashAdapter
-- **common**
-  - Constants
-  - LockPasswordPurpose
-  - LockPasswordState
-  - LockPasswordString
-  - PopupAction
-- **repository**
-  - FirestoreRepository
-  - MemoRepository
-- **room**
-  - **dao**
-    - MemoDao
-    - TrashDao
-  - **database**
-    - MemoDatabase
-  - **entity**
-    - Memo
-    - Trash
-- **security**
-  - EncryptionManager
-  - LockPasswordManager
-- **ui**
-  - **activity**
-    - MainActivity
-    - SettingsActivity
-  - **fragment**
-    - DeleteAccountFragment
-    - ForgotPasswordFragment
-    - ListFragment
-    - LockPasswordFragment
-    - MemoFragment
-    - SettingsFragment
-    - SignInFragment
-    - TrashFragment
-- **utils**
-  - ToastUtil
-  - VibrateUtil
-- **viewmodel**
-  - MainViewModel
-
+```text
+app
+ ┣ adapter
+ ┃ ┣ MemoAdapter.kt
+ ┃ ┗ TrashAdapter.kt
+ ┣ common
+ ┃ ┣ Constants.kt
+ ┃ ┣ LockPasswordPurpose.kt
+ ┃ ┣ LockPasswordState.kt
+ ┃ ┣ LockPasswordString.kt
+ ┃ ┗ PopupAction.kt
+ ┣ repository
+ ┃ ┣ FirestoreRepository.kt
+ ┃ ┗ MemoRepository.kt
+ ┣ room
+ ┃ ┣ dao
+ ┃ ┃ ┣ MemoDao.kt
+ ┃ ┃ ┗ TrashDao.kt
+ ┃ ┣ database
+ ┃ ┃ ┗ MemoDatabase.kt
+ ┃ ┗ entity
+ ┃   ┣ Memo.kt
+ ┃   ┗ Trash.kt
+ ┣ security
+ ┃ ┣ EncryptionManager.kt
+ ┃ ┗ LockPasswordManager.kt
+ ┣ ui
+ ┃ ┣ activity
+ ┃ ┃ ┣ MainActivity.kt
+ ┃ ┃ ┗ SettingsActivity.kt
+ ┃ ┗ fragment
+ ┃   ┣ DeleteAccountFragment.kt
+ ┃   ┣ ForgotPasswordFragment.kt
+ ┃   ┣ ListFragment.kt
+ ┃   ┣ LockPasswordFragment.kt
+ ┃   ┣ MemoFragment.kt
+ ┃   ┣ SettingsFragment.kt
+ ┃   ┣ SignInFragment.kt
+ ┃   ┗ TrashFragment.kt
+ ┣ utils
+ ┃ ┣ ToastUtil.kt
+ ┃ ┗ VibrateUtil.kt
+ ┗ viewmodel
+   ┗ MainViewModel.kt
+```
 ## 출처
 폰트 : https://noonnu.cc/font_page/1084
