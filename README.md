@@ -40,17 +40,17 @@
 - AES (Advanced Encryption Standard) / GCM (Galois/Counter Mode)
 - Data Encryption
 
-## ✅ 주요 기능 및 코드(Snipet)
-- 메모 작성 / 수정 / 삭제 (CRUD)
+## ✅ 주요 기능 및 코드(Snippet)
+- 메모 CRUD 기능 (Room Database)
 - 메모 잠금 및 비밀번호 인증
-- SearchView 기반 메모 검색
-- 휴지통 기능 (복원 및 자동 삭제)
-- Google 로그인 (Firebase Auth)
-- Firestore 메모 백업 및 복원
-- AES/GCM 기반 메모 암호화
+- 메모 검색 기능 (SearchView)
+- 휴지통 기능 (복원 및 30일 이후 자동 삭제)
+- Google 로그인 (Firebase Authentication)
+- 메모 백업 및 복원 기능 (Firestore)
+- 메모 내용 암호화 (AES/GCM)
 
 ### MVVM Architecture
-Room + Repository + ViewModel 구조로 UI와 데이터를 분리
+Fragment -> ViewModel -> Repository -> Room DAO -> Room Database
 ```kotlin
 // ViewModel - UI와 데이터를 연결
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -65,6 +65,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun insertMemo(memo: Memo) = viewModelScope.launch(Dispatchers.IO) {
         memoRepository.insertMemo(memo)
     }
+}
+```
+### Firestore Backup
+Room Database에 저장된 메모를 Firebase Authentication 사용자 UID 기준으로 Firestore에 백업
+```kotlin
+// Firestore에 메모 백업
+suspend fun backup(memos: List<Memo>) {
+    val uid = auth.currentUser?.uid ?: return
+
+    val memoCollection = db.collection("users")
+        .document(uid)
+        .collection("memo")
+
+    val batch = db.batch() // 여러 작업을 한 번에 처리하는 batch
+
+    memos.forEach {
+        batch.set(memoCollection.document(it.id.toString()), it)
+    }
+    batch.commit().await() // 비동기 commit
 }
 ```
 
