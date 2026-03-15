@@ -41,7 +41,7 @@
 - Android Keystore System
 - AES-GCM Encryption
 
-## ✅ 주요 기능
+## ✅ 주요 기능 및 핵심 구현 (Code Snippet)
 - 메모 CRUD (Room Database)
 - 메모 잠금 및 비밀번호 인증
 - 메모 검색 (SearchView)
