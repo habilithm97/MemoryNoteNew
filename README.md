@@ -12,45 +12,46 @@
 ## 🛠️ 기술 스택
 **Language**
 - Kotlin
-- XML (Extensible Markup Language)
 
 **Architecture**
-- MVVM (Model–View–ViewModel)
+- MVVM
 - Repository Pattern
   
 **Android Jetpack**
+- Fragment
+- RecyclerView
 - ViewModel
 - LiveData
 - Lifecycle
-- Room Database
-- Fragment
-- RecyclerView
-- View Binding
+- Room
 - Preference
 
-**Asynchronous Programming**
-- Kotlin Coroutines
+**UI**
+- XML
+- View Binding
 
 **Backend / BaaS**
 - Firebase Authentication
 - Cloud Firestore
 
+**Asynchronous**
+- Kotlin Coroutines
+
 **Security**
 - Android Keystore System
-- AES (Advanced Encryption Standard) / GCM (Galois/Counter Mode)
-- Data Encryption
+- AES-GCM Encryption
 
-## ✅ 주요 기능 및 코드(Snippet)
-- 메모 CRUD 기능 (Room Database)
+## ✅ 주요 기능
+- 메모 CRUD (Room Database)
 - 메모 잠금 및 비밀번호 인증
-- 메모 검색 기능 (SearchView)
-- 휴지통 기능 (복원 및 30일 이후 자동 삭제)
+- 메모 검색 (SearchView)
+- 휴지통 (복원 및 30일 이후 자동 삭제)
 - Google 로그인 (Firebase Authentication)
-- 메모 백업 및 복원 기능 (Firestore)
-- 메모 내용 암호화 (AES/GCM)
+- 메모 백업 및 복원 (Cloud Firestore)
+- 메모 내용 암호화 (AES/GCM Encryption)
 
 ### MVVM Architecture
-UI와 데이터를 분리
+UI와 데이터 계층을 분리
 Fragment(UI) -> ViewModel -> Repository -> Room(DAO)
 ```kotlin
 // ViewModel - UI와 데이터를 연결
