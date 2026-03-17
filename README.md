@@ -36,6 +36,7 @@
 
 **Asynchronous**
 - Kotlin Coroutines
+- Kotlin Flow
 
 **Security**
 - Android Keystore System
